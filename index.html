@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>8D Hacker Schedule</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --dark-bg: #101010;
+            --terminal-gray: #1a1a1a;
+            --border-glow: 0 0 15px rgba(0, 255, 65, 0.3);
+            --friday-highlight: #003311;
+            --special-glow: rgba(0, 255, 65, 0.15);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.45;
+        }
+
+        .user-header {
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            text-shadow: 0 0 10px var(--neon-green);
+            font-size: 1.6rem;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 900;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 50px repeat(6, 1fr);
+            gap: 6px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid rgba(0, 255, 65, 0.5);
+            padding: 8px;
+            box-shadow: var(--border-glow);
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1;
+            margin-bottom: 120px;
+        }
+
+        .time-header {
+            grid-column: 2 / span 6;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            text-align: center;
+            font-size: 0.6rem;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            color: rgba(0, 255, 65, 0.7);
+        }
+
+        .day-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(0, 255, 65, 0.4);
+            font-size: 0.85rem;
+            height: 80px;
+        }
+
+        .subject-card {
+            background: rgba(0, 255, 65, 0.03);
+            border: 1px solid rgba(0, 255, 65, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            height: 80px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .subject-card:hover {
+            background: rgba(0, 255, 65, 0.15);
+            border-color: var(--neon-green);
+            transform: translateY(-2px);
+        }
+
+        .special-slot {
+            background: var(--special-glow) !important;
+            border-color: rgba(0, 255, 65, 0.4) !important;
+        }
+
+        .tag-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 255, 65, 0.2);
+            color: #fff;
+            font-size: 0.45rem;
+            font-weight: bold;
+            padding: 2px 0;
+            text-align: center;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .fri-time-tag {
+            background: var(--friday-highlight);
+            color: var(--neon-green);
+            font-size: 0.5rem;
+            padding: 1px 4px;
+            margin-top: 4px;
+            border: 1px solid rgba(0, 255, 65, 0.5);
+            border-radius: 2px;
+        }
+
+        #status-bar {
+            position: fixed;
+            bottom: 25px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid var(--neon-green);
+            padding: 15px;
+            font-size: 0.8rem;
+            display: none;
+            width: 85%;
+            max-width: 450px;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+            z-index: 100;
+            border-radius: 4px;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .glitch { animation: glitch-anim 5s infinite linear alternate-reverse; }
+        @keyframes glitch-anim {
+            0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+            100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="user-header">> Welcome, Alvin (Class 8D)</div>
+    <h1 class="glitch">8D</h1>
+
+    <div class="grid-container">
+        <div></div>
+        <div class="time-header">
+            <div>[01]<br>07:50</div><div>[02]<br>08:50</div><div>[03]<br>09:50</div>
+            <div>[04]<br>11:35</div><div>[05]<br>12:35</div><div>[06]<br>13:30</div>
+        </div>
+
+        <div class="day-label">MO</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('ArB', 1)">Ar<span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Math', 2)">Math</div>
+        <div class="subject-card" onclick="handleTranslate('Eng', 3)">Eng</div>
+        <div class="subject-card" onclick="handleTranslate('Sc', 4)">Sc</div>
+        <div class="subject-card" onclick="handleTranslate('Math', 5)">Math</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('FrS', 6)">Fr<span class="tag-bottom">SPECIAL</span></div>
+
+        <div class="day-label">TU</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('IEEn', 1)">IE<span class="tag-bottom">SPECIAL-ENG</span></div>
+        <div class="subject-card" onclick="handleTranslate('Eng', 2)">Eng</div>
+        <div class="subject-card" onclick="handleTranslate('EngME', 3)">Eng/ME</div>
+        <div class="subject-card" onclick="handleTranslate('Sc', 4)">Sc</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('ArB', 5)">Ar<span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Math', 6)">Math</div>
+
+        <div class="day-label">WE</div>
+        <div class="subject-card" onclick="handleTranslate('Eng', 1)">Eng</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('IEEn', 2)">IE<span class="tag-bottom">SPECIAL-ENG</span></div>
+        <div class="subject-card" onclick="handleTranslate('Sc', 3)">Sc</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('ArB', 4)">Ar<span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Math', 5)">Math</div>
+        <div class="subject-card" onclick="handleTranslate('PE', 6)">PE</div>
+
+        <div class="day-label">TH</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('FrS', 1)">Fr<span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Eng', 2)">Eng</div>
+        <div class="subject-card" onclick="handleTranslate('Math', 3)">Math</div>
+        <div class="subject-card" onclick="handleTranslate('Sc', 4)">Sc</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('ArB', 5)">Ar<span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('SSEn', 6)">SS</div>
+
+        <div class="day-label">FR</div>
+        <div class="subject-card special-slot" onclick="handleTranslate('ArB', 'F1')">Ar<span class="fri-time-tag">7:40</span><span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Eng', 'F2')">Eng<span class="fri-time-tag">8:15</span></div>
+        <div class="subject-card" onclick="handleTranslate('Sc', 'F3')">Sc<span class="fri-time-tag">8:50</span></div>
+        <div class="subject-card special-slot" onclick="handleTranslate('FrS', 'F4')">Fr<span class="fri-time-tag">9:25</span><span class="tag-bottom">SPECIAL</span></div>
+        <div class="subject-card" onclick="handleTranslate('Math', 'F5')">Math<span class="fri-time-tag">10:20</span></div>
+        <div class="subject-card" onclick="handleTranslate('PE', 'F6')">PE<span class="fri-time-tag">10:55</span></div>
+    </div>
+
+    <div id="status-bar" onclick="this.style.display='none'"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let width, height, columns, drops;
+        const fontSize = 16;
+        let timer = null;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = Math.floor(width / fontSize);
+            drops = Array(columns).fill(1);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        function draw() {
+            ctx.fillStyle = 'rgba(16, 16, 16, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = Math.floor(Math.random() * 2);
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 33);
+
+        const slotTimes = {
+            1: "07:50-08:50", 2: "08:50-09:50", 3: "09:50-10:50", 4: "11:35-12:35", 5: "12:35-13:30", 6: "13:30-14:30",
+            'F1': "07:40-08:15", 'F2': "08:15-08:50", 'F3': "08:50-09:25", 'F4': "09:25-10:20", 'F5': "10:20-10:55", 'F6': "10:55-11:30"
+        };
+        const dictionary = {
+            'Math': {en: 'Mathematics', zh: '数学'}, 
+            'Eng': {en: 'English', zh: '英语'}, 
+            'Sc': {en: 'Science', zh: '科学'}, 
+            'PE': {en: 'PE', zh: '体育'},
+            'ArB': {en: 'Arabic (Special)', zh: '阿拉伯语'}, 
+            'FrS': {en: 'French (Special)', zh: '法语'}, 
+            'IEEn': {en: 'IE (SPECIAL-ENG)', zh: '特殊英语伊斯兰'},
+            'EngME': {en: 'Eng / Moral Ed', zh: '英语/道德教育'}, 
+            'SSEn': {en: 'Social Studies', zh: '社会研究'}
+        };
+
+        function handleTranslate(code, slotId) {
+            const bar = document.getElementById('status-bar');
+            
+            if(timer) clearTimeout(timer);
+
+            bar.innerHTML = `
+                <div style="color:#00ff41; border-bottom:1px solid #00ff41; margin-bottom:5px; padding-bottom:5px;">[DATA_RETRIEVAL_SUCCESS]</div>
+                <div><b>SUBJ:</b> ${dictionary[code].en}</div>
+                <div><b>TRAN:</b> ${dictionary[code].zh}</div>
+                <div><b>TIME:</b> ${slotTimes[slotId]}</div>
+                <div style="font-size:0.6rem; margin-top:8px; opacity:0.5; text-align:center;">(Auto-closing in 2.5s)</div>
+            `;
+            bar.style.display = 'block';
+
+            timer = setTimeout(() => {
+                bar.style.display = 'none';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
