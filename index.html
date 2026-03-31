@@ -156,6 +156,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
         }
 
         .glass-btn:hover {
@@ -172,6 +173,14 @@
             font-weight: 900;
             animation: pulse 1.5s infinite ease-in-out;
             color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .join-now:hover {
+            transform: scale(1.15);
+            text-shadow: 0 0 20px #fff;
         }
 
         @keyframes pulse {
@@ -200,20 +209,30 @@
             <div class="class-name" id="current-class">FARESKINGYT</div>
             <div class="time-display" id="clock">00:00:00</div>
             <div id="timer-container" style="display: none; font-size: 2rem; color: var(--break); font-family: Orbitron; margin-top: 25px; font-weight: 700;"></div>
-            <div class="join-now" id="join-status">JOIN CLASS</div>
+            <div class="join-now" id="join-status" onclick="joinActiveMeeting()">JOIN CLASS</div>
         </div>
 
         <div class="btn-container">
-            <a href="https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws" target="_blank" class="glass-btn">SOCIAL STUDIES</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=6ebdf14e-2312-448a-85eb-a2b7c7f3306d&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn">MATH</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn">ENGLISH</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjBkNWY4YWYtYThiMi00YjQ4LWIxYzQtNWUxOWI3ZTAwY2Q1%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%252236378197-03cc-469d-beec-60da9ce5f3aa%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=e50d47a3-0bb3-4424-b2a8-2eeadaee256a&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn">SCIENCE</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F3220483892366%3Fp%3D4BOcRYBujjT68E5w4u%26anon%3Dtrue&type=meet&deeplinkId=e113462a-5dc2-4fa6-9f5f-bd9e223b50b1&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn">ISLAMIC</a>
-            <a href="https://teams.microsoft.com/l/meetup-join/19%3Ameeting_YTZlMmExOGItYmM2NS00MTUzLWFkMmUtNTQzN2QyZTc5ZTUw%40thread.v2/0?context=%7B%22Tid%22%3A%22eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%22%2C%22Oid%22%3A%226225bb49-d84d-44cc-818a-37b37128f6c9%22%7D" target="_blank" class="glass-btn">FRENCH</a>
+            <a href="https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws" target="_blank" class="glass-btn" id="link-social">SOCIAL STUDIES</a>
+            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZmQxZDIxZTAtZWI3Ny00MjY1LTg4ZjgtNTU4MjNlYTRhMmVm%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=9db1a8de-4e14-4f7f-9986-31c83ed45760&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn" id="link-math">MATH</a>
+            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn" id="link-english">ENGLISH</a>
+            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjBkNWY4YWYtYThiMi00YjQ4LWIxYzQtNWUxOWI3ZTAwY2Q1%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%252236378197-03cc-469d-beec-60da9ce5f3aa%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=e50d47a3-0bb3-4424-b2a8-2eeadaee256a&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn" id="link-science">SCIENCE</a>
+            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F3220483892366%3Fp%3D4BOcRYBujjT68E5w4u%26anon%3Dtrue&type=meet&deeplinkId=e113462a-5dc2-4fa6-9f5f-bd9e223b50b1&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn" id="link-islamic">ISLAMIC</a>
+            <a href="https://teams.microsoft.com/l/meetup-join/19%3Ameeting_YTZlMmExOGItYmM2NS00MTUzLWFkMmUtNTQzN2QyZTc5ZTUw%40thread.v2/0?context=%7B%22Tid%22%3A%22eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%22%2C%22Oid%22%3A%226225bb49-d84d-44cc-818a-37b37128f6c9%22%7D" target="_blank" class="glass-btn" id="link-french">FRENCH</a>
         </div>
     </div>
 
     <script>
+        const links = {
+            "SOCIAL STUDIES": "https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws",
+            "MATH": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZmQxZDIxZTAtZWI3Ny00MjY1LTg4ZjgtNTU4MjNlYTRhMmVm%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=9db1a8de-4e14-4f7f-9986-31c83ed45760&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
+            "ENGLISH": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
+            "SCIENCE": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjBkNWY4YWYtYThiMi00YjQ4LWIxYzQtNWUxOWI3ZTAwY2Q1%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%252236378197-03cc-469d-beec-60da9ce5f3aa%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=e50d47a3-0bb3-4424-b2a8-2eeadaee256a&directDl=true&msLaunch=true&enableMobilePage=true",
+            "SPECIAL ISLAMIC": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F3220483892366%3Fp%3D4BOcRYBujjT68E5w4u%26anon%3Dtrue&type=meet&deeplinkId=e113462a-5dc2-4fa6-9f5f-bd9e223b50b1&directDl=true&msLaunch=true&enableMobilePage=true",
+            "FRENCH": "https://teams.microsoft.com/l/meetup-join/19%3Ameeting_YTZlMmExOGItYmM2NS00MTUzLWFkMmUtNTQzN2QyZTc5ZTUw%40thread.v2/0?context=%7B%22Tid%22%3A%22eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%22%2C%22Oid%22%3A%226225bb49-d84d-44cc-818a-37b37128f6c9%22%7D",
+            "ENGLISH/ME": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true"
+        };
+
         const timetable = {
             Monday: [
                 { start: "08:00", end: "08:45", name: "ENGLISH" },
@@ -257,6 +276,14 @@
             ]
         };
 
+        let currentActiveClassName = "";
+
+        function joinActiveMeeting() {
+            if (currentActiveClassName && links[currentActiveClassName]) {
+                window.open(links[currentActiveClassName], '_blank');
+            }
+        }
+
         function updateUI() {
             const now = new Date();
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -267,15 +294,16 @@
             document.getElementById('clock').innerText = now.toLocaleTimeString();
 
             const statusLabel = document.getElementById('status-label');
-            const className = document.getElementById('current-class');
+            const classNameDisplay = document.getElementById('current-class');
             const joinBtn = document.getElementById('join-status');
             const timerBox = document.getElementById('timer-container');
             const card = document.getElementById('card-element');
 
             if (!timetable[dayName]) {
                 statusLabel.innerText = "SYSTEM IDLE";
-                className.innerText = "WEEKEND";
+                classNameDisplay.innerText = "WEEKEND";
                 joinBtn.style.display = 'none';
+                currentActiveClassName = "";
                 return;
             }
 
@@ -300,22 +328,32 @@
             if (active) {
                 card.classList.remove('is-break');
                 statusLabel.innerText = "CURRENT SESSION";
-                className.innerText = active.name;
-                joinBtn.style.display = 'block';
+                classNameDisplay.innerText = active.name;
+                currentActiveClassName = active.name;
+                
+                // Only show Join Class if a link exists
+                if (links[active.name]) {
+                    joinBtn.style.display = 'block';
+                } else {
+                    joinBtn.style.display = 'none';
+                }
                 timerBox.style.display = 'none';
             } else if (coming) {
                 card.classList.add('is-break');
                 statusLabel.innerText = "UP NEXT";
-                className.innerText = "BREAK TIME";
+                classNameDisplay.innerText = "BREAK TIME";
                 joinBtn.style.display = 'none';
+                currentActiveClassName = "";
                 timerBox.style.display = 'block';
                 const [nH, nM] = coming.start.split(':').map(Number);
                 const diff = (nH * 60 + nM) - currentTime - 1;
                 timerBox.innerText = `${coming.name} IN ${diff}m ${60-currentSeconds}s`;
             } else {
                 statusLabel.innerText = "STANDBY";
-                className.innerText = "CLASSES ENDED";
+                classNameDisplay.innerText = "CLASSES ENDED";
                 joinBtn.style.display = 'none';
+                currentActiveClassName = "";
+                timerBox.style.display = 'none';
             }
         }
 
