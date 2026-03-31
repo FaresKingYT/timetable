@@ -12,6 +12,8 @@
             --primary: #9333ea;
             --accent: #c084fc;
             --break: #fbbf24;
+            --glass: rgba(147, 51, 234, 0.1);
+            --glow: 0 0 20px rgba(147, 51, 234, 0.5);
         }
 
         body, html {
@@ -26,7 +28,7 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow-x: hidden;
         }
@@ -35,6 +37,37 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        /* SMALLER INTRO OVERLAY */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out, visibility 1s;
+        }
+
+        .loader-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem; /* Reduced from 5rem */
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary);
+            margin-bottom: 10px;
+            animation: pulseIntro 1.5s infinite;
+        }
+
+        @keyframes pulseIntro {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
         }
 
         .stars-overlay {
@@ -53,235 +86,308 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
             padding: 2rem;
         }
 
-        .logo-container {
-            margin-bottom: 2.5rem;
-            animation: float 4s ease-in-out infinite;
+        /* NAV TABS */
+        .nav-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 3rem;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 30px;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+
+        .nav-btn {
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .tab-content {
+            width: 100%;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .logo-img {
-            width: 220px;
-            height: 220px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            border: 8px solid var(--primary);
-            box-shadow: 0 0 60px rgba(147, 51, 234, 0.8);
-            object-fit: cover;
-            background: #111;
+            border: 6px solid var(--primary);
+            box-shadow: 0 0 50px rgba(147, 51, 234, 0.6);
+            margin-bottom: 2rem;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-25px); }
-        }
-
+        /* STATUS CARD */
         .status-card {
-            background: rgba(147, 51, 234, 0.15);
+            background: var(--glass);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 4px solid rgba(147, 51, 234, 0.5);
+            border: 4px solid rgba(147, 51, 234, 0.4);
             border-radius: 50px;
-            padding: 5rem 3rem;
-            margin-bottom: 4rem;
+            padding: 6rem 3rem;
             width: 100%;
-            box-shadow: 0 0 100px rgba(147, 51, 234, 0.4);
+            max-width: 1100px;
+            box-shadow: 0 0 100px rgba(147, 51, 234, 0.3);
+            text-align: center;
         }
 
         .status-card.is-break {
             border-color: var(--break);
-            box-shadow: 0 0 100px rgba(251, 191, 36, 0.4);
-            background: rgba(251, 191, 36, 0.1);
+            box-shadow: 0 0 100px rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.05);
         }
-
-        .current-class-label {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 12px;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-
-        .is-break .current-class-label { color: var(--break); }
 
         .class-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 6rem);
+            font-size: clamp(4rem, 12vw, 9rem);
             font-weight: 900;
-            margin: 1.5rem 0;
-            text-shadow: 0 0 40px rgba(147, 51, 234, 0.9);
-            line-height: 1.1;
-            letter-spacing: -2px;
+            margin: 2rem 0;
+            text-shadow: 0 0 40px var(--primary);
         }
 
-        .time-display {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            opacity: 0.9;
-            margin-top: 2rem;
-            letter-spacing: 6px;
-            font-weight: 700;
-        }
-
-        .btn-container {
+        /* SCHEDULE STYLES */
+        .schedule-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            gap: 1.5rem;
             width: 100%;
-            margin-top: 2rem;
+            max-width: 900px;
         }
 
-        .glass-btn {
-            padding: 2rem;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            color: white;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 3px solid rgba(147, 51, 234, 0.4);
-            border-radius: 25px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
+        .schedule-item {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            cursor: pointer;
+            padding: 2.5rem;
+            background: rgba(147, 51, 234, 0.05);
+            border: 2px solid rgba(147, 51, 234, 0.2);
+            border-radius: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .glass-btn:hover {
-            background: rgba(147, 51, 234, 0.6);
-            transform: scale(1.1);
-            box-shadow: 0 25px 50px rgba(147, 51, 234, 0.5);
-            border-color: #fff;
+        .schedule-item:hover {
+            border-color: var(--accent);
+            background: rgba(147, 51, 234, 0.15);
+            transform: translateX(10px);
+        }
+
+        .schedule-item.active-now {
+            background: rgba(147, 51, 234, 0.3);
+            border: 3px solid #fff;
+            box-shadow: 0 0 40px var(--primary);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .schedule-item.active-now::before {
+            content: 'LIVE';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff0055;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-family: 'Orbitron';
+            border-radius: 10px;
+            animation: pulse 1s infinite;
+        }
+
+        .sch-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem; }
+        .sch-time { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--accent); }
+
+        .day-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .day-tab {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .day-tab.selected {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 15px var(--primary);
         }
 
         .join-now {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            margin-top: 2.5rem;
+            font-size: 4rem;
+            margin-top: 2rem;
             font-weight: 900;
-            animation: pulse 1.5s infinite ease-in-out;
+            animation: pulse 1.5s infinite;
             color: #fff;
             cursor: pointer;
-            display: inline-block;
-            transition: transform 0.2s;
-        }
-
-        .join-now:hover {
-            transform: scale(1.15);
-            text-shadow: 0 0 20px #fff;
+            text-shadow: 0 0 20px var(--primary);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
-        @media (max-width: 768px) {
-            .class-name { font-size: 3rem; }
-            .time-display { font-size: 2rem; }
-            .status-card { padding: 3rem 1.5rem; }
-        }
     </style>
 </head>
 <body>
 
+    <div id="intro-overlay">
+        <div class="loader-text">FARESKINGYT</div>
+        <div style="color: rgba(255,255,255,0.7); font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase;">Loading Schedule...</div>
+    </div>
+
     <div class="stars-overlay"></div>
 
     <div class="content">
-        <div class="logo-container">
-            <img src="https://unavatar.io/youtube/FaresKingYT" alt="FaresKingYT Logo" class="logo-img">
+        <img src="https://unavatar.io/youtube/FaresKingYT" alt="Logo" class="logo-img">
+
+        <div class="nav-container">
+            <div class="nav-btn active" onclick="showTab('status-tab')">Live Status</div>
+            <div class="nav-btn" onclick="showTab('schedule-tab')">Full Schedule</div>
         </div>
 
-        <div class="status-card" id="card-element">
-            <div class="current-class-label" id="status-label">INITIALIZING</div>
-            <div class="class-name" id="current-class">FARESKINGYT</div>
-            <div class="time-display" id="clock">00:00:00</div>
-            <div id="timer-container" style="display: none; font-size: 2rem; color: var(--break); font-family: Orbitron; margin-top: 25px; font-weight: 700;"></div>
-            <div class="join-now" id="join-status" onclick="joinActiveMeeting()">JOIN CLASS</div>
+        <!-- TAB 1: LIVE STATUS -->
+        <div id="status-tab" class="tab-content active">
+            <div class="status-card" id="card-element">
+                <div class="current-class-label" id="status-label" style="font-family: Orbitron; color: var(--accent); letter-spacing: 5px;">SYSTEM LIVE</div>
+                <div class="class-name" id="current-class">CONNECTING...</div>
+                <div class="time-display" id="clock" style="font-family: Orbitron; font-size: 3rem; opacity: 0.8;">00:00:00</div>
+                <div id="timer-container" style="display: none; font-size: 2.5rem; color: var(--break); font-family: Orbitron; margin-top: 20px; font-weight: 900;"></div>
+                <div class="join-now" id="join-status" onclick="joinActiveMeeting()" style="display:none">JOIN NOW</div>
+            </div>
         </div>
 
-        <div class="btn-container">
-            <a href="https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws" target="_blank" class="glass-btn" id="link-social">SOCIAL STUDIES</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZmQxZDIxZTAtZWI3Ny00MjY1LTg4ZjgtNTU4MjNlYTRhMmVm%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=9db1a8de-4e14-4f7f-9986-31c83ed45760&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn" id="link-math">MATH</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true" target="_blank" class="glass-btn" id="link-english">ENGLISH</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjBkNWY4YWYtYThiMi00YjQ4LWIxYzQtNWUxOWI3ZTAwY2Q1%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%252236378197-03cc-469d-beec-60da9ce5f3aa%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=e50d47a3-0bb3-4424-b2a8-2eeadaee256a&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn" id="link-science">SCIENCE</a>
-            <a href="https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F3220483892366%3Fp%3D4BOcRYBujjT68E5w4u%26anon%3Dtrue&type=meet&deeplinkId=e113462a-5dc2-4fa6-9f5f-bd9e223b50b1&directDl=true&msLaunch=true&enableMobilePage=true" target="_blank" class="glass-btn" id="link-islamic">ISLAMIC</a>
-            <a href="https://teams.microsoft.com/l/meetup-join/19%3Ameeting_YTZlMmExOGItYmM2NS00MTUzLWFkMmUtNTQzN2QyZTc5ZTUw%40thread.v2/0?context=%7B%22Tid%22%3A%22eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%22%2C%22Oid%22%3A%226225bb49-d84d-44cc-818a-37b37128f6c9%22%7D" target="_blank" class="glass-btn" id="link-french">FRENCH</a>
+        <!-- TAB 2: SCHEDULE -->
+        <div id="schedule-tab" class="tab-content">
+            <div class="day-tabs" id="day-tabs">
+                <div class="day-tab" onclick="switchDay('Monday')">MON</div>
+                <div class="day-tab" onclick="switchDay('Tuesday')">TUE</div>
+                <div class="day-tab" onclick="switchDay('Wednesday')">WED</div>
+                <div class="day-tab" onclick="switchDay('Thursday')">THU</div>
+                <div class="day-tab" onclick="switchDay('Friday')">FRI</div>
+            </div>
+            
+            <div class="schedule-grid" id="schedule-display">
+                <!-- Schedule items injected here -->
+            </div>
         </div>
     </div>
 
     <script>
+        // Intro handling
+        window.onload = function() {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-overlay');
+                intro.style.opacity = '0';
+                setTimeout(() => intro.style.visibility = 'hidden', 1000);
+            }, 1200);
+        };
+
         const links = {
-            "SOCIAL STUDIES": "https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws",
-            "MATH": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZmQxZDIxZTAtZWI3Ny00MjY1LTg4ZjgtNTU4MjNlYTRhMmVm%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=9db1a8de-4e14-4f7f-9986-31c83ed45760&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
             "ENGLISH": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
+            "MATH": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_ZmQxZDIxZTAtZWI3Ny00MjY1LTg4ZjgtNTU4MjNlYTRhMmVm%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=9db1a8de-4e14-4f7f-9986-31c83ed45760&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true",
             "SCIENCE": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_YjBkNWY4YWYtYThiMi00YjQ4LWIxYzQtNWUxOWI3ZTAwY2Q1%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%252236378197-03cc-469d-beec-60da9ce5f3aa%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=e50d47a3-0bb3-4424-b2a8-2eeadaee256a&directDl=true&msLaunch=true&enableMobilePage=true",
+            "SOCIAL STUDIES": "https://teams.microsoft.com/meet/3687673226102?p=I7BxGKoPw4zY6nvSws",
             "SPECIAL ISLAMIC": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fmeet%2F3220483892366%3Fp%3D4BOcRYBujjT68E5w4u%26anon%3Dtrue&type=meet&deeplinkId=e113462a-5dc2-4fa6-9f5f-bd9e223b50b1&directDl=true&msLaunch=true&enableMobilePage=true",
             "FRENCH": "https://teams.microsoft.com/l/meetup-join/19%3Ameeting_YTZlMmExOGItYmM2NS00MTUzLWFkMmUtNTQzN2QyZTc5ZTUw%40thread.v2/0?context=%7B%22Tid%22%3A%22eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%22%2C%22Oid%22%3A%226225bb49-d84d-44cc-818a-37b37128f6c9%22%7D",
             "ENGLISH/ME": "https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fmeetup-join%2F19%3Ameeting_OTg0ODZmY2ItNmE4Yy00YzU3LWFiYzMtNDkzYzRhNDliOTlh%40thread.v2%2F0%3Fcontext%3D%257B%2522Tid%2522%253A%2522eec0f51a-03e0-4f84-8c0c-1f0c97d4cde8%2522%252C%2522Oid%2522%253A%2522289c9388-c1b1-4c07-896a-2372670634e3%2522%257D%26anon%3Dtrue&type=meetup-join&deeplinkId=5314b6ee-2df9-4645-8061-11784ab1f379&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true"
         };
 
         const timetable = {
-            Monday: [
-                { start: "08:00", end: "08:45", name: "ENGLISH" },
-                { start: "08:50", end: "09:35", name: "MATH" },
-                { start: "09:40", end: "10:25", name: "SPECIAL ISLAMIC" },
-                { start: "10:55", end: "11:40", name: "SCIENCE" },
-                { start: "11:45", end: "12:30", name: "SPECIAL ARABIC" },
-                { start: "12:35", end: "13:20", name: "P.E" }
-            ],
-            Tuesday: [
-                { start: "08:00", end: "08:45", name: "MATH" },
-                { start: "08:50", end: "09:35", name: "ENGLISH" },
-                { start: "09:40", end: "10:25", name: "MATH" },
-                { start: "10:55", end: "11:40", name: "SCIENCE" },
-                { start: "11:45", end: "12:30", name: "SPECIAL ARABIC" },
-                { start: "12:35", end: "13:20", name: "FRENCH" }
-            ],
-            Wednesday: [
-                { start: "08:00", end: "08:45", name: "FRENCH" },
-                { start: "08:50", end: "09:35", name: "ENGLISH" },
-                { start: "09:40", end: "10:25", name: "SCIENCE" },
-                { start: "10:55", end: "11:40", name: "MATH" },
-                { start: "11:45", end: "12:30", name: "SPECIAL ARABIC" },
-                { start: "12:35", end: "13:20", name: "SOCIAL STUDIES" }
-            ],
-            Thursday: [
-                { start: "08:00", end: "08:45", name: "SCIENCE" },
-                { start: "08:50", end: "09:35", name: "MATH" },
-                { start: "09:40", end: "10:25", name: "ENGLISH" },
-                { start: "10:55", end: "11:40", name: "SPECIAL ISLAMIC" },
-                { start: "11:45", end: "12:30", name: "SPECIAL ARABIC" },
-                { start: "12:35", end: "13:20", name: "ENGLISH/ME" }
-            ],
-            Friday: [
-                { start: "07:45", end: "08:20", name: "SPECIAL ARABIC" },
-                { start: "08:25", end: "09:00", name: "P.E" },
-                { start: "09:05", end: "09:35", name: "SCIENCE" },
-                { start: "09:45", end: "10:20", name: "MATH" },
-                { start: "10:25", end: "10:55", name: "ENGLISH" },
-                { start: "11:00", end: "11:30", name: "FRENCH" }
-            ]
+            Monday: [{start:"08:00",end:"08:45",name:"ENGLISH"},{start:"08:50",end:"09:35",name:"MATH"},{start:"09:40",end:"10:25",name:"SPECIAL ISLAMIC"},{start:"10:55",end:"11:40",name:"SCIENCE"},{start:"11:45",end:"12:30",name:"SPECIAL ARABIC"},{start:"12:35",end:"13:20",name:"P.E"}],
+            Tuesday: [{start:"08:00",end:"08:45",name:"MATH"},{start:"08:50",end:"09:35",name:"ENGLISH"},{start:"09:40",end:"10:25",name:"MATH"},{start:"10:55",end:"11:40",name:"SCIENCE"},{start:"11:45",end:"12:30",name:"SPECIAL ARABIC"},{start:"12:35",end:"13:20",name:"FRENCH"}],
+            Wednesday: [{start:"08:00",end:"08:45",name:"FRENCH"},{start:"08:50",end:"09:35",name:"ENGLISH"},{start:"09:40",end:"10:25",name:"SCIENCE"},{start:"10:55",end:"11:40",name:"MATH"},{start:"11:45",end:"12:30",name:"SPECIAL ARABIC"},{start:"12:35",end:"13:20",name:"SOCIAL STUDIES"}],
+            Thursday: [{start:"08:00",end:"08:45",name:"SCIENCE"},{start:"08:50",end:"09:35",name:"MATH"},{start:"09:40",end:"10:25",name:"ENGLISH"},{start:"10:55",end:"11:40",name:"SPECIAL ISLAMIC"},{start:"11:45",end:"12:30",name:"SPECIAL ARABIC"},{start:"12:35",end:"13:20",name:"ENGLISH/ME"}],
+            Friday: [{start:"07:45",end:"08:20",name:"SPECIAL ARABIC"},{start:"08:25",end:"09:00",name:"P.E"},{start:"09:05",end:"09:35",name:"SCIENCE"},{start:"09:45",end:"10:20",name:"MATH"},{start:"10:25",end:"10:55",name:"ENGLISH"},{start:"11:00",end:"11:30",name:"FRENCH"}]
         };
 
         let currentActiveClassName = "";
+        let selectedDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        if (!timetable[selectedDay]) selectedDay = 'Monday';
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+            if(id === 'schedule-tab') renderSchedule();
+        }
+
+        function switchDay(day) {
+            selectedDay = day;
+            renderSchedule();
+        }
 
         function joinActiveMeeting() {
             if (currentActiveClassName && links[currentActiveClassName]) {
                 window.open(links[currentActiveClassName], '_blank');
             }
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('schedule-display');
+            const dayData = timetable[selectedDay];
+            const now = new Date();
+            const todayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            document.querySelectorAll('.day-tab').forEach(t => {
+                t.classList.toggle('selected', t.innerText === selectedDay.substring(0, 3).toUpperCase());
+            });
+
+            let html = '';
+            dayData.forEach(session => {
+                const [sH, sM] = session.start.split(':').map(Number);
+                const [eH, eM] = session.end.split(':').map(Number);
+                const start = sH * 60 + sM;
+                const end = eH * 60 + eM;
+                const isActive = (selectedDay === todayName && currentTime >= start && currentTime < end);
+
+                html += `
+                    <div class="schedule-item ${isActive ? 'active-now' : ''}">
+                        <div class="sch-name">${session.name}</div>
+                        <div class="sch-time">${session.start} — ${session.end}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
         }
 
         function updateUI() {
@@ -309,9 +415,11 @@
 
             const schedule = timetable[dayName];
             let active = null;
+            let breakTime = false;
             let coming = null;
 
-            for (const s of schedule) {
+            for (let i = 0; i < schedule.length; i++) {
+                const s = schedule[i];
                 const [sH, sM] = s.start.split(':').map(Number);
                 const [eH, eM] = s.end.split(':').map(Number);
                 const start = sH * 60 + sM;
@@ -320,45 +428,44 @@
                 if (currentTime >= start && currentTime < end) {
                     active = s; break;
                 }
-                if (start > currentTime) {
-                    coming = s; break;
+                
+                if (dayName !== 'Friday' && i < schedule.length - 1) {
+                    const next = schedule[i+1];
+                    const [nH, nM] = next.start.split(':').map(Number);
+                    if (currentTime >= end && currentTime < (nH * 60 + nM)) {
+                        breakTime = true; coming = next; break;
+                    }
                 }
+
+                if (start > currentTime) { coming = s; break; }
             }
 
             if (active) {
                 card.classList.remove('is-break');
-                statusLabel.innerText = "CURRENT SESSION";
+                statusLabel.innerText = "CURRENTLY LIVE";
                 classNameDisplay.innerText = active.name;
                 currentActiveClassName = active.name;
-                
-                // Only show Join Class if a link exists
-                if (links[active.name]) {
-                    joinBtn.style.display = 'block';
-                } else {
-                    joinBtn.style.display = 'none';
-                }
+                joinBtn.style.display = links[active.name] ? 'block' : 'none';
                 timerBox.style.display = 'none';
-            } else if (coming) {
+            } else if (breakTime || coming) {
                 card.classList.add('is-break');
                 statusLabel.innerText = "UP NEXT";
-                classNameDisplay.innerText = "BREAK TIME";
+                classNameDisplay.innerText = breakTime ? "5 MIN BREAK" : "GET READY";
                 joinBtn.style.display = 'none';
-                currentActiveClassName = "";
                 timerBox.style.display = 'block';
                 const [nH, nM] = coming.start.split(':').map(Number);
                 const diff = (nH * 60 + nM) - currentTime - 1;
                 timerBox.innerText = `${coming.name} IN ${diff}m ${60-currentSeconds}s`;
             } else {
                 statusLabel.innerText = "STANDBY";
-                classNameDisplay.innerText = "CLASSES ENDED";
+                classNameDisplay.innerText = "SCHOOL'S OUT";
                 joinBtn.style.display = 'none';
-                currentActiveClassName = "";
                 timerBox.style.display = 'none';
             }
         }
 
-        updateUI();
         setInterval(updateUI, 1000);
+        updateUI();
     </script>
 </body>
 </html>
