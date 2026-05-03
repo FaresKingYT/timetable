@@ -1,234 +1,235 @@
-```react
-import React, { useState, useEffect } from 'react';
-import { 
-  ShoppingCart, 
-  Plus, 
-  Minus, 
-  X, 
-  Calendar, 
-  MapPin, 
-  User, 
-  Send, 
-  Star, 
-  CheckCircle2,
-  ChevronRight
-} from 'lucide-react';
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fares King | The Plug</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+        .king-gradient {
+            background: linear-gradient(to right, #a855f7, #6b21a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cart-sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Glow -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[40vh] bg-purple-600/10 blur-[120px] pointer-events-none -z-10"></div>
 
-// --- CONFIGURATION ---
-const MY_WHATSAPP_NUMBER = "971558597737"; 
-
-// Direct links to your specific uploads
-const CHEETOS_IMG = "https://api.a0.dev/assets/image?url=uploaded:1777727762790.jpeg-d08ecd22-f137-404f-b789-9fbc0d500b58";
-const SPICY_POPCORN_IMG = "https://api.a0.dev/assets/image?url=uploaded:image.png-9275fc42-2cee-475b-ba17-533f74aed030";
-const BALANCED_POPCORN_IMG = "https://api.a0.dev/assets/image?url=uploaded:image.png-2fd90d04-2a01-4bf5-9f9b-186bb5283c18";
-const LOGO_URL = "https://api.a0.dev/assets/image?url=uploaded:image.png-055cb59e-1c43-4443-87bd-5bed14df3bfd";
-
-const App = () => {
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [orderStep, setOrderStep] = useState('review'); 
-  const [form, setForm] = useState({ name: '', grade: '', date: '' });
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const snacks = [
-    {
-      id: 'fk-spicy',
-      name: "Fares King Spicy Popcorn",
-      price: 4,
-      description: "Signature heat. Maximum spice saturation for elite seekers.",
-      img: SPICY_POPCORN_IMG,
-    },
-    {
-      id: 'fk-balanced',
-      name: "Fares King Balanced Popcorn",
-      price: 3,
-      description: "The perfect ratio of signature spice and savory salt.",
-      img: BALANCED_POPCORN_IMG,
-    },
-    {
-      id: 'cheetos',
-      name: "Cheetos Flamin' Hot",
-      price: 5,
-      description: "Elite crunch. The original fire snack for the kings.",
-      img: CHEETOS_IMG,
-    }
-  ];
-
-  const addToCart = (snack) => {
-    setCart(prev => {
-      const exists = prev.find(i => i.id === snack.id);
-      if (exists) return prev.map(i => i.id === snack.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...snack, qty: 1 }];
-    });
-  };
-
-  const updateQty = (id, d) => setCart(p => p.map(i => i.id === id ? { ...i, qty: Math.max(1, i.qty + d) } : i));
-  const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
-  const getWhatsAppUrl = () => {
-    const itemsList = cart.map(i => `• ${i.name} (x${i.qty}) - ${i.price * i.qty} AED`).join('\n');
-    const orderTicket = `👑 *NEW ORDER: FARES KING*%0A--------------------------%0A👤 *CUSTOMER:* ${form.name}%0A📍 *GRADE:* ${form.grade}%0A📅 *DATE:* ${form.date}%0A--------------------------%0A📦 *ITEMS:*%0A${itemsList}%0A%0A💰 *TOTAL:* ${total} AED%0A--------------------------%0A💸 *PAYMENT: CASH ONLY*%0A--------------------------%0A_Order via FaresKing.web_`;
-    return `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${orderTicket}`;
-  };
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-[#050505] flex items-center justify-center z-[999]">
-        <div className="text-center">
-          <img src={LOGO_URL} className="w-20 h-20 rounded-full object-cover mx-auto mb-4 border-2 border-purple-600 animate-pulse" alt="Loading" />
-          <p className="text-purple-500 font-black text-[10px] tracking-widest uppercase italic">The King Is Arriving</p>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <img src="https://api.a0.dev/assets/image?url=uploaded:image.png-055cb59e-1c43-4443-87bd-5bed14df3bfd" class="w-10 h-10 rounded-lg object-cover border border-purple-600/30" alt="Logo">
+            <h1 class="font-black italic text-xl uppercase tracking-tighter">Fares King</h1>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-600/50 pb-20">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[40vh] bg-purple-600/10 blur-[100px] pointer-events-none -z-10"></div>
-
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <img src={LOGO_URL} className="w-10 h-10 rounded-lg object-cover border border-purple-600/30" alt="Logo" />
-          <h1 className="font-black italic text-xl uppercase tracking-tighter">Fares King</h1>
-        </div>
-        <button onClick={() => { setIsCartOpen(true); setOrderStep('review'); }} className="p-3 bg-white/5 rounded-2xl relative border border-white/10 active:scale-95 transition-all">
-          <ShoppingCart className="w-5 h-5" />
-          {cart.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-purple-600 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">
-              {cart.reduce((a, b) => a + b.qty, 0)}
-            </span>
-          )}
+        <button onclick="toggleCart()" class="p-3 bg-white/5 rounded-2xl relative border border-white/10 active:scale-95 transition-all">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-purple-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
         </button>
-      </nav>
+    </nav>
 
-      {/* Header */}
-      <header className="pt-32 pb-8 px-6 text-center">
-        <h2 className="text-7xl md:text-8xl font-black italic uppercase tracking-tighter mb-2 leading-none">
-          THE <span className="text-purple-600">VAULT</span>
+    <!-- Header -->
+    <header class="pt-32 pb-12 px-6 text-center">
+        <h2 class="text-7xl md:text-8xl font-black italic uppercase tracking-tighter mb-2 leading-none">
+            THE <span class="king-gradient">VAULT</span>
         </h2>
-        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em]">Official Snack Catalog</p>
-      </header>
+        <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em]">Official Snack Catalog</p>
+    </header>
 
-      {/* Main Grid */}
-      <main className="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {snacks.map((snack) => {
-          const cartItem = cart.find(i => i.id === snack.id);
-          return (
-            <div key={snack.id} className="bg-[#0c0c0c] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col">
-              <div className="h-72 bg-neutral-900 flex items-center justify-center p-8 relative">
-                <img src={snack.img} className="max-w-full max-h-full object-contain drop-shadow-2xl" alt={snack.name} />
-                <div className="absolute top-6 right-6 bg-purple-600 px-4 py-1.5 rounded-xl font-black italic text-sm">
-                  {snack.price} AED
-                </div>
-              </div>
-              <div className="p-8 flex-grow">
-                <h3 className="text-2xl font-black italic uppercase mb-2 tracking-tighter">{snack.name}</h3>
-                <p className="text-white/40 text-[11px] mb-6 font-medium italic leading-relaxed">{snack.description}</p>
-                <button 
-                  onClick={() => addToCart(snack)}
-                  className={`w-full py-5 rounded-2xl font-black uppercase italic tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 ${
-                    cartItem ? 'bg-purple-600/20 text-purple-400 border border-purple-600/50' : 'bg-white text-black active:scale-95'
-                  }`}
-                >
-                  {cartItem ? <>Added ({cartItem.qty}) <CheckCircle2 className="w-4 h-4" /></> : <>Add To Bag <Plus className="w-4 h-4" /></>}
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </main>
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 pb-32" id="snack-grid">
+        <!-- Snacks will be injected here -->
+    </main>
 
-      {/* Cart Sidebar */}
-      {isCartOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setIsCartOpen(false)}></div>
-          <div className="relative w-full max-w-md bg-[#080808] border-l border-white/10 h-full flex flex-col">
-            <div className="p-6 flex justify-between items-center border-b border-white/5 bg-black">
-              <h2 className="font-black italic uppercase text-xl">Checkout</h2>
-              <button onClick={() => setIsCartOpen(false)} className="p-2 bg-white/5 rounded-xl"><X className="w-5 h-5"/></button>
-            </div>
-
-            <div className="flex-grow overflow-y-auto p-6 space-y-4">
-              {orderStep === 'review' ? (
-                <>
-                  {cart.length === 0 ? (
-                    <div className="py-20 text-center opacity-20 font-black uppercase text-[10px] tracking-widest italic">Bag is empty</div>
-                  ) : (
-                    cart.map(item => (
-                      <div key={item.id} className="flex gap-4 items-center bg-white/[0.03] p-4 rounded-3xl border border-white/5">
-                        <img src={item.img} className="w-14 h-14 rounded-xl object-contain bg-neutral-800 p-2" alt="Item" />
-                        <div className="flex-grow">
-                          <h4 className="font-black italic uppercase text-[11px] leading-tight">{item.name}</h4>
-                          <p className="text-purple-500 font-black text-xs">{item.price * item.qty} AED</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => updateQty(item.id, -1)} className="p-1.5 bg-white/5 rounded-lg active:bg-red-500/20"><Minus className="w-3 h-3"/></button>
-                          <span className="text-xs font-black">{item.qty}</span>
-                          <button onClick={() => updateQty(item.id, 1)} className="p-1.5 bg-white/5 rounded-lg active:bg-purple-500/20"><Plus className="w-3 h-3"/></button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </>
-              ) : (
-                <div className="space-y-6 pt-4 animate-in slide-in-from-bottom-2 duration-300">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/30 ml-1">Your Name</label>
-                    <input className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold" value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Fares" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/30 ml-1">Grade / Location</label>
-                    <input className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold" value={form.grade} onChange={e => setForm({...form, grade: e.target.value})} placeholder="10-A" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/30 ml-1">Date</label>
-                    <input className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold" value={form.date} onChange={e => setForm({...form, date: e.target.value})} placeholder="Monday morning" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="p-6 bg-black border-t border-white/5">
-              <div className="flex justify-between items-end mb-6">
-                <span className="text-[10px] font-black uppercase text-white/20">Grand Total</span>
-                <span className="text-4xl font-black italic">{total} AED</span>
-              </div>
-              {orderStep === 'review' ? (
-                <button disabled={cart.length === 0} onClick={() => setOrderStep('details')} className="w-full py-6 bg-white text-black font-black uppercase italic tracking-widest rounded-3xl active:scale-95 transition-all disabled:opacity-20 shadow-xl">
-                  Next Step
-                </button>
-              ) : (
-                <div className="flex gap-4">
-                  <button onClick={() => setOrderStep('review')} className="p-6 bg-white/5 border border-white/10 rounded-3xl"><ChevronRight className="rotate-180 w-5 h-5"/></button>
-                  <a 
-                    href={(!form.name || !form.grade || !form.date) ? "#" : getWhatsAppUrl()}
-                    target="_top"
-                    className={`flex-grow py-6 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-3xl flex items-center justify-center gap-2 shadow-xl shadow-purple-600/30 ${(!form.name || !form.grade || !form.date) ? 'opacity-30 cursor-not-allowed' : 'active:scale-95'}`}
-                  >
-                    Send Order <Send className="w-4 h-4" />
-                  </a>
-                </div>
-              )}
-            </div>
-          </div>
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden opacity-0 transition-opacity duration-300" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed top-0 right-0 w-full max-w-md h-full bg-[#080808] border-l border-white/10 z-[101] cart-sidebar flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-white/5 bg-black">
+            <h2 class="font-black italic uppercase text-xl">Your Bag</h2>
+            <button onclick="toggleCart()" class="p-2 bg-white/5 rounded-xl"><i class="fas fa-times"></i></button>
         </div>
-      )}
 
-      <footer className="py-20 flex flex-col items-center gap-6 border-t border-white/5 mt-10">
-        <Star className="w-6 h-6 text-purple-600 fill-current animate-pulse" />
-        <h2 className="text-xl font-black italic uppercase opacity-20">@FaresKingYT</h2>
-        <p className="text-[8px] font-black text-white/5 uppercase tracking-[1em]">Empire Plug</p>
-      </footer>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Cart items injected here -->
+        </div>
+
+        <div id="checkout-form" class="hidden p-6 space-y-4 border-t border-white/5 bg-black">
+            <h3 class="font-black uppercase text-xs text-purple-500 tracking-widest">Delivery Details</h3>
+            <input type="text" id="cust-name" placeholder="Full Name" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
+            <input type="text" id="cust-grade" placeholder="Grade / Section (e.g. 10-A)" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
+            <input type="text" id="cust-date" placeholder="Delivery Date (e.g. Monday)" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
+        </div>
+
+        <div class="p-6 bg-black border-t border-white/5">
+            <div class="flex justify-between items-end mb-6">
+                <span class="text-[10px] font-black uppercase text-white/20">Total</span>
+                <span class="text-4xl font-black italic" id="cart-total">0 AED</span>
+            </div>
+            <button id="next-btn" onclick="goToDetails()" class="w-full py-5 bg-white text-black font-black uppercase italic tracking-widest rounded-2xl active:scale-95 transition-all shadow-xl">
+                Next Step
+            </button>
+            <a id="whatsapp-btn" href="#" target="_top" class="hidden w-full py-5 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-purple-600/30 active:scale-95 transition-all">
+                Send Order <i class="fas fa-paper-plane"></i>
+            </a>
+            <button id="back-btn" onclick="goToReview()" class="hidden w-full mt-3 text-[10px] font-black uppercase text-white/20 tracking-widest">Go Back</button>
+        </div>
     </div>
-  );
-};
 
-export default App;
+    <footer class="py-20 flex flex-col items-center gap-6 border-t border-white/5 mt-10">
+        <i class="fas fa-star text-purple-600 animate-pulse"></i>
+        <h2 class="text-xl font-black italic uppercase opacity-20">@FaresKingYT</h2>
+    </footer>
+
+    <script>
+        const WHATSAPP_NUM = "971558597737";
+        const snacks = [
+            { id: 1, name: "Spicy Popcorn", price: 4, img: "https://api.a0.dev/assets/image?url=uploaded:image.png-9275fc42-2cee-475b-ba17-533f74aed030", desc: "Signature elite heat." },
+            { id: 2, name: "Balanced Popcorn", price: 3, img: "https://api.a0.dev/assets/image?url=uploaded:image.png-2fd90d04-2a01-4bf5-9f9b-186bb5283c18", desc: "Perfect spice/salt ratio." },
+            { id: 3, name: "Cheetos Flamin' Hot", price: 5, img: "https://api.a0.dev/assets/image?url=uploaded:1777727762790.jpeg-d08ecd22-f137-404f-b789-9fbc0d500b58", desc: "Classic crunch plug." }
+        ];
+
+        let cart = [];
+
+        function renderGrid() {
+            const grid = document.getElementById('snack-grid');
+            grid.innerHTML = snacks.map(s => `
+                <div class="bg-[#0c0c0c] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col">
+                    <div class="h-64 bg-neutral-900 flex items-center justify-center p-8 relative">
+                        <img src="${s.img}" class="max-w-full max-h-full object-contain" alt="${s.name}">
+                        <div class="absolute top-6 right-6 bg-purple-600 px-4 py-1.5 rounded-xl font-black italic text-sm">${s.price} AED</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-black italic uppercase mb-2 tracking-tighter">${s.name}</h3>
+                        <p class="text-white/40 text-[11px] mb-6 italic">${s.desc}</p>
+                        <button onclick="addToCart(${s.id})" class="w-full py-4 bg-white text-black font-black uppercase italic tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all">Add to Bag</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const item = snacks.find(s => s.id === id);
+            const inCart = cart.find(c => c.id === id);
+            if (inCart) inCart.qty++;
+            else cart.push({...item, qty: 1});
+            updateCartUI();
+            toggleCart(true);
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+            
+            let total = 0;
+            let count = 0;
+
+            list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px]">Empty</div>' : 
+                cart.map(c => {
+                    total += (c.price * c.qty);
+                    count += c.qty;
+                    return `
+                        <div class="flex gap-4 items-center bg-white/[0.03] p-4 rounded-3xl border border-white/5">
+                            <img src="${c.img}" class="w-12 h-12 object-contain bg-neutral-800 rounded-xl p-2">
+                            <div class="flex-grow">
+                                <h4 class="font-black italic uppercase text-[10px]">${c.name}</h4>
+                                <p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="changeQty(${c.id}, -1)" class="w-6 h-6 bg-white/5 rounded-lg">-</button>
+                                <span class="text-xs font-bold">${c.qty}</span>
+                                <button onclick="changeQty(${c.id}, 1)" class="w-6 h-6 bg-white/5 rounded-lg">+</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            totalEl.innerText = `${total} AED`;
+            countEl.innerText = count;
+            countEl.classList.toggle('hidden', count === 0);
+            updateWhatsAppLink(total);
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+            updateCartUI();
+        }
+
+        function toggleCart(forceOpen = false) {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = sidebar.classList.contains('open');
+
+            if (forceOpen || !isOpen) {
+                sidebar.classList.add('open');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            } else {
+                sidebar.classList.remove('open');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function goToDetails() {
+            if (cart.length === 0) return;
+            document.getElementById('cart-items').classList.add('hidden');
+            document.getElementById('checkout-form').classList.remove('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('whatsapp-btn').classList.remove('hidden');
+            document.getElementById('back-btn').classList.remove('hidden');
+        }
+
+        function goToReview() {
+            document.getElementById('cart-items').classList.remove('hidden');
+            document.getElementById('checkout-form').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            document.getElementById('whatsapp-btn').classList.add('hidden');
+            document.getElementById('back-btn').classList.add('hidden');
+        }
+
+        function updateWhatsAppLink(total) {
+            const btn = document.getElementById('whatsapp-btn');
+            const name = document.getElementById('cust-name').value || "Customer";
+            const grade = document.getElementById('cust-grade').value || "Not specified";
+            const date = document.getElementById('cust-date').value || "ASAP";
+            
+            const items = cart.map(c => `• ${c.name} (x${c.qty})`).join('%0A');
+            const text = `👑 *NEW ORDER: FARES KING*%0A--------------------------%0A👤 *NAME:* ${name}%0A📍 *GRADE:* ${grade}%0A📅 *DATE:* ${date}%0A--------------------------%0A📦 *ITEMS:*%0A${items}%0A%0A💰 *TOTAL:* ${total} AED`;
+            
+            btn.href = `https://wa.me/${WHATSAPP_NUM}?text=${text}`;
+        }
+
+        // Keep WhatsApp link updated as they type
+        ['cust-name', 'cust-grade', 'cust-date'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                const total = cart.reduce((s, c) => s + (c.price * c.qty), 0);
+                updateWhatsAppLink(total);
+            });
+        });
+
+        renderGrid();
+    </script>
+</body>
+</html>
 
 ```
