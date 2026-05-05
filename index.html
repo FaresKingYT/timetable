@@ -3,231 +3,391 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fares King | The Plug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fares King">
+    <meta name="theme-color" content="#050505">
+    <title>Fares King | Supermarket</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #050505;
             color: white;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        #webapp-prompt {
+            display: none;
+            background: #050505;
+            z-index: 1000;
+        }
+
+        .snack-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .snack-card.selected {
+            border-color: rgba(168, 85, 247, 0.5);
+            background: #0e0e0e;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
         .king-gradient {
             background: linear-gradient(to right, #a855f7, #6b21a8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
         .cart-sidebar {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
             transform: translateX(100%);
+            padding-bottom: var(--safe-bottom);
         }
+
         .cart-sidebar.open {
             transform: translateX(0);
         }
+
+        .snack-shadow {
+            filter: drop-shadow(0 20px 40px rgba(168, 85, 247, 0.3));
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        /* RESTORED BOBA & TIGER POSITIONING */
+        .boba-adjust { transform: scale(2.2) translate(10px, 40px); }
+        .selected .boba-adjust { transform: scale(2.3) translate(10px, 42px); }
+        .tiger-milk-pos { transform: scale(1.8) translate(65px, 20px); }
+        .selected .tiger-milk-pos { transform: scale(1.9) translate(70px, 20px); }
+
+        .snack-card.selected .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos) {
+            transform: scale(1.15) translateY(-15px);
+        }
+
+        .image-container {
+            height: 480px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.03) 0%, transparent 70%);
+        }
+
+        #loader.fade-out { opacity: 0; pointer-events: none; }
+
+        #toast {
+            position: fixed;
+            bottom: calc(2rem + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #a855f7;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-style: italic;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 200;
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.5);
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        nav { padding-top: calc(1rem + var(--safe-top)); }
+        .tap-active:active { transform: scale(0.96); }
+
+        @keyframes addEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); }
+        }
+        .item-added { animation: addEffect 0.4s ease-out; }
     </style>
 </head>
 <body>
-    <!-- Background Glow -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[40vh] bg-purple-600/10 blur-[120px] pointer-events-none -z-10"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="https://api.a0.dev/assets/image?url=uploaded:image.png-055cb59e-1c43-4443-87bd-5bed14df3bfd" class="w-10 h-10 rounded-lg object-cover border border-purple-600/30" alt="Logo">
-            <h1 class="font-black italic text-xl uppercase tracking-tighter">Fares King</h1>
+    <!-- Web App Prompt -->
+    <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-purple-600 blur-[60px] opacity-20"></div>
+            <img id="prompt-logo" src="" class="w-32 h-32 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
         </div>
-        <button onclick="toggleCart()" class="p-3 bg-white/5 rounded-2xl relative border border-white/10 active:scale-95 transition-all">
-            <i class="fas fa-shopping-cart"></i>
-            <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-purple-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
-        </button>
-    </nav>
-
-    <!-- Header -->
-    <header class="pt-32 pb-12 px-6 text-center">
-        <h2 class="text-7xl md:text-8xl font-black italic uppercase tracking-tighter mb-2 leading-none">
-            THE <span class="king-gradient">VAULT</span>
-        </h2>
-        <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em]">Official Snack Catalog</p>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 pb-32" id="snack-grid">
-        <!-- Snacks will be injected here -->
-    </main>
-
-    <!-- Cart Sidebar -->
-    <div id="cart-overlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden opacity-0 transition-opacity duration-300" onclick="toggleCart()"></div>
-    <div id="cart-sidebar" class="fixed top-0 right-0 w-full max-w-md h-full bg-[#080808] border-l border-white/10 z-[101] cart-sidebar flex flex-col">
-        <div class="p-6 flex justify-between items-center border-b border-white/5 bg-black">
-            <h2 class="font-black italic uppercase text-xl">Your Bag</h2>
-            <button onclick="toggleCart()" class="p-2 bg-white/5 rounded-xl"><i class="fas fa-times"></i></button>
-        </div>
-
-        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
-            <!-- Cart items injected here -->
-        </div>
-
-        <div id="checkout-form" class="hidden p-6 space-y-4 border-t border-white/5 bg-black">
-            <h3 class="font-black uppercase text-xs text-purple-500 tracking-widest">Delivery Details</h3>
-            <input type="text" id="cust-name" placeholder="Full Name" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
-            <input type="text" id="cust-grade" placeholder="Grade / Section (e.g. 10-A)" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
-            <input type="text" id="cust-date" placeholder="Delivery Date (e.g. Monday)" class="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none focus:border-purple-600 font-bold">
-        </div>
-
-        <div class="p-6 bg-black border-t border-white/5">
-            <div class="flex justify-between items-end mb-6">
-                <span class="text-[10px] font-black uppercase text-white/20">Total</span>
-                <span class="text-4xl font-black italic" id="cart-total">0 AED</span>
-            </div>
-            <button id="next-btn" onclick="goToDetails()" class="w-full py-5 bg-white text-black font-black uppercase italic tracking-widest rounded-2xl active:scale-95 transition-all shadow-xl">
-                Next Step
-            </button>
-            <a id="whatsapp-btn" href="#" target="_top" class="hidden w-full py-5 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-purple-600/30 active:scale-95 transition-all">
-                Send Order <i class="fas fa-paper-plane"></i>
-            </a>
-            <button id="back-btn" onclick="goToReview()" class="hidden w-full mt-3 text-[10px] font-black uppercase text-white/20 tracking-widest">Go Back</button>
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">USE WEB APP</h2>
+        <p class="text-white/40 text-sm mb-8 leading-relaxed">To access the shop, add this site to your home screen for the full premium experience.</p>
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center gap-4">
+            <i class="fas fa-share-square text-purple-500 text-xl"></i>
+            <p class="text-[10px] font-black uppercase tracking-widest text-left">Tap Share then<br><span class="text-white">"Add to Home Screen"</span></p>
         </div>
     </div>
 
-    <footer class="py-20 flex flex-col items-center gap-6 border-t border-white/5 mt-10">
-        <i class="fas fa-star text-purple-600 animate-pulse"></i>
-        <h2 class="text-xl font-black italic uppercase opacity-20">@FaresKingYT</h2>
-    </footer>
+    <!-- App Loading Screen -->
+    <div id="loader" class="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center z-[300] transition-opacity duration-1000">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-30 animate-pulse"></div>
+            <img id="load-logo" src="" class="w-28 h-28 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
+        </div>
+        <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Loading…</p>
+    </div>
+
+    <div id="toast">Added to bag</div>
+
+    <div id="main-content">
+        <nav class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-6 pb-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img id="nav-logo" src="" class="w-10 h-10 rounded-full object-cover border border-purple-600/30" alt="Fares King">
+                <div>
+                    <h1 class="font-black italic text-lg uppercase tracking-tighter leading-none">Fares King</h1>
+                    <p class="text-[9px] text-purple-500 font-black uppercase tracking-widest mt-1">Supermarket</p>
+                </div>
+            </div>
+            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl relative border border-white/10 flex items-center justify-center tap-active transition-all">
+                <i class="fas fa-shopping-bag text-lg"></i>
+                <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-purple-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
+            </button>
+        </nav>
+
+        <main class="pt-32 pb-32">
+            <header class="px-6 mb-12">
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Fares King's Premium Snacks</p>
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none">OUR <span class="king-gradient">PRODUCTS</span></h2>
+            </header>
+            <div id="snack-grid" class="px-4 space-y-8"></div>
+        </main>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden opacity-0 transition-opacity duration-500" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed top-0 right-0 w-full max-w-lg h-full bg-[#080808] z-[101] cart-sidebar flex flex-col shadow-2xl">
+        <div class="pt-[calc(1.5rem+var(--safe-top))] p-8 flex justify-between items-center border-b border-white/5">
+            <h2 class="font-black italic uppercase text-2xl tracking-tighter">Your Bag</h2>
+            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center tap-active"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div id="cart-content-area" class="flex-grow overflow-y-auto p-6">
+            <div id="cart-items" class="space-y-4"></div>
+            
+            <div id="checkout-fields" class="hidden space-y-6 pt-4">
+                <div class="bg-white/5 p-6 rounded-[2rem] border border-white/5 space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Customer Name</label>
+                        <input type="text" id="cust-name" placeholder="Full Name" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Grade / Section</label>
+                        <input type="text" id="cust-grade" placeholder="e.g. 12-A" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Delivery Day</label>
+                        <input type="text" id="cust-date" placeholder="When?" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
+                    </div>
+                </div>
+
+                <div id="receipt-preview" class="hidden bg-purple-600/10 border border-purple-600/20 p-6 rounded-[2rem] mt-4">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-purple-400 mb-4">Verified Receipt Generated</p>
+                    <div id="receipt-text" class="text-[10px] font-mono text-white/80 whitespace-pre leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 pb-[calc(2rem+var(--safe-bottom))] bg-black border-t border-white/5">
+            <div class="flex justify-between items-end mb-8 px-2">
+                <span class="text-[10px] font-black uppercase text-white/20 tracking-widest">Grand Total</span>
+                <span class="text-4xl font-black italic tracking-tighter text-purple-500" id="cart-total">0 AED</span>
+            </div>
+            <div class="space-y-4">
+                <button id="step-btn" onclick="nextStep()" class="w-full py-6 bg-white text-black font-black uppercase italic tracking-widest rounded-[2rem] tap-active disabled:opacity-10">Checkout</button>
+                <button id="final-btn" onclick="sendOrder()" class="hidden w-full py-6 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-[2rem] flex items-center justify-center gap-3 shadow-xl tap-active transition-all">
+                    Send Order <i class="fab fa-whatsapp text-lg"></i>
+                </button>
+                <button id="back-btn" onclick="prevStep()" class="hidden w-full py-2 text-[10px] font-black uppercase text-white/30 tracking-[0.3em]">Back to bag</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const WHATSAPP_NUM = "971558597737";
+        const WHATSAPP_GROUP = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
+        const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+        const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
         const snacks = [
-            { id: 1, name: "Spicy Popcorn", price: 4, img: "https://api.a0.dev/assets/image?url=uploaded:image.png-9275fc42-2cee-475b-ba17-533f74aed030", desc: "Signature elite heat." },
-            { id: 2, name: "Balanced Popcorn", price: 3, img: "https://api.a0.dev/assets/image?url=uploaded:image.png-2fd90d04-2a01-4bf5-9f9b-186bb5283c18", desc: "Perfect spice/salt ratio." },
-            { id: 3, name: "Cheetos Flamin' Hot", price: 5, img: "https://api.a0.dev/assets/image?url=uploaded:1777727762790.jpeg-d08ecd22-f137-404f-b789-9fbc0d500b58", desc: "Classic crunch plug." }
+            { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true },
+            { id: 2, name: "Classic Boba Taro", price: 16, img: getDriveImg("1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy"), desc: "Classic creamy taro with chewy boba pearls", isBoba: true },
+            { id: 3, name: "Flaming Hot Cheetos", price: 6, img: getDriveImg("1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ"), desc: "spicy crunchy chips" },
+            { id: 4, name: "Spicy Popcorn", price: 4, img: getDriveImg("1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s"), desc: "spicy popcorn" },
+            { id: 5, name: "Balanced Popcorn", price: 3, img: getDriveImg("1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO"), desc: "popcorn" }
         ];
 
         let cart = [];
 
+        function checkWebapp() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (!isStandalone) {
+                document.getElementById('webapp-prompt').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
         function renderGrid() {
-            const grid = document.getElementById('snack-grid');
-            grid.innerHTML = snacks.map(s => `
-                <div class="bg-[#0c0c0c] border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col">
-                    <div class="h-64 bg-neutral-900 flex items-center justify-center p-8 relative">
-                        <img src="${s.img}" class="max-w-full max-h-full object-contain" alt="${s.name}">
-                        <div class="absolute top-6 right-6 bg-purple-600 px-4 py-1.5 rounded-xl font-black italic text-sm">${s.price} AED</div>
+            document.getElementById('snack-grid').innerHTML = snacks.map(s => `
+                <div id="snack-${s.id}" onclick="handleCardClick(${s.id})" class="snack-card w-full bg-[#0c0c0c] border border-white/5 rounded-[3rem] overflow-hidden flex flex-col shadow-2xl">
+                    <div class="image-container">
+                        <img id="img-${s.id}" src="${s.img}" class="snack-shadow ${s.isBoba ? 'boba-adjust' : ''} ${s.isTiger ? 'tiger-milk-pos' : ''}" alt="${s.name}">
+                        <div class="absolute top-8 left-8 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2 rounded-2xl font-black italic text-xs tracking-tighter z-10">${s.price} AED</div>
                     </div>
-                    <div class="p-8">
-                        <h3 class="text-2xl font-black italic uppercase mb-2 tracking-tighter">${s.name}</h3>
-                        <p class="text-white/40 text-[11px] mb-6 italic">${s.desc}</p>
-                        <button onclick="addToCart(${s.id})" class="w-full py-4 bg-white text-black font-black uppercase italic tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all">Add to Bag</button>
+                    <div class="p-8 flex-grow bg-[#0c0c0c]">
+                        <h3 class="text-3xl font-black italic uppercase mb-2 tracking-tighter leading-tight">${s.name}</h3>
+                        <p class="text-white/30 text-[10px] mb-8 italic uppercase tracking-wider font-bold max-w-xs">${s.desc}</p>
+                        <button onclick="event.stopPropagation(); addToCart(${s.id})" class="w-full py-5 bg-white text-black font-black uppercase italic tracking-[0.2em] text-[10px] rounded-2xl tap-active transition-all shadow-xl">Add To Bag</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function addToCart(id) {
-            const item = snacks.find(s => s.id === id);
-            const inCart = cart.find(c => c.id === id);
-            if (inCart) inCart.qty++;
-            else cart.push({...item, qty: 1});
-            updateCartUI();
-            toggleCart(true);
+        function handleCardClick(id) {
+            document.querySelectorAll('.snack-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`snack-${id}`).classList.add('selected');
         }
 
-        function updateCartUI() {
-            const list = document.getElementById('cart-items');
-            const totalEl = document.getElementById('cart-total');
-            const countEl = document.getElementById('cart-count');
-            
-            let total = 0;
-            let count = 0;
-
-            list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px]">Empty</div>' : 
-                cart.map(c => {
-                    total += (c.price * c.qty);
-                    count += c.qty;
-                    return `
-                        <div class="flex gap-4 items-center bg-white/[0.03] p-4 rounded-3xl border border-white/5">
-                            <img src="${c.img}" class="w-12 h-12 object-contain bg-neutral-800 rounded-xl p-2">
-                            <div class="flex-grow">
-                                <h4 class="font-black italic uppercase text-[10px]">${c.name}</h4>
-                                <p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="changeQty(${c.id}, -1)" class="w-6 h-6 bg-white/5 rounded-lg">-</button>
-                                <span class="text-xs font-bold">${c.qty}</span>
-                                <button onclick="changeQty(${c.id}, 1)" class="w-6 h-6 bg-white/5 rounded-lg">+</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-            totalEl.innerText = `${total} AED`;
-            countEl.innerText = count;
-            countEl.classList.toggle('hidden', count === 0);
-            updateWhatsAppLink(total);
+        function addToCart(id) {
+            const item = snacks.find(s => s.id === id);
+            const exists = cart.find(c => c.id === id);
+            const cardEl = document.getElementById(`snack-${id}`);
+            cardEl.classList.add('item-added');
+            setTimeout(() => cardEl.classList.remove('item-added'), 400);
+            if (exists) exists.qty++; else cart.push({...item, qty: 1});
+            updateUI();
+            const toast = document.getElementById('toast');
+            toast.innerText = "Added to bag";
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+            handleCardClick(id);
         }
 
         function changeQty(id, delta) {
             const item = cart.find(c => c.id === id);
             item.qty += delta;
             if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
-            updateCartUI();
+            updateUI();
         }
 
-        function toggleCart(forceOpen = false) {
+        function updateUI() {
+            const list = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+            let total = 0;
+            let count = 0;
+            list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px] italic tracking-[0.5em]">Your bag is empty</div>' : 
+                cart.map(c => {
+                    total += (c.price * c.qty);
+                    count += c.qty;
+                    return `<div class="flex gap-4 items-center bg-white/[0.03] p-5 rounded-[2rem] border border-white/5"><div class="w-16 h-16 bg-neutral-900 rounded-2xl flex items-center justify-center p-2"><img src="${c.img}" class="max-w-full max-h-full object-contain"></div><div class="flex-grow"><h4 class="font-black italic uppercase text-[10px] mb-0.5 tracking-tight">${c.name}</h4><p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p></div><div class="flex items-center gap-3"><button onclick="changeQty(${c.id},-1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-minus text-[8px]"></i></button><span class="text-xs font-black w-4 text-center">${c.qty}</span><button onclick="changeQty(${c.id},1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-plus text-[8px]"></i></button></div></div>`;
+                }).join('');
+            totalEl.innerText = `${total} AED`;
+            countEl.innerText = count;
+            countEl.classList.toggle('hidden', count === 0);
+            document.getElementById('step-btn').disabled = cart.length === 0;
+            generateReceiptPreview();
+        }
+
+        function generateReceiptPreview() {
+            const name = document.getElementById('cust-name').value || "---";
+            const grade = document.getElementById('cust-grade').value || "---";
+            const date = document.getElementById('cust-date').value || "---";
+            const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const items = cart.map(c => `• ${c.name} x${c.qty}`).join('\n');
+            const orderId = Math.floor(1000 + Math.random() * 9000);
+            const verifyToken = btoa(total + orderId).substring(0, 5); // Simple tamper check
+
+            const receipt = `👑 FARES KING RECEIPT\n--------------------\nID: [FK-${orderId}]\nTOKEN: [${verifyToken}]\n\n👤 ${name}\n📍 ${grade}\n📅 ${date}\n\n📦 ITEMS:\n${items}\n\n💰 TOTAL: ${total} AED`;
+            document.getElementById('receipt-text').innerText = receipt;
+            return receipt;
+        }
+
+        function sendOrder() {
+            const text = generateReceiptPreview();
+            
+            // Clipboard logic
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            const toast = document.getElementById('toast');
+            toast.innerText = "Order copied! Now paste in group.";
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                window.open(WHATSAPP_GROUP, '_top');
+            }, 1200);
+        }
+
+        function toggleCart() {
             const sidebar = document.getElementById('cart-sidebar');
             const overlay = document.getElementById('cart-overlay');
-            const isOpen = sidebar.classList.contains('open');
-
-            if (forceOpen || !isOpen) {
+            if (!sidebar.classList.contains('open')) {
                 sidebar.classList.add('open');
                 overlay.classList.remove('hidden');
                 setTimeout(() => overlay.style.opacity = '1', 10);
             } else {
                 sidebar.classList.remove('open');
                 overlay.style.opacity = '0';
-                setTimeout(() => overlay.classList.add('hidden'), 300);
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+                prevStep();
             }
         }
 
-        function goToDetails() {
-            if (cart.length === 0) return;
+        function nextStep() {
             document.getElementById('cart-items').classList.add('hidden');
-            document.getElementById('checkout-form').classList.remove('hidden');
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('whatsapp-btn').classList.remove('hidden');
+            document.getElementById('checkout-fields').classList.remove('hidden');
+            document.getElementById('receipt-preview').classList.remove('hidden');
+            document.getElementById('step-btn').classList.add('hidden');
+            document.getElementById('final-btn').classList.remove('hidden');
             document.getElementById('back-btn').classList.remove('hidden');
         }
 
-        function goToReview() {
+        function prevStep() {
             document.getElementById('cart-items').classList.remove('hidden');
-            document.getElementById('checkout-form').classList.add('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
-            document.getElementById('whatsapp-btn').classList.add('hidden');
+            document.getElementById('checkout-fields').classList.add('hidden');
+            document.getElementById('receipt-preview').classList.add('hidden');
+            document.getElementById('step-btn').classList.remove('hidden');
+            document.getElementById('final-btn').classList.add('hidden');
             document.getElementById('back-btn').classList.add('hidden');
         }
 
-        function updateWhatsAppLink(total) {
-            const btn = document.getElementById('whatsapp-btn');
-            const name = document.getElementById('cust-name').value || "Customer";
-            const grade = document.getElementById('cust-grade').value || "Not specified";
-            const date = document.getElementById('cust-date').value || "ASAP";
-            
-            const items = cart.map(c => `• ${c.name} (x${c.qty})`).join('%0A');
-            const text = `👑 *NEW ORDER: FARES KING*%0A--------------------------%0A👤 *NAME:* ${name}%0A📍 *GRADE:* ${grade}%0A📅 *DATE:* ${date}%0A--------------------------%0A📦 *ITEMS:*%0A${items}%0A%0A💰 *TOTAL:* ${total} AED`;
-            
-            btn.href = `https://wa.me/${WHATSAPP_NUM}?text=${text}`;
-        }
+        ['cust-name', 'cust-grade', 'cust-date'].forEach(id => document.getElementById(id).addEventListener('input', updateUI));
 
-        // Keep WhatsApp link updated as they type
-        ['cust-name', 'cust-grade', 'cust-date'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                const total = cart.reduce((s, c) => s + (c.price * c.qty), 0);
-                updateWhatsAppLink(total);
-            });
-        });
-
-        renderGrid();
+        window.onload = () => {
+            checkWebapp();
+            const img = getDriveImg(LOGO_ID);
+            document.getElementById('nav-logo').src = img;
+            document.getElementById('load-logo').src = img;
+            document.getElementById('prompt-logo').src = img;
+            renderGrid();
+            setTimeout(() => document.getElementById('loader').classList.add('fade-out'), 1500);
+        };
     </script>
 </body>
 </html>
