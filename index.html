@@ -10,17 +10,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fares King">
     <meta name="theme-color" content="#050505">
-    <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- HOME SCREEN ICONS (ENHANCED FIX) -->
-    <!-- Apple specifically looks for 'apple-touch-icon' with direct link formats -->
+    <!-- HOME SCREEN ICONS -->
     <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w152">
     <link rel="apple-touch-icon" sizes="180x180" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w180">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w192">
-    
-    <!-- Startup Image (Splash Screen) -->
-    <link rel="apple-touch-startup-image" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w1000">
+    <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w192">
 
     <title>Fares King | Supermarket</title>
     
@@ -58,7 +52,6 @@
         .snack-card.selected {
             border-color: rgba(168, 85, 247, 0.5);
             background: #0e0e0e;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .king-gradient {
@@ -137,9 +130,7 @@
             position: relative;
             transition: all 0.3s ease;
         }
-        .tab-btn.active {
-            color: white;
-        }
+        .tab-btn.active { color: white; }
         .tab-btn.active::after {
             content: '';
             position: absolute;
@@ -154,34 +145,29 @@
     </style>
 </head>
 <body>
-    <!-- Web App Prompt -->
     <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-20"></div>
             <img id="prompt-logo" src="" class="w-32 h-32 rounded-full object-cover border-4 border-purple-600 relative z-10 shadow-2xl">
         </div>
         <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">INSTALL WEB APP</h2>
-        <p class="text-white/40 text-sm mb-8 leading-relaxed">Access the supermarket directly from your home screen for the best experience.</p>
+        <p class="text-white/40 text-sm mb-8 leading-relaxed">Add to home screen to use the supermarket.</p>
         <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center gap-4">
             <i class="fas fa-share-square text-purple-500 text-xl"></i>
             <p class="text-[10px] font-black uppercase tracking-widest text-left">Tap Share then<br><span class="text-white">"Add to Home Screen"</span></p>
         </div>
     </div>
 
-    <!-- App Loading Screen -->
     <div id="loader" class="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center z-[300] transition-opacity duration-1000">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-30 animate-pulse"></div>
             <img id="load-logo" src="" class="w-28 h-28 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
         </div>
-        <div class="space-y-2 text-center">
-            <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Entering Empire…</p>
-        </div>
+        <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Entering Empire…</p>
     </div>
 
     <div id="toast">Added to bag</div>
 
-    <!-- Main Content -->
     <div id="main-content">
         <nav class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-6 pb-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -191,7 +177,7 @@
                     <h1 class="font-black italic text-lg uppercase tracking-tighter leading-none">Fares King</h1>
                 </div>
             </div>
-            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl relative border border-white/10 flex items-center justify-center tap-active transition-all">
+            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl relative border border-white/10 flex items-center justify-center tap-active">
                 <i class="fas fa-shopping-bag text-lg"></i>
                 <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-purple-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
             </button>
@@ -199,10 +185,7 @@
 
         <main class="pt-32 pb-32">
             <header class="px-6 mb-8">
-                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Fares King's Premium Selection</p>
-                <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none">
-                    OUR <span class="king-gradient">PRODUCTS</span>
-                </h2>
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none">OUR <span class="king-gradient">PRODUCTS</span></h2>
             </header>
 
             <div class="flex px-6 gap-8 mb-8">
@@ -215,7 +198,6 @@
         </main>
     </div>
 
-    <!-- Sidebar / Cart -->
     <div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden opacity-0 transition-opacity duration-500" onclick="toggleCart()"></div>
     <div id="cart-sidebar" class="fixed top-0 right-0 w-full max-w-lg h-full bg-[#080808] z-[101] cart-sidebar flex flex-col shadow-2xl">
         <div class="pt-[calc(1.5rem+var(--safe-top))] p-8 flex justify-between items-center border-b border-white/5">
@@ -227,19 +209,11 @@
             <div id="cart-items" class="space-y-4"></div>
             <div id="checkout-fields" class="hidden space-y-6 pt-4">
                 <div class="bg-white/5 p-6 rounded-[2rem] border border-white/5 space-y-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Customer Name</label>
-                        <input type="text" id="cust-name" placeholder="Full Name" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Grade / Section</label>
-                        <input type="text" id="cust-grade" placeholder="e.g. 12-A" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Delivery Day</label>
-                        <input type="text" id="cust-date" placeholder="When?" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold transition-all text-white placeholder:text-white/10">
-                    </div>
+                    <input type="text" id="cust-name" placeholder="Full Name" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
+                    <input type="text" id="cust-grade" placeholder="Grade / Section (e.g. 12-A)" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
+                    <input type="text" id="cust-date" placeholder="Delivery Day" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
                 </div>
+                <p class="text-[10px] text-white/30 text-center uppercase tracking-widest font-black">Order will be copied to clipboard.<br>Paste it in the group chat!</p>
             </div>
         </div>
 
@@ -249,9 +223,9 @@
                 <span class="text-4xl font-black italic tracking-tighter text-purple-500" id="cart-total">0 AED</span>
             </div>
             <div class="space-y-4">
-                <button id="step-btn" onclick="nextStep()" class="w-full py-6 bg-white text-black font-black uppercase italic tracking-widest rounded-[2rem] tap-active transition-all shadow-xl disabled:opacity-10">Checkout</button>
-                <button id="final-btn" onclick="sendOrder()" class="hidden w-full py-6 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-[2rem] flex items-center justify-center gap-3 shadow-xl shadow-purple-600/40 tap-active transition-all">
-                    Send Order <i class="fab fa-whatsapp text-lg"></i>
+                <button id="step-btn" onclick="nextStep()" class="w-full py-6 bg-white text-black font-black uppercase italic tracking-widest rounded-[2rem] tap-active disabled:opacity-10">Checkout</button>
+                <button id="final-btn" onclick="sendOrder()" class="hidden w-full py-6 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-[2rem] flex items-center justify-center gap-3 shadow-xl shadow-purple-600/40 tap-active">
+                    Copy & Open Chat <i class="fab fa-whatsapp text-lg"></i>
                 </button>
                 <button id="back-btn" onclick="prevStep()" class="hidden w-full py-2 text-[10px] font-black uppercase text-white/30 tracking-[0.3em]">Back to bag</button>
             </div>
@@ -262,23 +236,14 @@
         const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
         const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
         const WEBAPP_ICON_ID = "19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk";
-        const SPICY_POP_ID = "1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s";
-        const BALANCED_POP_ID = "1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO";
-        const TARO_BOBA_ID = "1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy";
-        const HOT_CHEETOS_ID = "1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ";
-        const TIGER_MILK_ID = "19o__91KB2EsotwLSIr0x63ygLdE0QhfR";
-        
-        // --- WHATSAPP CONFIG ---
-        // Change this to your exact phone number with country code (no + or spaces)
-        // Or if you want to send to a group, usually you have to send it to a person first who then shares to the group.
-        const RECEIVER_PHONE = "971558597737"; 
+        const GROUP_LINK = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
 
         const snacks = [
-            { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg(TIGER_MILK_ID), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true, category: 'boba' },
-            { id: 2, name: "Classic Boba Taro", price: 16, img: getDriveImg(TARO_BOBA_ID), desc: "Classic creamy taro with chewy boba pearls", isBoba: true, category: 'boba' },
-            { id: 3, name: "Flaming Hot Cheetos", price: 6, img: getDriveImg(HOT_CHEETOS_ID), desc: "spicy crunchy chips", category: 'snacks' },
-            { id: 4, name: "Spicy Popcorn", price: 4, img: getDriveImg(SPICY_POP_ID), desc: "spicy popcorn", category: 'snacks' },
-            { id: 5, name: "Balanced Popcorn", price: 3, img: getDriveImg(BALANCED_POP_ID), desc: "popcorn", category: 'snacks' }
+            { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true, category: 'boba' },
+            { id: 2, name: "Classic Boba Taro", price: 16, img: getDriveImg("1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy"), desc: "Classic creamy taro with chewy boba pearls", isBoba: true, category: 'boba' },
+            { id: 3, name: "Flaming Hot Cheetos", price: 6, img: getDriveImg("1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ"), desc: "spicy crunchy chips", category: 'snacks' },
+            { id: 4, name: "Spicy Popcorn", price: 4, img: getDriveImg("1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s"), desc: "spicy popcorn", category: 'snacks' },
+            { id: 5, name: "Balanced Popcorn", price: 3, img: getDriveImg("1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO"), desc: "popcorn", category: 'snacks' }
         ];
 
         let cart = [];
@@ -290,9 +255,6 @@
                 document.getElementById('webapp-prompt').style.display = 'flex';
                 document.getElementById('main-content').style.display = 'none';
                 document.getElementById('loader').style.display = 'none';
-            } else {
-                document.getElementById('webapp-prompt').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
             }
         }
 
@@ -306,15 +268,15 @@
         function renderGrid() {
             const filtered = snacks.filter(s => currentTab === 'all' || s.category === currentTab);
             document.getElementById('snack-grid').innerHTML = filtered.map(s => `
-                <div id="snack-${s.id}" onclick="handleCardClick(${s.id})" class="snack-card w-full bg-[#0c0c0c] border border-white/5 rounded-[3rem] overflow-hidden flex flex-col shadow-2xl">
+                <div id="snack-${s.id}" onclick="handleCardClick(${s.id})" class="snack-card w-full bg-[#0c0c0c] border border-white/5 rounded-[3rem] overflow-hidden flex flex-col">
                     <div class="image-container">
-                        <img id="img-${s.id}" src="${s.img}" class="snack-shadow ${s.isBoba ? 'boba-adjust' : ''} ${s.isTiger ? 'tiger-milk-pos' : ''}" alt="${s.name}">
+                        <img src="${s.img}" class="snack-shadow ${s.isBoba ? 'boba-adjust' : ''} ${s.isTiger ? 'tiger-milk-pos' : ''}">
                         <div class="absolute top-8 left-8 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2 rounded-2xl font-black italic text-xs tracking-tighter z-10">${s.price} AED</div>
                     </div>
-                    <div class="p-8 flex-grow bg-[#0c0c0c]">
+                    <div class="p-8 flex-grow">
                         <h3 class="text-3xl font-black italic uppercase mb-2 tracking-tighter leading-tight">${s.name}</h3>
-                        <p class="text-white/30 text-[10px] mb-8 italic uppercase tracking-wider font-bold max-w-xs">${s.desc}</p>
-                        <button onclick="event.stopPropagation(); addToCart(${s.id})" class="w-full py-5 bg-white text-black font-black uppercase italic tracking-[0.2em] text-[10px] rounded-2xl tap-active transition-all shadow-xl">Add To Bag</button>
+                        <p class="text-white/30 text-[10px] mb-8 italic uppercase tracking-wider font-bold">${s.desc}</p>
+                        <button onclick="event.stopPropagation(); addToCart(${s.id})" class="w-full py-5 bg-white text-black font-black uppercase italic text-[10px] rounded-2xl tap-active">Add To Bag</button>
                     </div>
                 </div>
             `).join('');
@@ -332,10 +294,8 @@
             else cart.push({...item, qty: 1});
             updateUI();
             const toast = document.getElementById('toast');
-            toast.innerText = "Added to bag";
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
-            handleCardClick(id);
         }
 
         function changeQty(id, delta) {
@@ -350,11 +310,11 @@
             const totalEl = document.getElementById('cart-total');
             const countEl = document.getElementById('cart-count');
             let total = 0, count = 0;
-            list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px] italic tracking-[0.5em]">Your bag is empty</div>' : 
+            list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase italic tracking-[0.5em]">Empty</div>' : 
                 cart.map(c => {
                     total += (c.price * c.qty);
                     count += c.qty;
-                    return `<div class="flex gap-4 items-center bg-white/[0.03] p-5 rounded-[2rem] border border-white/5"><div class="w-16 h-16 bg-neutral-900 rounded-2xl flex items-center justify-center p-2"><img src="${c.img}" class="max-w-full max-h-full object-contain"></div><div class="flex-grow"><h4 class="font-black italic uppercase text-[10px] mb-0.5 tracking-tight">${c.name}</h4><p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p></div><div class="flex items-center gap-3"><button onclick="changeQty(${c.id},-1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-minus text-[8px]"></i></button><span class="text-xs font-black w-4 text-center">${c.qty}</span><button onclick="changeQty(${c.id},1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-plus text-[8px]"></i></button></div></div>`;
+                    return `<div class="flex gap-4 items-center bg-white/[0.03] p-5 rounded-[2rem] border border-white/5"><div class="w-16 h-16 bg-neutral-900 rounded-2xl p-2"><img src="${c.img}" class="max-w-full max-h-full object-contain"></div><div class="flex-grow"><h4 class="font-black italic uppercase text-[10px] mb-0.5">${c.name}</h4><p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p></div><div class="flex items-center gap-3"><button onclick="changeQty(${c.id},-1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center"><i class="fas fa-minus text-[8px]"></i></button><span class="text-xs font-black w-4 text-center">${c.qty}</span><button onclick="changeQty(${c.id},1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center"><i class="fas fa-plus text-[8px]"></i></button></div></div>`;
                 }).join('');
             totalEl.innerText = `${total} AED`;
             countEl.innerText = count;
@@ -362,7 +322,7 @@
             document.getElementById('step-btn').disabled = cart.length === 0;
         }
 
-        function sendOrder() {
+        async function sendOrder() {
             const name = document.getElementById('cust-name').value || "Customer";
             const grade = document.getElementById('cust-grade').value || "N/A";
             const date = document.getElementById('cust-date').value || "ASAP";
@@ -370,9 +330,21 @@
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
             const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
             
-            // USING api.whatsapp.com for better cross-device direct messaging
-            const url = `https://api.whatsapp.com/send?phone=${RECEIVER_PHONE}&text=${encodeURIComponent(messageText)}`;
-            window.open(url, '_top');
+            // Clipboard Copy for manual paste (best for Group links)
+            const textArea = document.createElement("textarea");
+            textArea.value = messageText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            const toast = document.getElementById('toast');
+            toast.innerText = "Order Copied! Paste in Group.";
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                window.open(GROUP_LINK, '_top');
+            }, 1000);
         }
 
         function toggleCart() {
@@ -386,7 +358,6 @@
                 sidebar.classList.remove('open');
                 overlay.style.opacity = '0';
                 setTimeout(() => overlay.classList.add('hidden'), 500);
-                prevStep();
             }
         }
 
@@ -416,7 +387,7 @@
             renderGrid();
             setTimeout(() => {
                 document.getElementById('loader').classList.add('fade-out');
-            }, 4000);
+            }, 3000);
         };
     </script>
 </body>
