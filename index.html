@@ -157,14 +157,14 @@
 
     <div id="toast">Added to bag</div>
 
-    <!-- Main Content (Hidden if not in Web App Mode) -->
+    <!-- Main Content -->
     <div id="main-content">
         <nav class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-6 pb-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <img id="nav-logo" src="" class="w-10 h-10 rounded-full object-cover border border-purple-600/30" alt="Fares King">
                 <div>
+                    <p class="text-[9px] text-purple-500 font-black uppercase tracking-widest mb-1">Supermarket</p>
                     <h1 class="font-black italic text-lg uppercase tracking-tighter leading-none">Fares King</h1>
-                    <p class="text-[9px] text-purple-500 font-black uppercase tracking-widest mt-1">Supermarket</p>
                 </div>
             </div>
             <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl relative border border-white/10 flex items-center justify-center tap-active transition-all">
@@ -228,9 +228,7 @@
     </div>
 
     <script>
-        // --- WHATSAPP GROUP LINK ---
         const WHATSAPP_GROUP = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
-        
         const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
         const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
         const SPICY_POP_ID = "1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s";
@@ -249,7 +247,6 @@
 
         let cart = [];
 
-        // Check if running as standalone web app
         function checkWebapp() {
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
             if (!isStandalone) {
@@ -280,7 +277,8 @@
 
         function handleCardClick(id) {
             document.querySelectorAll('.snack-card').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`snack-${id}`).classList.add('selected');
+            const target = document.getElementById(`snack-${id}`);
+            if(target) target.classList.add('selected');
         }
 
         function addToCart(id) {
@@ -293,6 +291,7 @@
             else cart.push({...item, qty: 1});
             updateUI();
             const toast = document.getElementById('toast');
+            toast.innerText = "Added to bag";
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
             handleCardClick(id);
@@ -330,12 +329,8 @@
             const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('%0A');
             
-            // Format message to copy/paste or just redirect to group
             const text = `👑 *FARES KING ORDER*%0A--------------------------%0A👤 *NAME:* ${name}%0A📍 *GRADE:* ${grade}%0A📅 *DATE:* ${date}%0A--------------------------%0A📦 *ITEMS:*%0A${itemsMsg}%0A%0A💰 *TOTAL:* ${total} AED`;
             
-            // Since we can't send a pre-filled message to a group via API easily without individual membership, 
-            // the standard practice for group links is just a redirect. 
-            // We'll copy the text to clipboard first so the user can paste it in the group.
             const dummy = document.createElement("textarea");
             document.body.appendChild(dummy);
             dummy.value = text.replace(/%0A/g, '\n');
