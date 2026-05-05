@@ -1,344 +1,545 @@
-```react
-import React, { useState, useEffect, useMemo } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query } from 'firebase/firestore';
-import { ShoppingBag, X, Plus, Minus, Search, CheckCircle, ChevronRight, History, Zap } from 'lucide-react';
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fares King">
+    <meta name="theme-color" content="#050505">
+    <title>Fares King | Supermarket</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
 
-const firebaseConfig = JSON.parse(__firebase_config);
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'fares-king-luxury';
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: white;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-const WHATSAPP_GROUP = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
-const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
-const LOGO_IMG = getDriveImg("1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I");
+        #webapp-prompt {
+            display: none;
+            background: #050505;
+            z-index: 1000;
+        }
 
-const SNACKS_DATA = [
-  { id: 1, name: "Tiger Fresh Milk", price: 20, cat: 'boba', img: getDriveImg("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true },
-  { id: 2, name: "Classic Boba Taro", price: 16, cat: 'boba', img: getDriveImg("1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy"), desc: "Classic creamy taro with chewy boba pearls", isBoba: true },
-  { id: 3, name: "Flaming Hot Cheetos", price: 6, cat: 'snacks', img: getDriveImg("1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ"), desc: "spicy crunchy chips" },
-  { id: 4, name: "Spicy Popcorn", price: 4, cat: 'snacks', img: getDriveImg("1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s"), desc: "spicy popcorn" },
-  { id: 5, name: "Balanced Popcorn", price: 3, cat: 'snacks', img: getDriveImg("1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO"), desc: "popcorn" }
-];
+        .snack-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [tab, setTab] = useState('all');
-  const [view, setView] = useState('shop'); // shop, checkout, verified, history
-  const [verifiedOrder, setVerifiedOrder] = useState(null);
-  const [orderHistory, setOrderHistory] = useState([]);
-  const [form, setForm] = useState({ name: '', grade: '', date: '' });
-  const [isStandalone, setIsStandalone] = useState(true);
+        .snack-card.selected {
+            border-color: rgba(168, 85, 247, 0.5);
+            background: #0e0e0e;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
 
-  // 1. Initial Setup & Auth
-  useEffect(() => {
-    const init = async () => {
-      await signInAnonymously(auth);
-      // Check if standalone
-      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-      setIsStandalone(standalone);
-      
-      // Check for verification link in URL
-      const params = new URLSearchParams(window.location.search);
-      const verifyId = params.get('verify');
-      if (verifyId) {
-        fetchVerifiedOrder(verifyId);
-      }
-    };
-    init();
-    const unsub = onAuthStateChanged(auth, setUser);
-    return () => unsub();
-  }, []);
+        .king-gradient {
+            background: linear-gradient(to right, #a855f7, #6b21a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-  // 2. Fetch User History
-  useEffect(() => {
-    if (!user) return;
-    const q = collection(db, 'artifacts', appId, 'users', user.uid, 'orders');
-    return onSnapshot(q, (snapshot) => {
-      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setOrderHistory(orders);
-    }, (err) => console.error(err));
-  }, [user]);
+        .cart-sidebar {
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            transform: translateX(100%);
+            padding-bottom: var(--safe-bottom);
+        }
 
-  const fetchVerifiedOrder = async (orderId) => {
-    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId);
-    const snap = await getDoc(docRef);
-    if (snap.exists()) {
-      setVerifiedOrder(snap.data());
-      setView('verified');
-    }
-  };
+        .cart-sidebar.open {
+            transform: translateX(0);
+        }
 
-  const addToCart = (product) => {
-    setCart(prev => {
-      const exists = prev.find(i => i.id === product.id);
-      if (exists) return prev.map(i => i.id === product.id ? {...i, qty: i.qty + 1} : i);
-      return [...prev, {...product, qty: 1}];
-    });
-  };
+        .snack-shadow {
+            filter: drop-shadow(0 20px 40px rgba(168, 85, 247, 0.3));
+            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        /* Specific positioning for your images */
+        .boba-adjust { transform: scale(2.2) translate(10px, 40px); }
+        .selected .boba-adjust { transform: scale(2.3) translate(10px, 42px); }
 
-  const updateQty = (id, delta) => {
-    setCart(prev => prev.map(i => i.id === id ? {...i, qty: Math.max(0, i.qty + delta)} : i).filter(i => i.qty > 0));
-  };
+        .tiger-milk-pos { transform: scale(1.8) translate(65px, 20px); }
+        .selected .tiger-milk-pos { transform: scale(1.9) translate(70px, 20px); }
 
-  const total = useMemo(() => cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0), [cart]);
+        .snack-card.selected .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos) {
+            transform: scale(1.15) translateY(-15px);
+        }
 
-  const handlePlaceOrder = async () => {
-    if (!user || cart.length === 0) return;
-    const orderId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const orderData = {
-      orderId,
-      items: cart,
-      total,
-      customer: form,
-      timestamp: Date.now(),
-      status: 'pending'
-    };
+        .image-container {
+            height: 480px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.03) 0%, transparent 70%);
+        }
 
-    try {
-      // Save to public collection for verification
-      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId), orderData);
-      // Save to user's private history
-      await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'orders', orderId), orderData);
-      
-      const verifyLink = `${window.location.origin}${window.location.pathname}?verify=${orderId}`;
-      const itemsText = cart.map(i => `• ${i.name} x${i.qty}`).join('%0A');
-      const waMsg = `👑 *FARES KING ORDER [${orderId}]*%0A%0A👤 ${form.name}%0A📍 ${form.grade}%0A📅 ${form.date}%0A%0A📦 *ITEMS:*%0A${itemsMsg}%0A%0A💰 *TOTAL:* ${total} AED%0A%0A✅ *VERIFY OFFICIAL RECEIPT:*%0A${verifyLink}`;
-      
-      // Copy message
-      const dummy = document.createElement("textarea");
-      document.body.appendChild(dummy);
-      dummy.value = waMsg.replace(/%0A/g, '\n');
-      dummy.select();
-      document.execCommand('copy');
-      document.body.removeChild(dummy);
+        #loader.fade-out { opacity: 0; pointer-events: none; }
 
-      window.open(WHATSAPP_GROUP, '_top');
-    } catch (e) {
-      alert("Error saving order. Check connection.");
-    }
-  };
+        #toast {
+            position: fixed;
+            bottom: calc(2rem + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #a855f7;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-style: italic;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.5);
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-  if (!isStandalone && view !== 'verified') {
-    return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-10 text-center text-white">
-         <img src={LOGO_IMG} className="w-32 h-32 rounded-full border-2 border-purple-600 mb-8" />
-         <h1 className="text-3xl font-black italic mb-4">USE WEB APP</h1>
-         <p className="text-white/40 text-sm mb-8">Add to Home Screen for the premium shop experience.</p>
-         <div className="bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-            <Zap className="text-purple-500" />
-            <p className="text-xs font-bold uppercase tracking-widest text-left">Tap Share then <br/> "Add to Home Screen"</p>
-         </div>
-      </div>
-    );
-  }
+        .tab-btn {
+            transition: all 0.3s ease;
+            opacity: 0.4;
+        }
+        .tab-btn.active {
+            opacity: 1;
+            background: white;
+            color: black;
+            border-color: white;
+        }
 
-  return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-purple-500/30">
-      {/* Verification View */}
-      {view === 'verified' && verifiedOrder && (
-        <div className="fixed inset-0 z-[200] bg-black p-6 flex items-center justify-center">
-          <div className="w-full max-w-md bg-zinc-900 border border-purple-500/30 rounded-[3rem] p-8 relative">
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-purple-600 w-24 h-24 rounded-full flex items-center justify-center border-8 border-black shadow-2xl">
-              <CheckCircle size={40} />
-            </div>
-            <div className="mt-12 text-center">
-              <h2 className="text-2xl font-black italic uppercase tracking-tighter text-purple-500">Official Receipt</h2>
-              <p className="text-[10px] text-white/30 tracking-[0.3em] font-bold mt-1">VERIFIED CLOUD RECORD</p>
-              
-              <div className="mt-8 space-y-4 text-left">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[10px] text-white/20 uppercase font-black">Customer Details</p>
-                  <p className="font-bold">{verifiedOrder.customer.name} ({verifiedOrder.customer.grade})</p>
-                  <p className="text-xs text-white/40">Delivery: {verifiedOrder.customer.date}</p>
-                </div>
+        .tap-active:active { transform: scale(0.96); }
 
-                <div className="space-y-2">
-                  {verifiedOrder.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-white/60">{item.name} x{item.qty}</span>
-                      <span className="font-bold">{item.price * item.qty} AED</span>
-                    </div>
-                  ))}
-                </div>
+        @keyframes addEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); }
+        }
+        .item-added { animation: addEffect 0.4s ease-out; }
 
-                <div className="border-t border-white/10 pt-4 flex justify-between items-center">
-                   <span className="text-lg font-black italic">TOTAL</span>
-                   <span className="text-2xl font-black italic text-purple-500">{verifiedOrder.total} AED</span>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => { window.location.search = ''; setView('shop'); }}
-                className="w-full mt-8 py-5 bg-white text-black font-black uppercase italic rounded-2xl text-xs"
-              >
-                Back to Shop
-              </button>
-            </div>
-          </div>
+        /* Verification Screen Styling */
+        #verify-screen {
+            display: none;
+            background: #050505;
+            z-index: 3000;
+        }
+    </style>
+</head>
+<body>
+    <!-- App Prompt -->
+    <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-purple-600 blur-[60px] opacity-20"></div>
+            <img id="prompt-logo" src="" class="w-32 h-32 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
         </div>
-      )}
-
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-8 flex justify-between items-center bg-[#050505]/80 backdrop-blur-xl border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <img src={LOGO_IMG} className="w-10 h-10 rounded-full border border-purple-500/30" />
-          <div>
-            <h1 className="font-black italic text-lg uppercase tracking-tighter leading-none">Fares King</h1>
-            <p className="text-[8px] text-purple-500 font-black uppercase tracking-[0.3em]">Supermarket</p>
-          </div>
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">USE WEB APP</h2>
+        <p class="text-white/40 text-sm mb-8 leading-relaxed">To access the shop, add this site to your home screen for the full premium experience.</p>
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center gap-4">
+            <i class="fas fa-share-square text-purple-500 text-xl"></i>
+            <p class="text-[10px] font-black uppercase tracking-widest text-left">Tap Share then<br><span class="text-white">"Add to Home Screen"</span></p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setView(view === 'history' ? 'shop' : 'history')} className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10">
-            <History size={20} />
-          </button>
-          <button onClick={() => setIsCartOpen(true)} className="w-12 h-12 bg-white/5 rounded-2xl relative flex items-center justify-center border border-white/10">
-            <ShoppingBag size={20} />
-            {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-purple-600 text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
-          </button>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="pt-32 pb-24 px-4">
-        {view === 'history' ? (
-          <div className="animate-in slide-in-from-right duration-500">
-             <h2 className="text-4xl font-black italic uppercase mb-8">My <span className="text-purple-500">History</span></h2>
-             {orderHistory.length === 0 ? (
-               <div className="text-center py-20 opacity-20 font-black italic text-sm">NO ORDERS YET</div>
-             ) : (
-               <div className="space-y-4">
-                 {[...orderHistory].sort((a,b) => b.timestamp - a.timestamp).map(o => (
-                   <div key={o.id} className="bg-white/5 border border-white/5 p-6 rounded-[2rem] flex justify-between items-center">
-                      <div>
-                        <p className="text-[10px] font-black uppercase text-purple-500">#{o.id}</p>
-                        <p className="font-bold">{o.total} AED</p>
-                        <p className="text-[10px] text-white/30">{new Date(o.timestamp).toLocaleDateString()}</p>
-                      </div>
-                      <ChevronRight className="text-white/20" />
-                   </div>
-                 ))}
-               </div>
-             )}
-          </div>
-        ) : (
-          <>
-            <header className="mb-12 px-2">
-              <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-[0.9]">OUR <br/><span className="text-purple-500">PRODUCTS</span></h2>
-              
-              {/* Tabs */}
-              <div className="flex gap-2 mt-8 overflow-x-auto no-scrollbar">
-                {['all', 'boba', 'snacks'].map(t => (
-                  <button 
-                    key={t}
-                    onClick={() => setTab(t)}
-                    className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${tab === t ? 'bg-white text-black' : 'bg-white/5 text-white/40 border border-white/5'}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </header>
-
-            <div className="space-y-6">
-              {SNACKS_DATA.filter(s => tab === 'all' || s.cat === tab).map(snack => (
-                <div key={snack.id} className="bg-zinc-900/50 border border-white/5 rounded-[3rem] p-6 flex flex-col relative overflow-hidden">
-                  <div className="h-64 flex items-center justify-center relative">
-                    <img 
-                      src={snack.img} 
-                      className={`h-full object-contain drop-shadow-[0_20px_50px_rgba(168,85,247,0.4)] ${snack.isBoba ? 'scale-[2] translate-y-8 translate-x-4' : snack.isTiger ? 'scale-[1.6] translate-y-4 translate-x-12' : 'scale-110'}`} 
-                    />
-                    <div className="absolute top-0 right-0 bg-black/50 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 text-xs font-black italic">
-                      {snack.price} AED
-                    </div>
-                  </div>
-                  <div className="mt-8">
-                    <h3 className="text-2xl font-black italic uppercase tracking-tighter">{snack.name}</h3>
-                    <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mb-6">{snack.desc}</p>
-                    <button 
-                      onClick={() => addToCart(snack)}
-                      className="w-full py-5 bg-white text-black font-black uppercase italic rounded-2xl text-[10px] tracking-[0.2em] hover:scale-95 active:scale-90 transition-all shadow-xl"
-                    >
-                      Add To Bag
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </main>
-
-      {/* Cart Sidebar */}
-      <div className={`fixed inset-0 z-[100] transition-opacity duration-500 ${isCartOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsCartOpen(false)} />
-        <div className={`absolute right-0 top-0 bottom-0 w-full max-w-lg bg-[#080808] flex flex-col transition-transform duration-500 ease-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="p-8 flex justify-between items-center border-b border-white/5">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter">Your Bag</h2>
-            <button onClick={() => setIsCartOpen(false)} className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center"><X /></button>
-          </div>
-
-          <div className="flex-grow overflow-y-auto p-6 space-y-4">
-            {view === 'checkout' ? (
-              <div className="space-y-6">
-                <div className="bg-white/5 p-6 rounded-[2rem] space-y-6">
-                  {['name', 'grade', 'date'].map(field => (
-                    <div key={field} className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">{field}</label>
-                      <input 
-                        type="text" 
-                        value={form[field]}
-                        onChange={(e) => setForm({...form, [field]: e.target.value})}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 outline-none focus:border-purple-600 transition-all font-bold"
-                        placeholder={`Enter ${field}...`}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : cart.length === 0 ? (
-              <div className="text-center py-20 opacity-20 font-black italic text-xs tracking-widest uppercase">EMPTY</div>
-            ) : (
-              cart.map(item => (
-                <div key={item.id} className="bg-white/5 p-4 rounded-3xl flex gap-4 items-center border border-white/5">
-                  <div className="w-16 h-16 bg-black rounded-2xl p-2"><img src={item.img} className="w-full h-full object-contain" /></div>
-                  <div className="flex-grow">
-                    <p className="text-[10px] font-black uppercase">{item.name}</p>
-                    <p className="text-purple-500 font-black text-xs">{item.price * item.qty} AED</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => updateQty(item.id, -1)} className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center"><Minus size={12}/></button>
-                    <span className="text-xs font-black w-4 text-center">{item.qty}</span>
-                    <button onClick={() => updateQty(item.id, 1)} className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center"><Plus size={12}/></button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="p-8 bg-black border-t border-white/5">
-            <div className="flex justify-between items-end mb-8">
-              <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Grand Total</span>
-              <span className="text-4xl font-black italic tracking-tighter text-purple-500">{total} AED</span>
-            </div>
-            {view === 'checkout' ? (
-              <div className="space-y-4">
-                <button onClick={handlePlaceOrder} disabled={!form.name || !form.grade} className="w-full py-6 bg-purple-600 text-white font-black uppercase italic rounded-3xl disabled:opacity-30">Send Order</button>
-                <button onClick={() => setView('shop')} className="w-full text-[10px] font-black uppercase text-white/20 tracking-widest">Back to Cart</button>
-              </div>
-            ) : (
-              <button onClick={() => setView('checkout')} disabled={cart.length === 0} className="w-full py-6 bg-white text-black font-black uppercase italic rounded-3xl disabled:opacity-10">Checkout</button>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
-  );
-}
+
+    <!-- Verification Screen (Uneditable Receipt) -->
+    <div id="verify-screen" class="fixed inset-0 flex flex-col items-center justify-center p-6 text-center">
+        <div class="w-full max-w-md bg-zinc-900 border border-purple-500/30 rounded-[3rem] p-8 relative shadow-2xl">
+            <div class="w-20 h-20 bg-purple-600 rounded-full mx-auto flex items-center justify-center -mt-16 border-8 border-[#050505] shadow-2xl mb-6">
+                <i class="fas fa-check text-2xl text-white"></i>
+            </div>
+            <h2 class="text-2xl font-black italic uppercase text-purple-500 tracking-tighter mb-1">Official Receipt</h2>
+            <p id="receipt-id" class="text-[9px] font-black uppercase text-white/30 tracking-widest mb-8">ORDER ID: ---</p>
+            
+            <div id="receipt-content" class="text-left space-y-4 mb-8 max-h-[40vh] overflow-y-auto pr-2">
+                <!-- Receipt details here -->
+            </div>
+
+            <button onclick="window.location.search=''; window.location.reload();" class="w-full py-5 bg-white text-black font-black uppercase italic rounded-2xl tap-active">Go to Store</button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center z-[300] transition-opacity duration-1000">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-30 animate-pulse"></div>
+            <img id="load-logo" src="" class="w-28 h-28 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
+        </div>
+        <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Loading Store…</p>
+    </div>
+
+    <div id="toast">Added to bag</div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <nav class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 px-6 pb-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img id="nav-logo" src="" class="w-10 h-10 rounded-full object-cover border border-purple-600/30">
+                <div>
+                    <h1 class="font-black italic text-lg uppercase tracking-tighter leading-none">Fares King</h1>
+                    <p class="text-[9px] text-purple-500 font-black uppercase tracking-widest mt-1">Supermarket</p>
+                </div>
+            </div>
+            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl relative border border-white/10 flex items-center justify-center tap-active">
+                <i class="fas fa-shopping-bag text-lg"></i>
+                <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-purple-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
+            </button>
+        </nav>
+
+        <main class="pt-32 pb-32">
+            <header class="px-6 mb-8">
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Luxury Selection</p>
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none mb-8">THE <span class="king-gradient">PRODUCTS</span></h2>
+                
+                <!-- Category Tabs -->
+                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                    <button onclick="setCategory('all')" id="tab-all" class="tab-btn active px-6 py-3 bg-white/5 border border-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest whitespace-nowrap">All Items</button>
+                    <button onclick="setCategory('boba')" id="tab-boba" class="tab-btn px-6 py-3 bg-white/5 border border-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest whitespace-nowrap">Boba Tea</button>
+                    <button onclick="setCategory('snacks')" id="tab-snacks" class="tab-btn px-6 py-3 bg-white/5 border border-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest whitespace-nowrap">Snacks</button>
+                </div>
+            </header>
+            <div id="snack-grid" class="px-4 space-y-8"></div>
+        </main>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden opacity-0 transition-opacity duration-500" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="fixed top-0 right-0 w-full max-w-lg h-full bg-[#080808] z-[101] cart-sidebar flex flex-col shadow-2xl">
+        <div class="pt-[calc(1.5rem+var(--safe-top))] p-8 flex justify-between items-center border-b border-white/5">
+            <h2 class="font-black italic uppercase text-2xl tracking-tighter">Your Bag</h2>
+            <button onclick="toggleCart()" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center tap-active"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div id="cart-content-area" class="flex-grow overflow-y-auto p-6">
+            <div id="cart-items" class="space-y-4"></div>
+            <div id="checkout-fields" class="hidden space-y-6 pt-4">
+                <div class="bg-white/5 p-6 rounded-[2rem] border border-white/5 space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Customer Name</label>
+                        <input type="text" id="cust-name" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Grade / Section</label>
+                        <input type="text" id="cust-grade" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-white/30 tracking-widest ml-1">Delivery Day</label>
+                        <input type="text" id="cust-date" placeholder="e.g. Monday P2" class="w-full bg-white/5 border border-white/10 rounded-2xl py-5 px-6 outline-none focus:border-purple-600 font-bold text-white">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 pb-[calc(2rem+var(--safe-bottom))] bg-black border-t border-white/5">
+            <div class="flex justify-between items-end mb-8 px-2">
+                <span class="text-[10px] font-black uppercase text-white/20 tracking-widest">Grand Total</span>
+                <span class="text-4xl font-black italic tracking-tighter text-purple-500" id="cart-total">0 AED</span>
+            </div>
+            <div class="space-y-4">
+                <button id="step-btn" onclick="nextStep()" class="w-full py-6 bg-white text-black font-black uppercase italic tracking-widest rounded-[2rem] tap-active disabled:opacity-10">Checkout</button>
+                <button id="final-btn" onclick="sendOrder()" class="hidden w-full py-6 bg-purple-600 text-white font-black uppercase italic tracking-widest rounded-[2rem] flex items-center justify-center gap-3 tap-active shadow-xl shadow-purple-600/40">
+                    Send Order <i class="fab fa-whatsapp text-lg"></i>
+                </button>
+                <button id="back-btn" onclick="prevStep()" class="hidden w-full py-2 text-[10px] font-black uppercase text-white/30 tracking-[0.3em]">Back to bag</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'fares-king-luxury-v2';
+
+        const WHATSAPP_GROUP = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
+        const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+        const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
+        
+        const snacks = [
+            { id: 1, name: "Tiger Fresh Milk", price: 20, cat: 'boba', img: getDriveImg("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true },
+            { id: 2, name: "Classic Boba Taro", price: 16, cat: 'boba', img: getDriveImg("1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy"), desc: "Classic creamy taro with chewy boba pearls", isBoba: true },
+            { id: 3, name: "Flaming Hot Cheetos", price: 6, cat: 'snacks', img: getDriveImg("1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ"), desc: "spicy crunchy chips" },
+            { id: 4, name: "Spicy Popcorn", price: 4, cat: 'snacks', img: getDriveImg("1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s"), desc: "spicy popcorn" },
+            { id: 5, name: "Balanced Popcorn", price: 3, cat: 'snacks', img: getDriveImg("1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO"), desc: "popcorn" }
+        ];
+
+        let cart = [];
+        let activeCategory = 'all';
+
+        // Initialize App
+        window.onload = async () => {
+            await signInAnonymously(auth);
+            
+            checkWebapp();
+            const img = getDriveImg(LOGO_ID);
+            document.getElementById('nav-logo').src = img;
+            document.getElementById('load-logo').src = img;
+            document.getElementById('prompt-logo').src = img;
+            
+            renderGrid();
+            checkVerification();
+
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('fade-out');
+            }, 1500);
+        };
+
+        function checkWebapp() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (!isStandalone && !new URLSearchParams(window.location.search).has('verify')) {
+                document.getElementById('webapp-prompt').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        async function checkVerification() {
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('verify');
+            if (!orderId) return;
+
+            document.getElementById('loader').style.display = 'flex';
+            
+            try {
+                const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const now = Date.now();
+                    const ageInHours = (now - data.timestamp) / (1000 * 60 * 60);
+
+                    // 15 Hour Expiry
+                    if (ageInHours > 15) {
+                        alert("Receipt Expired (15hr limit)");
+                        window.location.search = "";
+                        return;
+                    }
+
+                    document.getElementById('main-content').style.display = 'none';
+                    document.getElementById('webapp-prompt').style.display = 'none';
+                    document.getElementById('verify-screen').style.display = 'flex';
+                    document.getElementById('receipt-id').innerText = `ORDER ID: ${data.id}`;
+                    
+                    document.getElementById('receipt-content').innerHTML = `
+                        <div class="bg-white/5 p-5 rounded-3xl border border-white/5">
+                            <p class="text-[10px] font-black uppercase text-purple-400 tracking-widest mb-1">Customer</p>
+                            <p class="text-xl font-black italic">${data.customer.name}</p>
+                            <p class="text-xs text-white/40 font-bold">${data.customer.grade} • ${data.customer.date}</p>
+                        </div>
+                        <div class="space-y-3 px-1">
+                            ${data.items.map(i => `
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-white/60 font-medium">${i.name} (x${i.qty})</span>
+                                    <span class="font-black">${i.price * i.qty} AED</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="pt-6 border-t border-white/10 flex justify-between items-center">
+                            <span class="font-black italic text-lg tracking-tighter uppercase">Total Paid</span>
+                            <span class="text-3xl font-black italic text-purple-500">${data.total} AED</span>
+                        </div>
+                    `;
+                } else {
+                    alert("Order not found or deleted.");
+                    window.location.search = "";
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                document.getElementById('loader').classList.add('fade-out');
+            }
+        }
+
+        window.renderGrid = () => {
+            const grid = document.getElementById('snack-grid');
+            const filtered = snacks.filter(s => activeCategory === 'all' || s.cat === activeCategory);
+            
+            grid.innerHTML = filtered.map(s => `
+                <div id="snack-${s.id}" onclick="handleCardClick(${s.id})" class="snack-card w-full bg-[#0c0c0c] border border-white/5 rounded-[3rem] overflow-hidden flex flex-col shadow-2xl">
+                    <div class="image-container">
+                        <img src="${s.img}" class="snack-shadow ${s.isBoba ? 'boba-adjust' : ''} ${s.isTiger ? 'tiger-milk-pos' : ''}">
+                        <div class="absolute top-8 left-8 bg-black/40 backdrop-blur-xl border border-white/10 px-5 py-2 rounded-2xl font-black italic text-xs tracking-tighter z-10">${s.price} AED</div>
+                    </div>
+                    <div class="p-8 flex-grow">
+                        <h3 class="text-3xl font-black italic uppercase mb-2 tracking-tighter leading-tight">${s.name}</h3>
+                        <p class="text-white/30 text-[10px] mb-8 italic uppercase tracking-wider font-bold max-w-xs">${s.desc}</p>
+                        <button onclick="event.stopPropagation(); addToCart(${s.id})" class="w-full py-5 bg-white text-black font-black uppercase italic tracking-[0.2em] text-[10px] rounded-2xl tap-active transition-all shadow-xl">Add To Bag</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.setCategory = (cat) => {
+            activeCategory = cat;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${cat}`).classList.add('active');
+            renderGrid();
+        };
+
+        window.handleCardClick = (id) => {
+            document.querySelectorAll('.snack-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`snack-${id}`).classList.add('selected');
+        };
+
+        window.addToCart = (id) => {
+            const item = snacks.find(s => s.id === id);
+            const exists = cart.find(c => c.id === id);
+            const cardEl = document.getElementById(`snack-${id}`);
+            cardEl.classList.add('item-added');
+            setTimeout(() => cardEl.classList.remove('item-added'), 400);
+            
+            if (exists) exists.qty++;
+            else cart.push({...item, qty: 1});
+            
+            updateUI();
+            showToast("Added to bag");
+            handleCardClick(id);
+        };
+
+        window.updateUI = () => {
+            const list = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+            let total = 0;
+            let count = 0;
+
+            if (cart.length === 0) {
+                list.innerHTML = '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px] italic tracking-[0.5em]">Your bag is empty</div>';
+            } else {
+                list.innerHTML = cart.map(c => {
+                    total += (c.price * c.qty);
+                    count += c.qty;
+                    return `
+                    <div class="flex gap-4 items-center bg-white/[0.03] p-5 rounded-[2rem] border border-white/5">
+                        <div class="w-16 h-16 bg-neutral-900 rounded-2xl flex items-center justify-center p-2">
+                            <img src="${c.img}" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-black italic uppercase text-[10px] mb-0.5 tracking-tight">${c.name}</h4>
+                            <p class="text-purple-500 font-black text-xs">${c.price * c.qty} AED</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="changeQty(${c.id},-1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-minus text-[8px]"></i></button>
+                            <span class="text-xs font-black w-4 text-center">${c.qty}</span>
+                            <button onclick="changeQty(${c.id},1)" class="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-plus text-[8px]"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            totalEl.innerText = `${total} AED`;
+            countEl.innerText = count;
+            countEl.classList.toggle('hidden', count === 0);
+            document.getElementById('step-btn').disabled = cart.length === 0;
+        };
+
+        window.changeQty = (id, delta) => {
+            const item = cart.find(c => c.id === id);
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+            updateUI();
+        };
+
+        window.toggleCart = () => {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            if (!sidebar.classList.contains('open')) {
+                sidebar.classList.add('open');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            } else {
+                sidebar.classList.remove('open');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+                prevStep();
+            }
+        };
+
+        window.nextStep = () => {
+            document.getElementById('cart-items').classList.add('hidden');
+            document.getElementById('checkout-fields').classList.remove('hidden');
+            document.getElementById('step-btn').classList.add('hidden');
+            document.getElementById('final-btn').classList.remove('hidden');
+            document.getElementById('back-btn').classList.remove('hidden');
+        };
+
+        window.prevStep = () => {
+            document.getElementById('cart-items').classList.remove('hidden');
+            document.getElementById('checkout-fields').classList.add('hidden');
+            document.getElementById('step-btn').classList.remove('hidden');
+            document.getElementById('final-btn').classList.add('hidden');
+            document.getElementById('back-btn').classList.add('hidden');
+        };
+
+        window.sendOrder = async () => {
+            const name = document.getElementById('cust-name').value;
+            const grade = document.getElementById('cust-grade').value;
+            const date = document.getElementById('cust-date').value || "ASAP";
+            
+            if (!name || !grade) return showToast("Name & Grade required");
+
+            const orderId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const verifyLink = `${window.location.origin}${window.location.pathname}?verify=${orderId}`;
+
+            const orderData = {
+                id: orderId,
+                customer: { name, grade, date },
+                items: cart,
+                total,
+                timestamp: Date.now()
+            };
+
+            try {
+                // Save to Firestore
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', orderId), orderData);
+
+                const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
+                const text = `👑 *FARES KING ORDER [${orderId}]*\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED\n\n✅ *VERIFIED RECEIPT:*\n${verifyLink}`;
+                
+                const dummy = document.createElement("textarea");
+                document.body.appendChild(dummy);
+                dummy.value = text;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+
+                showToast("Copied! Open WhatsApp...");
+                setTimeout(() => window.open(WHATSAPP_GROUP, '_top'), 1500);
+            } catch (e) {
+                showToast("Database Error");
+            }
+        };
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
 
 ```
