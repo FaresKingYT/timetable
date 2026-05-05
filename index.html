@@ -35,37 +35,6 @@
             z-index: 1000;
         }
 
-        /* CUSTOM PURPLE FK LOGO FOR PROMPT */
-        .custom-logo-circle {
-            width: 140px;
-            height: 140px;
-            background: black;
-            border: 4px solid #a855f7;
-            border-radius: 40px; /* Squircle style */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 50px rgba(168, 85, 247, 0.4);
-        }
-        .logo-supermarket-text {
-            font-size: 9px;
-            font-weight: 900;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            margin-bottom: -4px;
-            opacity: 0.8;
-        }
-        .logo-fk-text {
-            font-size: 56px;
-            font-weight: 900;
-            color: #a855f7;
-            font-style: italic;
-            letter-spacing: -3px;
-            line-height: 1;
-        }
-
         .snack-card {
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -178,14 +147,11 @@
     </style>
 </head>
 <body>
-    <!-- Web App Prompt with Your Custom Purple Logo -->
+    <!-- Web App Prompt with Original Logo -->
     <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-20"></div>
-            <div class="custom-logo-circle relative z-10">
-                <span class="logo-supermarket-text">Supermarket</span>
-                <span class="logo-fk-text">FK</span>
-            </div>
+            <img id="prompt-logo" src="" class="w-32 h-32 rounded-full object-cover border-4 border-purple-600 relative z-10 shadow-2xl">
         </div>
         <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">INSTALL WEB APP</h2>
         <p class="text-white/40 text-sm mb-8 leading-relaxed">Access the supermarket directly from your home screen for the best experience.</p>
@@ -195,7 +161,7 @@
         </div>
     </div>
 
-    <!-- App Loading Screen (Original Logo) -->
+    <!-- App Loading Screen -->
     <div id="loader" class="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center z-[300] transition-opacity duration-1000">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-30 animate-pulse"></div>
@@ -391,7 +357,9 @@
             const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
             const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`, '_top');
+            
+            const url = `https://wa.me/?text=${encodeURIComponent(messageText)}`;
+            window.location.href = url;
         }
 
         function toggleCart() {
@@ -430,10 +398,11 @@
             const img = getDriveImg(LOGO_ID);
             document.getElementById('nav-logo').src = img;
             document.getElementById('load-logo').src = img;
+            document.getElementById('prompt-logo').src = img;
             renderGrid();
             setTimeout(() => {
                 document.getElementById('loader').classList.add('fade-out');
-            }, 1500);
+            }, 4000);
         };
     </script>
 </body>
