@@ -29,11 +29,41 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- WEB APP PROMPT STYLE --- */
         #webapp-prompt {
             display: none;
             background: #050505;
             z-index: 1000;
+        }
+
+        /* CUSTOM PURPLE FK LOGO FOR PROMPT */
+        .custom-logo-circle {
+            width: 140px;
+            height: 140px;
+            background: black;
+            border: 4px solid #a855f7;
+            border-radius: 40px; /* Squircle style */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.4);
+        }
+        .logo-supermarket-text {
+            font-size: 9px;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            margin-bottom: -4px;
+            opacity: 0.8;
+        }
+        .logo-fk-text {
+            font-size: 56px;
+            font-weight: 900;
+            color: #a855f7;
+            font-style: italic;
+            letter-spacing: -3px;
+            line-height: 1;
         }
 
         .snack-card {
@@ -118,8 +148,26 @@
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
         nav { padding-top: calc(1rem + var(--safe-top)); }
-
         .tap-active:active { transform: scale(0.96); }
+
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: white;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: #a855f7;
+            border-radius: 2px;
+        }
 
         @keyframes addEffect {
             0% { transform: scale(1); }
@@ -130,28 +178,31 @@
     </style>
 </head>
 <body>
-    <!-- Web App Prompt (Shown when in regular browser) -->
+    <!-- Web App Prompt with Your Custom Purple Logo -->
     <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
         <div class="relative mb-8">
-            <div class="absolute inset-0 bg-purple-600 blur-[60px] opacity-20"></div>
-            <img id="prompt-logo" src="" class="w-32 h-32 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
+            <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-20"></div>
+            <div class="custom-logo-circle relative z-10">
+                <span class="logo-supermarket-text">Supermarket</span>
+                <span class="logo-fk-text">FK</span>
+            </div>
         </div>
-        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">USE WEB APP</h2>
-        <p class="text-white/40 text-sm mb-8 leading-relaxed">To access the shop, add this site to your home screen for the full premium experience.</p>
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter mb-4">INSTALL WEB APP</h2>
+        <p class="text-white/40 text-sm mb-8 leading-relaxed">Access the supermarket directly from your home screen for the best experience.</p>
         <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center gap-4">
             <i class="fas fa-share-square text-purple-500 text-xl"></i>
             <p class="text-[10px] font-black uppercase tracking-widest text-left">Tap Share then<br><span class="text-white">"Add to Home Screen"</span></p>
         </div>
     </div>
 
-    <!-- App Loading Screen -->
+    <!-- App Loading Screen (Original Logo) -->
     <div id="loader" class="fixed inset-0 bg-[#050505] flex flex-col items-center justify-center z-[300] transition-opacity duration-1000">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-30 animate-pulse"></div>
             <img id="load-logo" src="" class="w-28 h-28 rounded-full object-cover border-2 border-purple-600 relative z-10 shadow-2xl">
         </div>
         <div class="space-y-2 text-center">
-            <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Loading…</p>
+            <p class="text-purple-500 font-black tracking-[0.6em] text-[10px] uppercase italic animate-pulse">Entering Empire…</p>
         </div>
     </div>
 
@@ -174,12 +225,20 @@
         </nav>
 
         <main class="pt-32 pb-32">
-            <header class="px-6 mb-12">
-                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Fares King's Premium Snacks</p>
+            <header class="px-6 mb-8">
+                <p class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-2">Fares King's Premium Selection</p>
                 <h2 class="text-5xl font-black italic uppercase tracking-tighter leading-none">
                     OUR <span class="king-gradient">PRODUCTS</span>
                 </h2>
             </header>
+
+            <!-- Tabs Navigation -->
+            <div class="flex px-6 gap-8 mb-8">
+                <button onclick="setTab('all')" id="tab-all" class="tab-btn active text-[10px] font-black uppercase tracking-widest text-white/40">All Items</button>
+                <button onclick="setTab('boba')" id="tab-boba" class="tab-btn text-[10px] font-black uppercase tracking-widest text-white/40">Boba Drinks</button>
+                <button onclick="setTab('snacks')" id="tab-snacks" class="tab-btn text-[10px] font-black uppercase tracking-widest text-white/40">Snacks</button>
+            </div>
+
             <div id="snack-grid" class="px-4 space-y-8"></div>
         </main>
     </div>
@@ -228,7 +287,6 @@
     </div>
 
     <script>
-        const WHATSAPP_GROUP = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
         const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
         const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
         const SPICY_POP_ID = "1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s";
@@ -238,14 +296,15 @@
         const TIGER_MILK_ID = "19o__91KB2EsotwLSIr0x63ygLdE0QhfR";
 
         const snacks = [
-            { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg(TIGER_MILK_ID), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true },
-            { id: 2, name: "Classic Boba Taro", price: 16, img: getDriveImg(TARO_BOBA_ID), desc: "Classic creamy taro with chewy boba pearls", isBoba: true },
-            { id: 3, name: "Flaming Hot Cheetos", price: 6, img: getDriveImg(HOT_CHEETOS_ID), desc: "spicy crunchy chips" },
-            { id: 4, name: "Spicy Popcorn", price: 4, img: getDriveImg(SPICY_POP_ID), desc: "spicy popcorn" },
-            { id: 5, name: "Balanced Popcorn", price: 3, img: getDriveImg(BALANCED_POP_ID), desc: "popcorn" }
+            { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg(TIGER_MILK_ID), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true, category: 'boba' },
+            { id: 2, name: "Classic Boba Taro", price: 16, img: getDriveImg(TARO_BOBA_ID), desc: "Classic creamy taro with chewy boba pearls", isBoba: true, category: 'boba' },
+            { id: 3, name: "Flaming Hot Cheetos", price: 6, img: getDriveImg(HOT_CHEETOS_ID), desc: "spicy crunchy chips", category: 'snacks' },
+            { id: 4, name: "Spicy Popcorn", price: 4, img: getDriveImg(SPICY_POP_ID), desc: "spicy popcorn", category: 'snacks' },
+            { id: 5, name: "Balanced Popcorn", price: 3, img: getDriveImg(BALANCED_POP_ID), desc: "popcorn", category: 'snacks' }
         ];
 
         let cart = [];
+        let currentTab = 'all';
 
         function checkWebapp() {
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -259,8 +318,16 @@
             }
         }
 
+        function setTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            renderGrid();
+        }
+
         function renderGrid() {
-            document.getElementById('snack-grid').innerHTML = snacks.map(s => `
+            const filtered = snacks.filter(s => currentTab === 'all' || s.category === currentTab);
+            document.getElementById('snack-grid').innerHTML = filtered.map(s => `
                 <div id="snack-${s.id}" onclick="handleCardClick(${s.id})" class="snack-card w-full bg-[#0c0c0c] border border-white/5 rounded-[3rem] overflow-hidden flex flex-col shadow-2xl">
                     <div class="image-container">
                         <img id="img-${s.id}" src="${s.img}" class="snack-shadow ${s.isBoba ? 'boba-adjust' : ''} ${s.isTiger ? 'tiger-milk-pos' : ''}" alt="${s.name}">
@@ -277,16 +344,12 @@
 
         function handleCardClick(id) {
             document.querySelectorAll('.snack-card').forEach(el => el.classList.remove('selected'));
-            const target = document.getElementById(`snack-${id}`);
-            if(target) target.classList.add('selected');
+            document.getElementById(`snack-${id}`).classList.add('selected');
         }
 
         function addToCart(id) {
             const item = snacks.find(s => s.id === id);
             const exists = cart.find(c => c.id === id);
-            const cardEl = document.getElementById(`snack-${id}`);
-            cardEl.classList.add('item-added');
-            setTimeout(() => cardEl.classList.remove('item-added'), 400);
             if (exists) exists.qty++;
             else cart.push({...item, qty: 1});
             updateUI();
@@ -308,8 +371,7 @@
             const list = document.getElementById('cart-items');
             const totalEl = document.getElementById('cart-total');
             const countEl = document.getElementById('cart-count');
-            let total = 0;
-            let count = 0;
+            let total = 0, count = 0;
             list.innerHTML = cart.length === 0 ? '<div class="py-20 text-center opacity-10 font-black uppercase text-[10px] italic tracking-[0.5em]">Your bag is empty</div>' : 
                 cart.map(c => {
                     total += (c.price * c.qty);
@@ -327,24 +389,9 @@
             const grade = document.getElementById('cust-grade').value || "N/A";
             const date = document.getElementById('cust-date').value || "ASAP";
             const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-            const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('%0A');
-            
-            const text = `👑 *FARES KING ORDER*%0A--------------------------%0A👤 *NAME:* ${name}%0A📍 *GRADE:* ${grade}%0A📅 *DATE:* ${date}%0A--------------------------%0A📦 *ITEMS:*%0A${itemsMsg}%0A%0A💰 *TOTAL:* ${total} AED`;
-            
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = text.replace(/%0A/g, '\n');
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
-
-            const toast = document.getElementById('toast');
-            toast.innerText = "Order copied! Paste in group.";
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                window.open(WHATSAPP_GROUP, '_top');
-            }, 1000);
+            const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
+            const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`, '_top');
         }
 
         function toggleCart() {
@@ -383,7 +430,6 @@
             const img = getDriveImg(LOGO_ID);
             document.getElementById('nav-logo').src = img;
             document.getElementById('load-logo').src = img;
-            document.getElementById('prompt-logo').src = img;
             renderGrid();
             setTimeout(() => {
                 document.getElementById('loader').classList.add('fade-out');
