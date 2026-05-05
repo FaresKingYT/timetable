@@ -12,13 +12,15 @@
     <meta name="theme-color" content="#050505">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- HOME SCREEN ICONS (THE FIX) -->
-    <!-- We use the thumbnail link with a larger size parameter to ensure high quality on retina displays -->
+    <!-- HOME SCREEN ICONS (ENHANCED FIX) -->
+    <!-- Apple specifically looks for 'apple-touch-icon' with direct link formats -->
     <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
     <link rel="apple-touch-icon" sizes="152x152" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w152">
     <link rel="apple-touch-icon" sizes="180x180" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w180">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w167">
-    <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w192">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w192">
+    
+    <!-- Startup Image (Splash Screen) -->
+    <link rel="apple-touch-startup-image" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w1000">
 
     <title>Fares King | Supermarket</title>
     
@@ -149,13 +151,6 @@
             background: #a855f7;
             border-radius: 2px;
         }
-
-        @keyframes addEffect {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); filter: brightness(1.2); }
-            100% { transform: scale(1); }
-        }
-        .item-added { animation: addEffect 0.4s ease-out; }
     </style>
 </head>
 <body>
@@ -210,7 +205,6 @@
                 </h2>
             </header>
 
-            <!-- Tabs Navigation -->
             <div class="flex px-6 gap-8 mb-8">
                 <button onclick="setTab('all')" id="tab-all" class="tab-btn active text-[10px] font-black uppercase tracking-widest text-white/40">All Items</button>
                 <button onclick="setTab('boba')" id="tab-boba" class="tab-btn text-[10px] font-black uppercase tracking-widest text-white/40">Boba Drinks</button>
@@ -273,6 +267,11 @@
         const TARO_BOBA_ID = "1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy";
         const HOT_CHEETOS_ID = "1kD2YKFBd8n1vhVJjkP0h4JjqQ63zK0mZ";
         const TIGER_MILK_ID = "19o__91KB2EsotwLSIr0x63ygLdE0QhfR";
+        
+        // --- WHATSAPP CONFIG ---
+        // Change this to your exact phone number with country code (no + or spaces)
+        // Or if you want to send to a group, usually you have to send it to a person first who then shares to the group.
+        const RECEIVER_PHONE = "971558597737"; 
 
         const snacks = [
             { id: 1, name: "Tiger Fresh Milk", price: 20, img: getDriveImg(TIGER_MILK_ID), desc: "premium fresh milk with tiger sugar stripes and boba", isTiger: true, category: 'boba' },
@@ -370,8 +369,10 @@
             const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
             const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
-            const url = `https://wa.me/?text=${encodeURIComponent(messageText)}`;
-            window.location.href = url;
+            
+            // USING api.whatsapp.com for better cross-device direct messaging
+            const url = `https://api.whatsapp.com/send?phone=${RECEIVER_PHONE}&text=${encodeURIComponent(messageText)}`;
+            window.open(url, '_top');
         }
 
         function toggleCart() {
