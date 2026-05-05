@@ -4,14 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- WEB APP SETTINGS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fares King">
     <meta name="theme-color" content="#050505">
+    <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- WEB APP ICON (CUSTOM LOGO) -->
+    <!-- HOME SCREEN ICONS (THE FIX) -->
+    <!-- We use the thumbnail link with a larger size parameter to ensure high quality on retina displays -->
     <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
-    <link rel="icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w152">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w180">
+    <link rel="apple-touch-icon" sizes="167x167" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w167">
+    <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w192">
 
     <title>Fares King | Supermarket</title>
     
@@ -152,7 +159,7 @@
     </style>
 </head>
 <body>
-    <!-- Web App Prompt with Original Logo -->
+    <!-- Web App Prompt -->
     <div id="webapp-prompt" class="fixed inset-0 flex flex-col items-center justify-center p-10 text-center">
         <div class="relative mb-8">
             <div class="absolute inset-0 bg-purple-600 blur-[80px] opacity-20"></div>
@@ -363,8 +370,6 @@
             const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
             const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
-            
-            // wa.me/?text= is standard for pre-filling WhatsApp on both iOS and Android.
             const url = `https://wa.me/?text=${encodeURIComponent(messageText)}`;
             window.location.href = url;
         }
@@ -406,9 +411,8 @@
             const appIcon = getDriveImg(WEBAPP_ICON_ID);
             document.getElementById('nav-logo').src = img;
             document.getElementById('load-logo').src = img;
-            document.getElementById('prompt-logo').src = appIcon; // New Logo for Prompt
+            document.getElementById('prompt-logo').src = appIcon; 
             renderGrid();
-            // 4s Loading Time
             setTimeout(() => {
                 document.getElementById('loader').classList.add('fade-out');
             }, 4000);
