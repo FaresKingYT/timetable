@@ -8,6 +8,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fares King">
     <meta name="theme-color" content="#050505">
+    
+    <!-- WEB APP ICON (CUSTOM LOGO) -->
+    <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
+    <link rel="icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
+
     <title>Fares King | Supermarket</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -255,6 +260,7 @@
     <script>
         const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
         const LOGO_ID = "1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I";
+        const WEBAPP_ICON_ID = "19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk";
         const SPICY_POP_ID = "1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s";
         const BALANCED_POP_ID = "1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO";
         const TARO_BOBA_ID = "1xKAx3WvPkZQ8OHNMYWbNnpR2WpPpEsGy";
@@ -358,6 +364,7 @@
             const itemsMsg = cart.map(c => `• ${c.name} (x${c.qty})`).join('\n');
             const messageText = `👑 *FARES KING ORDER*\n--------------------------\n👤 *NAME:* ${name}\n📍 *GRADE:* ${grade}\n📅 *DATE:* ${date}\n--------------------------\n📦 *ITEMS:*\n${itemsMsg}\n\n💰 *TOTAL:* ${total} AED`;
             
+            // wa.me/?text= is standard for pre-filling WhatsApp on both iOS and Android.
             const url = `https://wa.me/?text=${encodeURIComponent(messageText)}`;
             window.location.href = url;
         }
@@ -396,10 +403,12 @@
         window.onload = () => {
             checkWebapp();
             const img = getDriveImg(LOGO_ID);
+            const appIcon = getDriveImg(WEBAPP_ICON_ID);
             document.getElementById('nav-logo').src = img;
             document.getElementById('load-logo').src = img;
-            document.getElementById('prompt-logo').src = img;
+            document.getElementById('prompt-logo').src = appIcon; // New Logo for Prompt
             renderGrid();
+            // 4s Loading Time
             setTimeout(() => {
                 document.getElementById('loader').classList.add('fade-out');
             }, 4000);
