@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Fares King">
   <meta name="theme-color" content="#050505">
-  <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w1000">
+  <!-- Home screen icon — separate from the spinning loader logo -->
+  <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
   <title>Fares King | Supermarket</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -34,7 +36,6 @@
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
     .tap-active:active{transform:scale(.96);}
     .tab-btn{position:relative;}
-    .tab-btn.active{color:white;}
     .tab-btn.active::after{content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:#a855f7;border-radius:2px;}
     /* LOADER */
     #loader{position:fixed;inset:0;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow-y:auto;}
@@ -49,9 +50,9 @@
     #logo-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(168,85,247,.6);position:relative;z-index:2;animation:logoSpin 1.4s cubic-bezier(.22,1,.36,1) infinite;box-shadow:0 0 30px rgba(168,85,247,.35);}
     @keyframes logoSpin{
       0%  {transform:rotateY(0deg)   scale(1);    filter:brightness(1)   drop-shadow(0 0 12px rgba(168,85,247,.6));}
-      25% {transform:rotateY(90deg)  scale(0.82); filter:brightness(0.5) drop-shadow(0 0 4px  rgba(168,85,247,.1));}
+      25% {transform:rotateY(90deg)  scale(0.82); filter:brightness(0.5) drop-shadow(0 0 4px rgba(168,85,247,.1));}
       50% {transform:rotateY(180deg) scale(1);    filter:brightness(1)   drop-shadow(0 0 12px rgba(168,85,247,.6));}
-      75% {transform:rotateY(270deg) scale(0.82); filter:brightness(0.5) drop-shadow(0 0 4px  rgba(168,85,247,.1));}
+      75% {transform:rotateY(270deg) scale(0.82); filter:brightness(0.5) drop-shadow(0 0 4px rgba(168,85,247,.1));}
       100%{transform:rotateY(360deg) scale(1);    filter:brightness(1)   drop-shadow(0 0 12px rgba(168,85,247,.6));}
     }
     #logo-img-fb{display:none;width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#6b21a8,#3b0764);align-items:center;justify-content:center;font-family:"Archivo Black",sans-serif;font-size:2.5rem;color:white;border:2px solid rgba(168,85,247,.6);animation:logoSpin 1.4s cubic-bezier(.22,1,.36,1) infinite;box-shadow:0 0 30px rgba(168,85,247,.35);}
@@ -63,12 +64,14 @@
     #app.entering{animation:appEnter .6s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes appEnter{from{opacity:0;transform:scale(.97) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
     @keyframes waPulse{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,0)}50%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 13px rgba(37,211,102,0)}}
-    /* SITE DOWN OVERLAY */
+    /* ADMIN TAP ZONE — large invisible area at bottom */
+    #tap-zone{position:fixed;bottom:0;left:0;right:0;height:60px;z-index:9998;cursor:default;}
+    /* SITE DOWN */
     #site-down-overlay{position:fixed;inset:0;background:#050505;z-index:8888;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
-    /* GOOGLE SIGN IN BTN */
-    .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:white;color:#1f1f1f;border:none;border-radius:14px;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s ease;}
+    @keyframes sdPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    /* GOOGLE BTN */
+    .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:280px;padding:14px 20px;background:white;color:#1f1f1f;border:none;border-radius:14px;font-family:"Inter",sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s ease;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
     .google-btn:active{transform:scale(.97);}
-    .google-btn svg{flex-shrink:0;}
   </style>
 </head>
 <body>
@@ -79,18 +82,23 @@
     <div id="logo-halo"></div>
     <div id="logo-ring"></div>
     <div id="logo-ring2"></div>
-    <img id="logo-img" src="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w1000" alt="Fares King" onerror="this.style.display='none';document.getElementById('logo-img-fb').style.display='flex'">
+    <!-- Spinning logo uses the round app logo -->
+    <img id="logo-img"
+      src="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w1000"
+      alt="Fares King"
+      onerror="this.style.display='none';document.getElementById('logo-img-fb').style.display='flex'">
     <div id="logo-img-fb">F</div>
   </div>
   <div id="prog-bar"><div id="prog-fill"></div></div>
   <div id="loader-label">Loading</div>
 </div>
 
-<!-- SITE DOWN OVERLAY -->
+<!-- SITE DOWN PAGE -->
 <div id="site-down-overlay">
-  <img src="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w500" style="width:72px;height:72px;border-radius:20px;object-fit:cover;margin-bottom:20px;border:2px solid rgba(168,85,247,.4);" onerror="this.style.display='none'">
-  <div style="width:14px;height:14px;border-radius:50%;background:#ef4444;box-shadow:0 0 12px rgba(239,68,68,.8);margin-bottom:16px;animation:sdPulse 1s ease-in-out infinite;"></div>
-  <style>@keyframes sdPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}</style>
+  <img src="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500"
+    style="width:80px;height:80px;border-radius:20px;object-fit:cover;margin-bottom:20px;border:2px solid rgba(168,85,247,.4);"
+    onerror="this.style.display='none'">
+  <div style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 12px rgba(239,68,68,.8);margin-bottom:16px;animation:sdPulse 1s ease-in-out infinite;"></div>
   <h2 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;text-align:center;">We'll Be Back Soon</h2>
   <p id="site-down-msg" style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6;max-width:280px;">The shop is temporarily closed. Check back later.</p>
 </div>
@@ -98,6 +106,9 @@
 <!-- APP -->
 <div id="app"></div>
 <div id="toast" class="toast"></div>
+
+<!-- ADMIN TAP ZONE — sits on top of everything, 60px tall, invisible -->
+<div id="tap-zone"></div>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -118,13 +129,12 @@ const firebaseConfig = {
   measurementId:     "G-RQ0QZ0QYXR"
 };
 
-const fbApp  = initializeApp(firebaseConfig);
+const fbApp     = initializeApp(firebaseConfig);
 try{ getAnalytics(fbApp); }catch(e){}
-const db     = getFirestore(fbApp);
-const auth   = getAuth(fbApp);
+const db        = getFirestore(fbApp);
+const auth      = getAuth(fbApp);
 const gProvider = new GoogleAuthProvider();
 
-/* ── Allowed admin email ── */
 const ADMIN_EMAIL = "narisaidova@gmail.com";
 
 window.FK_DB = {
@@ -143,42 +153,35 @@ window.FK_DB = {
   },
   async markComplete(id){ await updateDoc(doc(db,"orders",id),{status:"complete"}); },
   async deleteOrder(id){ await deleteDoc(doc(db,"orders",id)); },
-
-  /* Settings: siteDown, waLink, custom message */
   async getSettings(){
-    try{
-      const snap = await getDoc(doc(db,"config","settings"));
-      return snap.exists()?snap.data():{};
-    }catch(e){ return {}; }
+    try{ const snap=await getDoc(doc(db,"config","settings")); return snap.exists()?snap.data():{}; }
+    catch(e){ return {}; }
   },
   async saveSettings(data){ await setDoc(doc(db,"config","settings"),data,{merge:true}); },
-
-  /* Products in Firestore */
   async getProducts(){
-    try{
-      const snap = await getDoc(doc(db,"config","products"));
-      return snap.exists()?snap.data().list:null;
-    }catch(e){ return null; }
+    try{ const snap=await getDoc(doc(db,"config","products")); return snap.exists()?snap.data().list:null; }
+    catch(e){ return null; }
   },
   async saveProducts(list){ await setDoc(doc(db,"config","products"),{list}); },
 };
 
 window.FK_AUTH = {
   async signInGoogle(){
-    const result = await signInWithPopup(auth, gProvider);
+    const result = await signInWithPopup(auth,gProvider);
     return result.user;
   },
   async signOut(){ await signOut(auth); },
-  onAuth(cb){ return onAuthStateChanged(auth, cb); },
-  isAdmin(user){ return user && user.email === ADMIN_EMAIL; }
+  onAuth(cb){ return onAuthStateChanged(auth,cb); },
+  isAdmin(user){ return user && user.email===ADMIN_EMAIL; }
 };
 
 window.dispatchEvent(new Event("fk-ready"));
 </script>
 
-<!-- MAIN SCRIPT -->
+<!-- MAIN -->
 <script>
 const drive = id=>`https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+const ICON_HOME = "https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500";
 
 const DEFAULT_SNACKS = [
   {id:1,name:"Tiger Fresh Milk",   price:20,img:drive("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"),isTiger:true, category:"boba",  desc:"premium fresh milk with tiger sugar stripes and boba"},
@@ -187,23 +190,24 @@ const DEFAULT_SNACKS = [
   {id:4,name:"Spicy Popcorn",      price:4, img:drive("1BJGzA2GC_xCCeEvhirSg4Y8ht14skr-s"),               category:"snacks",desc:"spicy popcorn"},
   {id:5,name:"Balanced Popcorn",   price:3, img:drive("1I78L6Tv0T_-zTeQ2UUitxl8Dd_Pbm-sO"),               category:"snacks",desc:"popcorn"}
 ];
-
-const THEMES = {
-  purple:{ bg:"#050505",accent:"#a855f7",accentDark:"#6b21a8",card:"#0a0a0a",label:"Purple (Default)" },
-  blue:  { bg:"#020510",accent:"#3b82f6",accentDark:"#1d4ed8",card:"#050a18",label:"Midnight Blue" },
-  green: { bg:"#020805",accent:"#22c55e",accentDark:"#15803d",card:"#050e08",label:"Neon Green" },
-  red:   { bg:"#080203",accent:"#ef4444",accentDark:"#b91c1c",card:"#120404",label:"Crimson" },
-  gold:  { bg:"#080600",accent:"#f59e0b",accentDark:"#b45309",card:"#120e00",label:"Gold" },
+const THEMES={
+  purple:{bg:"#050505",accent:"#a855f7",accentDark:"#6b21a8",label:"Purple (Default)"},
+  blue:  {bg:"#020510",accent:"#3b82f6",accentDark:"#1d4ed8",label:"Midnight Blue"},
+  green: {bg:"#020805",accent:"#22c55e",accentDark:"#15803d",label:"Neon Green"},
+  red:   {bg:"#080203",accent:"#ef4444",accentDark:"#b91c1c",label:"Crimson"},
+  gold:  {bg:"#080600",accent:"#f59e0b",accentDark:"#b45309",label:"Gold"},
 };
 
-let SNACKS        = DEFAULT_SNACKS.slice();
-let currentTheme  = localStorage.getItem("fk_theme")||"purple";
-let cart          = JSON.parse(localStorage.getItem("fk_cart")||"[]");
-let selectedSnack = null, currentFilter="all";
-let adminOrders   = [], tapCount=0, tapTimer=null;
-let _pendingOrder = null, _adminUser=null;
-let GROUP_LINK    = "https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
-let YT            = "https://youtube.com/@faresking";
+let SNACKS       = DEFAULT_SNACKS.slice();
+let currentTheme = localStorage.getItem("fk_theme")||"purple";
+let cart         = JSON.parse(localStorage.getItem("fk_cart")||"[]");
+let selectedSnack=null, currentFilter="all";
+let adminOrders  =[], _adminUser=null, _pendingOrder=null;
+let GROUP_LINK   ="https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
+let YT           ="https://youtube.com/@faresking";
+
+/* tap tracking lives OUTSIDE buildApp so it's always active */
+let tapCount=0, tapTimer=null;
 
 function applyTheme(key){
   const t=THEMES[key]||THEMES.purple;
@@ -214,20 +218,20 @@ applyTheme(currentTheme);
 
 /* ── PWA CHECK + LOADER ── */
 (function(){
-  const ICON="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w500";
-  const isStandalone=window.navigator.standalone===true||window.matchMedia("(display-mode: standalone)").matches||window.matchMedia("(display-mode: fullscreen)").matches;
+  const isStandalone=window.navigator.standalone===true
+    ||window.matchMedia("(display-mode:standalone)").matches
+    ||window.matchMedia("(display-mode:fullscreen)").matches;
 
   function launchApp(){
     const fill=document.getElementById("prog-fill");
     let pct=0;
     const pi=setInterval(()=>{pct=Math.min(pct+(Math.random()*18+5),92);fill.style.width=pct+"%";},160);
     setTimeout(()=>{
-      clearInterval(pi); fill.style.width="100%";
+      clearInterval(pi);fill.style.width="100%";
       setTimeout(()=>{
         document.getElementById("loader").classList.add("fade-out");
         setTimeout(()=>{
           document.getElementById("loader").style.display="none";
-          /* Load settings then boot */
           bootApp();
         },600);
       },300);
@@ -236,19 +240,29 @@ applyTheme(currentTheme);
 
   function showInstallGuide(){
     const loader=document.getElementById("loader");
-    const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
     const isAndroid=/android/i.test(navigator.userAgent);
+    const steps=isAndroid?[
+      ["Open in Chrome","Make sure you're using Chrome, not another browser."],
+      ["Tap the ⋮ menu","Tap the three dots in the top-right corner."],
+      ["Add to Home screen","Tap \"Add to Home screen\" then tap Add."],
+      ["Open from Home Screen","Tap the Fares King icon on your home screen."]
+    ]:[
+      ["Open in Safari","Must be Safari — not Chrome or any other browser."],
+      ["Tap the Share icon","The box-with-arrow icon at the bottom of Safari."],
+      ["Add to Home Screen","Scroll the share sheet and tap \"Add to Home Screen\"."],
+      ["Tap Add","Tap Add in the top-right corner."],
+      ["Open from Home Screen","Open the app from your Home Screen icon — not Safari."]
+    ];
     loader.innerHTML=`
-      <div style="width:100%;max-width:390px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 24px;box-sizing:border-box;">
+      <div style="width:100%;max-width:390px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 24px 48px;box-sizing:border-box;">
         <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:100px;padding:6px 16px;margin-bottom:32px;">
           <div style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.8);animation:blink 1s ease-in-out infinite;flex-shrink:0;"></div>
           <span style="color:#ef4444;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;">Website Detected</span>
         </div>
-        <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}</style>
+        <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}@keyframes glow2{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}</style>
         <div style="position:relative;margin-bottom:20px;">
-          <div style="position:absolute;inset:-16px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.3) 0%,transparent 70%);animation:glow2 2s ease-in-out infinite;"></div>
-          <style>@keyframes glow2{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}</style>
-          <img src="${ICON}" style="width:90px;height:90px;border-radius:24px;object-fit:cover;border:2px solid rgba(168,85,247,.5);position:relative;z-index:1;box-shadow:0 8px 32px rgba(168,85,247,.3);" onerror="this.style.display='none'">
+          <div style="position:absolute;inset:-16px;border-radius:28px;background:radial-gradient(circle,rgba(168,85,247,.3) 0%,transparent 70%);animation:glow2 2s ease-in-out infinite;"></div>
+          <img src="${ICON_HOME}" style="width:90px;height:90px;border-radius:24px;object-fit:cover;border:2px solid rgba(168,85,247,.5);position:relative;z-index:1;box-shadow:0 8px 32px rgba(168,85,247,.3);" onerror="this.style.display='none'">
         </div>
         <h1 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:6px;text-align:center;">Fares King</h1>
         <p style="font-size:12px;color:rgba(168,85,247,.8);letter-spacing:.3em;text-transform:uppercase;margin-bottom:10px;">SuperMarket</p>
@@ -257,72 +271,73 @@ applyTheme(currentTheme);
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           <span style="color:white;font-weight:900;font-size:13px;letter-spacing:.05em;text-transform:uppercase;">Add to Home Screen</span>
         </div>
-        <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(168,85,247,.3),transparent);margin-bottom:28px;"></div>
-        <p style="font-size:10px;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;font-weight:900;margin-bottom:20px;align-self:flex-start;">${isAndroid?"Android — Chrome":"iOS — Safari"}</p>
-        ${isAndroid?`
-        <div style="width:100%;display:flex;flex-direction:column;gap:16px;">
-          ${["Open in Chrome","Make sure you're using Chrome browser, not a different app.","Tap the ⋮ menu","Tap the three dots in the top-right corner of Chrome.","Add to Home screen","Tap \"Add to Home screen\" then tap <strong style='color:white'>Add</strong>.","Open from Home Screen","Find the Fares King icon on your home screen and open it from there."].reduce((a,v,i)=>i%2===0?[...a,{t:v}]:(a[a.length-1].d=v,a),[]).map((s,i)=>`
-          <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
-            <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;">${i+1}</div>
-            <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s.t}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s.d}</p></div>
+        <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(168,85,247,.3),transparent);margin-bottom:24px;"></div>
+        <p style="font-size:10px;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;font-weight:900;margin-bottom:18px;align-self:flex-start;">${isAndroid?"Android — Chrome":"iOS — Safari"}</p>
+        <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
+          ${steps.map((s,i)=>`<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
+            <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
+            <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s[0]}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s[1]}</p></div>
           </div>`).join("")}
-        </div>`:
-        `<div style="width:100%;display:flex;flex-direction:column;gap:16px;">
-          ${["Open in Safari","This must be opened in <strong style='color:white'>Safari</strong> — not Chrome or any other browser.","Tap the Share button","Tap the <strong style='color:white'>Share icon</strong> (box with arrow) at the bottom of the Safari screen.","Tap Add to Home Screen","Scroll the share sheet and tap <strong style='color:white'>\"Add to Home Screen\"</strong>.","Tap Add","Tap <strong style='color:white'>Add</strong> in the top-right. The icon appears on your Home Screen.","Open from Home Screen","Open the app from your Home Screen icon — not from Safari."].reduce((a,v,i)=>i%2===0?[...a,{t:v}]:(a[a.length-1].d=v,a),[]).map((s,i)=>`
-          <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
-            <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;">${i+1}</div>
-            <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s.t}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s.d}</p></div>
-          </div>`).join("")}
-        </div>`}
-        <div style="margin-top:28px;padding:14px 18px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);border-radius:16px;text-align:center;width:100%;box-sizing:border-box;">
+        </div>
+        <div style="margin-top:24px;padding:14px 18px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);border-radius:16px;text-align:center;width:100%;box-sizing:border-box;">
           <p style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;">Once installed, open from your Home Screen and this screen won't appear again.</p>
         </div>
       </div>`;
   }
 
   if(isStandalone){ launchApp(); }
-  else { showInstallGuide(); }
+  else{ showInstallGuide(); }
 })();
 
-/* ── BOOT: load settings & products from Firebase, then show app ── */
+/* ── BOOT ── */
 async function bootApp(){
-  /* Wait for firebase to be ready */
   if(!window.FK_DB) await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
-
   try{
-    /* Load settings */
-    const settings = await window.FK_DB.getSettings();
-    if(settings.waLink)  GROUP_LINK = settings.waLink;
-    if(settings.ytLink)  YT         = settings.ytLink;
-
-    /* Site down check */
+    const settings=await window.FK_DB.getSettings();
+    if(settings.waLink) GROUP_LINK=settings.waLink;
+    if(settings.ytLink) YT=settings.ytLink;
     if(settings.siteDown){
-      const msg = settings.siteDownMsg||"The shop is temporarily closed. Check back later.";
+      const msg=settings.siteDownMsg||"The shop is temporarily closed. Check back later.";
       document.getElementById("site-down-msg").textContent=msg;
       document.getElementById("site-down-overlay").style.display="flex";
-      return; /* Don't show the app */
+      /* Still set up tap zone for admin access even when site is down */
+      setupTapZone();
+      return;
     }
+    const remote=await window.FK_DB.getProducts();
+    if(remote&&remote.length>0) SNACKS=remote;
+  }catch(e){ console.warn("Settings load failed",e); }
 
-    /* Load products */
-    const remoteProducts = await window.FK_DB.getProducts();
-    if(remoteProducts && remoteProducts.length>0) SNACKS=remoteProducts;
-  }catch(e){ console.warn("Settings load failed, using defaults",e); }
-
-  /* Show app */
   const app=document.getElementById("app");
   app.style.display="block";
   app.classList.add("entering");
   buildApp();
+  setupTapZone();
 
-  /* Listen for auth state (for admin panel) */
-  window.FK_AUTH.onAuth(user=>{
-    _adminUser = user;
-  });
+  window.FK_AUTH.onAuth(user=>{ _adminUser=user; });
 }
 
-/* ── BUILD APP ── */
+/* ── TAP ZONE — set up once, always works ── */
+function setupTapZone(){
+  const zone=document.getElementById("tap-zone");
+  if(!zone) return;
+  zone.addEventListener("touchend",handleAdminTap,{passive:true});
+  zone.addEventListener("click",handleAdminTap);
+}
+function handleAdminTap(){
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer=setTimeout(()=>{ tapCount=0; },1000);
+  if(tapCount>=4){
+    tapCount=0;
+    openAdminSignin();
+  }
+}
+
+/* ── BUILD APP HTML ── */
 function buildApp(){
   document.getElementById("app").innerHTML=`
+  <!-- TOP NAV -->
   <div class="fixed top-0 left-0 right-0 z-[100] bg-[#050505]/95 backdrop-blur-md border-b border-white/5" style="padding-top:var(--safe-top)">
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex items-center gap-3">
@@ -339,6 +354,7 @@ function buildApp(){
     </div>
   </div>
 
+  <!-- MAIN VIEW -->
   <div id="main-view" style="padding-top:calc(64px + var(--safe-top));padding-bottom:calc(72px + var(--safe-bottom))">
     <div class="px-4 pt-6 pb-4">
       <p class="text-[10px] tracking-[0.5em] text-purple-400/70 uppercase mb-1">Welcome to</p>
@@ -429,7 +445,7 @@ function buildApp(){
     <i class="fab fa-whatsapp text-white text-xl"></i>
   </a>
 
-  <!-- MODALS -->
+  <!-- ORDER LOOKUP MODAL -->
   <div id="lookup-modal" class="hidden fixed inset-0 z-[600] flex items-end bg-black/80 backdrop-blur-sm">
     <div class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
       <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
@@ -444,6 +460,7 @@ function buildApp(){
     </div>
   </div>
 
+  <!-- SHARE MODAL -->
   <div id="share-modal" class="hidden fixed inset-0 z-[700] flex items-end bg-black/85 backdrop-blur-sm">
     <div id="share-sheet" class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6 translate-y-full transition-transform duration-500" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
       <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
@@ -452,148 +469,391 @@ function buildApp(){
         <div><h3 class="font-display text-lg uppercase italic">Send Order</h3><p class="text-white/30 text-xs">Ready to share</p></div>
       </div>
       <div id="share-preview" class="bg-white/[0.025] border border-white/8 rounded-2xl p-4 mb-4 text-xs text-white/50 leading-relaxed font-mono whitespace-pre-wrap max-h-44 overflow-y-auto"></div>
-      <button onclick="sendToWhatsApp()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white flex items-center justify-center gap-2 mb-2" style="background:linear-gradient(135deg,#25D366,#128C7E);"><i class="fab fa-whatsapp text-base"></i> Send to Group</button>
+      <button onclick="sendToWhatsApp()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white flex items-center justify-center gap-2 mb-2" style="background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 8px 24px rgba(37,211,102,.35)"><i class="fab fa-whatsapp text-base"></i> Send to Group</button>
       <button onclick="closeShareModal()" class="w-full py-3 text-white/30 text-xs">Skip for now</button>
     </div>
   </div>
-
-  <!-- ADMIN SIGN IN SCREEN -->
-  <div id="admin-signin" class="hidden fixed inset-0 z-[800] bg-[#050505] flex flex-col items-center justify-center px-8">
-    <div class="w-16 h-16 rounded-2xl bg-purple-900/30 border border-purple-600/30 flex items-center justify-center mb-6"><i class="fas fa-shield-halved text-purple-400 text-2xl"></i></div>
-    <h3 class="font-display text-2xl uppercase italic mb-2">Admin Access</h3>
-    <p class="text-white/30 text-xs text-center mb-8 leading-relaxed">Sign in with your Google account.<br>Only authorised accounts can access admin.</p>
-    <button onclick="doAdminSignIn()" class="google-btn" style="max-width:280px;">
-      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Sign in with Google
-    </button>
-    <p id="signin-err" class="text-red-400 text-xs mt-4 text-center hidden"></p>
-    <button onclick="closeAdminSignin()" class="mt-4 text-white/25 text-xs">Cancel</button>
-  </div>
-
-  <!-- ADMIN PANEL -->
-  <div id="admin-panel" class="hidden fixed inset-0 z-[810] bg-[#050505] flex flex-col" style="padding-top:var(--safe-top)">
-    <div class="flex items-center justify-between p-4 border-b border-white/5 flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <img id="admin-avatar" src="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);display:none;">
-        <div><p class="font-black text-sm">Admin Panel</p><p id="admin-email-label" class="text-[9px] tracking-widest text-purple-400/50 truncate max-w-[180px]">FARES KING</p></div>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="doAdminSignOut()" class="text-white/30 text-xs px-3 py-2 rounded-xl border border-white/8 tap-active">Sign out</button>
-        <button onclick="closeAdmin()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white tap-active"><i class="fas fa-times text-sm"></i></button>
-      </div>
-    </div>
-    <div class="flex border-b border-white/5 flex-shrink-0 overflow-x-auto" style="scrollbar-width:none">
-      <button onclick="adminTab('orders')"   id="atab-orders"   class="flex-shrink-0 px-4 py-3 text-xs font-black uppercase tracking-wider text-purple-400 border-b-2 border-purple-500">Orders</button>
-      <button onclick="adminTab('products')" id="atab-products" class="flex-shrink-0 px-4 py-3 text-xs font-black uppercase tracking-wider text-white/30 border-b-2 border-transparent">Products</button>
-      <button onclick="adminTab('themes')"   id="atab-themes"   class="flex-shrink-0 px-4 py-3 text-xs font-black uppercase tracking-wider text-white/30 border-b-2 border-transparent">Themes</button>
-      <button onclick="adminTab('settings')" id="atab-settings" class="flex-shrink-0 px-4 py-3 text-xs font-black uppercase tracking-wider text-white/30 border-b-2 border-transparent">Settings</button>
-    </div>
-    <div class="flex-1 overflow-y-auto">
-
-      <!-- ORDERS -->
-      <div id="atab-orders-content" class="p-4">
-        <div class="grid grid-cols-3 gap-2.5 mb-4">
-          <div class="bg-purple-900/15 border border-purple-600/15 rounded-2xl p-3 text-center"><p id="adm-total" class="font-display text-2xl">—</p><p class="text-[9px] text-white/30 mt-1 tracking-widest">TOTAL</p></div>
-          <div class="bg-amber-400/5 border border-amber-400/15 rounded-2xl p-3 text-center"><p id="adm-pend" class="font-display text-2xl text-amber-400">—</p><p class="text-[9px] text-white/30 mt-1 tracking-widest">PENDING</p></div>
-          <div class="bg-green-500/5 border border-green-500/15 rounded-2xl p-3 text-center"><p id="adm-rev" class="font-display text-lg text-green-400">—</p><p class="text-[9px] text-white/30 mt-1 tracking-widest">REVENUE</p></div>
-        </div>
-        <div class="flex gap-2 mb-3">
-          <input id="adm-search" oninput="renderAdminList()" type="text" placeholder="Search orders..." class="flex-1 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-purple-500 transition-all placeholder-white/20">
-          <select id="adm-filter" onchange="renderAdminList()" class="bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none"><option value="all">All</option><option value="pending">Pending</option><option value="complete">Complete</option></select>
-          <button onclick="loadAdminOrders()" class="bg-purple-600/20 border border-purple-600/30 rounded-xl px-3 py-2.5 text-purple-400 text-xs tap-active"><i class="fas fa-rotate-right"></i></button>
-        </div>
-        <div id="adm-list"></div>
-      </div>
-
-      <!-- PRODUCTS -->
-      <div id="atab-products-content" class="p-4 hidden">
-        <div class="flex justify-between items-center mb-4">
-          <p class="text-xs text-white/40 uppercase tracking-widest font-black">Products</p>
-          <button onclick="openProductModal(null)" class="bg-purple-600/20 border border-purple-600/30 rounded-xl px-3 py-2 text-purple-400 text-xs font-black tap-active"><i class="fas fa-plus mr-1"></i>Add</button>
-        </div>
-        <div id="adm-products-list"></div>
-      </div>
-
-      <!-- THEMES -->
-      <div id="atab-themes-content" class="p-4 hidden">
-        <p class="text-xs text-white/40 uppercase tracking-widest font-black mb-4">App Theme</p>
-        <div class="flex flex-col gap-3" id="theme-list">
-          ${Object.entries(THEMES).map(([k,t])=>`
-          <button onclick="applyTheme('${k}');renderThemeList()" class="flex items-center justify-between px-4 py-3 rounded-2xl border transition-all tap-active theme-option" data-key="${k}" style="border-color:${t.accent}22;background:${t.accent}0a">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full" style="background:linear-gradient(135deg,${t.accent},${t.accentDark})"></div>
-              <span class="text-sm font-black">${t.label}</span>
-            </div>
-            <i class="fas fa-check text-sm theme-check-${k}" style="color:${t.accent};display:${k===currentTheme?'block':'none'}"></i>
-          </button>`).join('')}
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div id="atab-settings-content" class="p-4 hidden">
-        <p class="text-xs text-white/40 uppercase tracking-widest font-black mb-4">Site Settings</p>
-
-        <!-- Site Down Toggle -->
-        <div class="bg-white/[0.03] border border-white/8 rounded-2xl p-4 mb-3">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <p class="font-black text-sm">Close Shop</p>
-              <p class="text-white/35 text-xs mt-0.5">Show "We'll be back" page to everyone</p>
-            </div>
-            <button onclick="toggleSiteDown()" id="site-down-toggle" class="w-12 h-6 rounded-full relative transition-all bg-white/10 border border-white/10">
-              <div id="site-down-knob" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white/40 transition-all"></div>
-            </button>
-          </div>
-          <label class="text-[10px] tracking-widest text-white/30 uppercase font-black block mb-1.5">Custom Closed Message</label>
-          <input id="site-down-msg-inp" type="text" placeholder="The shop is temporarily closed..." class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        </div>
-
-        <!-- WA Group Link -->
-        <div class="bg-white/[0.03] border border-white/8 rounded-2xl p-4 mb-3">
-          <p class="font-black text-sm mb-1">WhatsApp Group Link</p>
-          <p class="text-white/35 text-xs mb-3">Updates the group button and order sharing</p>
-          <input id="wa-link-inp" type="url" placeholder="https://chat.whatsapp.com/..." value="${GROUP_LINK}" class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-purple-500 transition-all placeholder-white/20 mb-2">
-        </div>
-
-        <!-- YT Link -->
-        <div class="bg-white/[0.03] border border-white/8 rounded-2xl p-4 mb-4">
-          <p class="font-black text-sm mb-1">YouTube Link</p>
-          <input id="yt-link-inp" type="url" placeholder="https://youtube.com/..." value="${YT}" class="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2.5 text-white text-xs outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        </div>
-
-        <button onclick="saveSettings()" class="w-full py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,#a855f7,#6b21a8);box-shadow:0 6px 20px rgba(168,85,247,.35)">Save Settings</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PRODUCT MODAL -->
-  <div id="product-modal" class="hidden fixed inset-0 z-[820] flex items-end bg-black/85 backdrop-blur-sm">
-    <div id="product-sheet" class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6 translate-y-full transition-transform duration-400" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
-      <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
-      <h3 id="product-modal-title" class="font-display text-xl uppercase italic mb-4">Add Product</h3>
-      <div class="flex flex-col gap-3">
-        <input id="pm-name"  type="text"   placeholder="Product name"     class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        <input id="pm-price" type="number" placeholder="Price (AED)"      class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        <input id="pm-desc"  type="text"   placeholder="Short description" class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        <input id="pm-img"   type="text"   placeholder="Google Drive thumbnail URL" class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder-white/20">
-        <select id="pm-cat" class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-white text-sm outline-none"><option value="boba">🧋 Drinks / Boba</option><option value="snacks">🍟 Snacks</option></select>
-      </div>
-      <button onclick="saveProductModal()" class="w-full mt-4 py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,#a855f7,#6b21a8);box-shadow:0 8px 30px rgba(168,85,247,.4)">Save Product</button>
-      <button onclick="closeProductModal()" class="w-full mt-2 py-3 text-white/30 text-xs">Cancel</button>
-    </div>
-  </div>
-
-  <div id="tap-zone" class="fixed bottom-0 left-0 right-0 h-5 z-50"></div>
   `;
 
   renderProducts("all");
   updateCartUI();
-  document.getElementById("tap-zone").addEventListener("click",()=>{
-    tapCount++;clearTimeout(tapTimer);
-    tapTimer=setTimeout(()=>tapCount=0,800);
-    if(tapCount>=4){tapCount=0;openAdminSignin();}
+}
+
+/* ── ADMIN SIGN-IN SCREEN (rendered outside #app so always accessible) ── */
+function openAdminSignin(){
+  /* If already signed in as admin, go straight to panel */
+  if(_adminUser && window.FK_AUTH && window.FK_AUTH.isAdmin(_adminUser)){
+    openAdmin(); return;
+  }
+  /* Build sign-in screen if not already there */
+  let screen=document.getElementById("admin-signin-screen");
+  if(!screen){
+    screen=document.createElement("div");
+    screen.id="admin-signin-screen";
+    screen.style.cssText="position:fixed;inset:0;z-index:9990;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;";
+    screen.innerHTML=`
+      <div style="width:64px;height:64px;border-radius:18px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <i class="fas fa-shield-halved" style="color:#a855f7;font-size:1.4rem;"></i>
+      </div>
+      <h3 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Admin Access</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;margin-bottom:32px;max-width:260px;">Sign in with your Google account to access the admin panel.</p>
+      <button class="google-btn" onclick="doAdminSignIn()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign in with Google
+      </button>
+      <p id="admin-signin-err" style="color:#f87171;font-size:12px;margin-top:14px;text-align:center;display:none;max-width:260px;"></p>
+      <button onclick="closeAdminSignin()" style="margin-top:16px;background:none;border:none;color:rgba(255,255,255,.25);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
+    `;
+    document.body.appendChild(screen);
+  }
+  screen.style.display="flex";
+}
+function closeAdminSignin(){
+  const s=document.getElementById("admin-signin-screen");
+  if(s) s.style.display="none";
+}
+async function doAdminSignIn(){
+  const err=document.getElementById("admin-signin-err");
+  err.style.display="none";
+  try{
+    const user=await window.FK_AUTH.signInGoogle();
+    if(!window.FK_AUTH.isAdmin(user)){
+      await window.FK_AUTH.signOut();
+      err.textContent="Access denied — this account is not authorised.";
+      err.style.display="block";
+      return;
+    }
+    _adminUser=user;
+    closeAdminSignin();
+    openAdmin();
+  }catch(e){
+    err.textContent="Sign in failed. Make sure popups are allowed and try again.";
+    err.style.display="block";
+  }
+}
+async function doAdminSignOut(){
+  await window.FK_AUTH.signOut();
+  _adminUser=null;
+  closeAdmin();
+  showToast("Signed out");
+}
+
+/* ── ADMIN PANEL ── */
+function openAdmin(){
+  let panel=document.getElementById("admin-panel");
+  if(!panel){
+    panel=document.createElement("div");
+    panel.id="admin-panel";
+    panel.style.cssText="position:fixed;inset:0;z-index:9980;background:#050505;display:flex;flex-direction:column;padding-top:var(--safe-top);";
+    document.body.appendChild(panel);
+  }
+  const t=THEMES[currentTheme]||THEMES.purple;
+  panel.innerHTML=`
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        ${_adminUser?.photoURL?`<img src="${_adminUser.photoURL}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);">`:''}
+        <div>
+          <p style="font-weight:800;font-size:14px;">Admin Panel</p>
+          <p style="font-size:10px;color:rgba(168,85,247,.6);letter-spacing:.1em;margin-top:1px;">${_adminUser?.email||''}</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button onclick="doAdminSignOut()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;color:rgba(255,255,255,.4);font-size:11px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Sign out</button>
+        <button onclick="closeAdmin()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;">✕</button>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;overflow-x:auto;" id="adm-tabs">
+      <button onclick="admTab('orders')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:${t.accent};border-bottom:2px solid ${t.accent};cursor:pointer;font-family:Inter,sans-serif;" id="atb-orders">Orders</button>
+      <button onclick="admTab('products')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button>
+      <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
+      <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
+    </div>
+    <!-- Content -->
+    <div style="flex:1;overflow-y:auto;" id="adm-content"></div>
+  `;
+  panel.style.display="flex";
+  admTab("orders");
+  loadAdminOrders();
+}
+function closeAdmin(){
+  const p=document.getElementById("admin-panel");
+  if(p) p.style.display="none";
+}
+
+function admTab(name){
+  const t=THEMES[currentTheme]||THEMES.purple;
+  ["orders","products","themes","settings"].forEach(n=>{
+    const btn=document.getElementById("atb-"+n);
+    if(!btn)return;
+    const active=n===name;
+    btn.style.color=active?t.accent:"rgba(255,255,255,.3)";
+    btn.style.borderBottom=active?`2px solid ${t.accent}`:"2px solid transparent";
   });
+  const c=document.getElementById("adm-content");
+  if(!c)return;
+  if(name==="orders")   renderAdmOrders(c);
+  if(name==="products") renderAdmProducts(c);
+  if(name==="themes")   renderAdmThemes(c);
+  if(name==="settings") renderAdmSettings(c);
+}
+
+/* ORDERS TAB */
+async function loadAdminOrders(){
+  const c=document.getElementById("adm-content");
+  if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.5rem;"></i></div>`;
+  try{
+    adminOrders=await window.FK_DB.getAllOrders();
+    const curTab=document.querySelector("#adm-tabs button[style*='border-bottom: 2px solid #']")||document.getElementById("atb-orders");
+    if(curTab&&curTab.id==="atb-orders") renderAdmOrders(document.getElementById("adm-content"));
+  }catch(e){ if(c) c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load</p>`; }
+}
+function renderAdmOrders(c){
+  if(!c)return;
+  const pend=adminOrders.filter(o=>o.status!=="complete").length;
+  const rev=adminOrders.filter(o=>o.status==="complete").reduce((s,o)=>s+(o.total||0),0);
+  c.innerHTML=`
+    <div style="padding:14px 16px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;">
+          <p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p>
+          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL</p>
+        </div>
+        <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;">
+          <p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p>
+          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p>
+        </div>
+        <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;">
+          <p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p>
+          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="adm-search" oninput="filterAdmOrders()" type="text" placeholder="Search..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:white;font-size:12px;outline:none;font-family:Inter,sans-serif;">
+        <select id="adm-filter" onchange="filterAdmOrders()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 10px;color:white;font-size:12px;outline:none;">
+          <option value="all">All</option><option value="pending">Pending</option><option value="complete">Complete</option>
+        </select>
+        <button onclick="loadAdminOrders()" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:9px 12px;color:#a855f7;font-size:12px;cursor:pointer;">↻</button>
+      </div>
+      <div id="adm-orders-list"></div>
+    </div>`;
+  filterAdmOrders();
+}
+function filterAdmOrders(){
+  const search=(document.getElementById("adm-search")?.value||"").toLowerCase();
+  const filter=document.getElementById("adm-filter")?.value||"all";
+  let list=adminOrders;
+  if(filter!=="all") list=list.filter(o=>o.status===filter);
+  if(search) list=list.filter(o=>(o.id||"").toLowerCase().includes(search)||(o.customer?.name||"").toLowerCase().includes(search)||(o.customer?.grade||"").toLowerCase().includes(search));
+  const el=document.getElementById("adm-orders-list");
+  if(!el)return;
+  if(!list.length){el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No orders found</p>`;return;}
+  el.innerHTML=list.map(o=>{
+    const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
+    const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+    const its=(o.items||[]).map(i=>`${i.name}×${i.qty}`).join(", ");
+    const done=o.status==="complete";
+    return `<div style="border-radius:14px;border:1px solid ${done?"rgba(34,197,94,.2)":"rgba(255,255,255,.08)"};background:${done?"rgba(34,197,94,.02)":"rgba(255,255,255,.015)"};padding:13px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div>
+          <p style="font-size:11px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p>
+          <p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Unknown"}</p>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:10px;font-weight:900;padding:2px 10px;border-radius:100px;${done?"background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);":"background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);"}">${(o.status||"pending").toUpperCase()}</span>
+          <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
+        </div>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,.35);">${o.customer?.grade||""} · ${o.customer?.date||""}</p>
+      <p style="font-size:11px;color:rgba(255,255,255,.2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${its}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+        <span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
+        <div style="display:flex;gap:7px;">
+          ${!done?`<button onclick="admMarkDone('${o.id}')" style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);border-radius:10px;padding:6px 12px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">✓ Complete</button>`:`<span style="font-size:11px;color:rgba(34,197,94,.5);">✓ Done</span>`}
+          <button onclick="admDeleteOrder('${o.id}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:6px 10px;color:#f87171;font-size:11px;cursor:pointer;">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+async function admMarkDone(id){
+  await window.FK_DB.markComplete(id);
+  const o=adminOrders.find(x=>x.id===id);if(o)o.status="complete";
+  filterAdmOrders();showToast("Marked complete!");
+}
+async function admDeleteOrder(id){
+  if(!confirm("Delete this order permanently?"))return;
+  await window.FK_DB.deleteOrder(id);
+  adminOrders=adminOrders.filter(x=>x.id!==id);
+  filterAdmOrders();showToast("Order deleted");
+}
+
+/* PRODUCTS TAB */
+function renderAdmProducts(c){
+  if(!c)return;
+  c.innerHTML=`<div style="padding:14px 16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;">Products</p>
+      <button onclick="openProductModal(null)" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:7px 14px;color:#a855f7;font-size:11px;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;">+ Add</button>
+    </div>
+    <div id="adm-prod-list">
+      ${SNACKS.map(s=>`<div style="display:flex;align-items:center;gap:12px;padding:11px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015);margin-bottom:8px;">
+        <img src="${s.img}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;background:rgba(168,85,247,.05);flex-shrink:0;" loading="lazy">
+        <div style="flex:1;min-width:0;">
+          <p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</p>
+          <p style="font-size:11px;color:#a855f7;margin-top:2px;">AED ${s.price} · ${s.category}</p>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <button onclick="openProductModal(${s.id})" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a855f7;font-size:12px;">✏️</button>
+          <button onclick="admDeleteProduct(${s.id})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#f87171;font-size:12px;">🗑</button>
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+let _editProdId=null;
+function openProductModal(id){
+  _editProdId=id;
+  let m=document.getElementById("prod-modal");
+  if(!m){m=document.createElement("div");m.id="prod-modal";document.body.appendChild(m);}
+  const s=id?SNACKS.find(x=>x.id===id):null;
+  m.style.cssText="position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);";
+  m.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:24px;padding-bottom:calc(24px + var(--safe-bottom));">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 20px;"></div>
+    <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:16px;">${s?"Edit":"Add"} Product</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input id="pm-name"  type="text"   placeholder="Product name"     value="${s?.name||''}"     style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+      <input id="pm-price" type="number" placeholder="Price (AED)"      value="${s?.price||''}"    style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+      <input id="pm-desc"  type="text"   placeholder="Short description" value="${s?.desc||''}"     style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+      <input id="pm-img"   type="text"   placeholder="Google Drive thumbnail URL" value="${s?.img||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;color:white;font-size:14px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+      <select id="pm-cat" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:13px 16px;color:white;font-size:14px;outline:none;font-family:Inter,sans-serif;">
+        <option value="boba" ${s?.category==="boba"?"selected":""}>🧋 Drinks / Boba</option>
+        <option value="snacks" ${s?.category==="snacks"||!s?"selected":""}>🍟 Snacks</option>
+      </select>
+    </div>
+    <button onclick="saveProductModal()" style="width:100%;margin-top:16px;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;">Save Product</button>
+    <button onclick="document.getElementById('prod-modal').style.display='none'" style="width:100%;margin-top:8px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
+  </div>`;
+}
+async function saveProductModal(){
+  const name=document.getElementById("pm-name").value.trim();
+  const price=parseFloat(document.getElementById("pm-price").value)||0;
+  const desc=document.getElementById("pm-desc").value.trim();
+  const img=document.getElementById("pm-img").value.trim();
+  const cat=document.getElementById("pm-cat").value;
+  if(!name||!price||!img){showToast("Fill in all fields");return;}
+  if(_editProdId){
+    const s=SNACKS.find(x=>x.id===_editProdId);
+    if(s){s.name=name;s.price=price;s.desc=desc;s.img=img;s.category=cat;}
+  } else {
+    SNACKS.push({id:Math.max(0,...SNACKS.map(s=>s.id))+1,name,price,desc,img,category:cat});
+  }
+  try{await window.FK_DB.saveProducts(SNACKS);}catch(e){console.warn(e);}
+  document.getElementById("prod-modal").style.display="none";
+  renderProducts(currentFilter);
+  renderAdmProducts(document.getElementById("adm-content"));
+  showToast(_editProdId?"Product updated!":"Product added!");
+}
+async function admDeleteProduct(id){
+  if(!confirm("Remove this product?"))return;
+  SNACKS=SNACKS.filter(s=>s.id!==id);
+  try{await window.FK_DB.saveProducts(SNACKS);}catch(e){}
+  renderProducts(currentFilter);
+  renderAdmProducts(document.getElementById("adm-content"));
+  showToast("Product removed");
+}
+
+/* THEMES TAB */
+function renderAdmThemes(c){
+  if(!c)return;
+  c.innerHTML=`<div style="padding:14px 16px;">
+    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">App Theme</p>
+    ${Object.entries(THEMES).map(([k,t])=>`
+    <button onclick="applyTheme('${k}');renderAdmThemes(document.getElementById('adm-content'))" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});"></div>
+        <span style="font-weight:800;font-size:14px;color:white;">${t.label}</span>
+      </div>
+      ${k===currentTheme?`<i class="fas fa-check" style="color:${t.accent};"></i>`:""}
+    </button>`).join("")}
+  </div>`;
+}
+
+/* SETTINGS TAB */
+let _siteDown=false;
+function renderAdmSettings(c){
+  if(!c)return;
+  c.innerHTML=`<div style="padding:14px 16px;">
+    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Site Settings</p>
+
+    <!-- Close shop toggle -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <p style="font-weight:800;font-size:14px;">Close Shop</p>
+          <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Show maintenance page to everyone</p>
+        </div>
+        <div id="sd-toggle" onclick="toggleSD()" style="width:48px;height:26px;border-radius:100px;background:${_siteDown?"#ef4444":"rgba(255,255,255,.1)"};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
+          <div style="position:absolute;top:3px;left:${_siteDown?"23px":"3px"};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
+        </div>
+      </div>
+      <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Closed Message</label>
+      <input id="sd-msg" type="text" placeholder="The shop is temporarily closed..." value="${document.getElementById("site-down-msg")?.textContent||""}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+    </div>
+
+    <!-- WA Link -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <p style="font-weight:800;font-size:14px;margin-bottom:4px;">WhatsApp Group Link</p>
+      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;">Updates the group button and order sharing</p>
+      <input id="wa-inp" type="url" value="${GROUP_LINK}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+    </div>
+
+    <!-- YT Link -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:16px;">
+      <p style="font-weight:800;font-size:14px;margin-bottom:10px;">YouTube Link</p>
+      <input id="yt-inp" type="url" value="${YT}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+    </div>
+
+    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(168,85,247,.35);">Save Settings</button>
+  </div>`;
+
+  /* Load current settings */
+  window.FK_DB.getSettings().then(s=>{
+    _siteDown=!!s.siteDown;
+    if(s.siteDownMsg){ const el=document.getElementById("sd-msg"); if(el)el.value=s.siteDownMsg; }
+    if(s.waLink){ const el=document.getElementById("wa-inp"); if(el)el.value=s.waLink; }
+    if(s.ytLink){ const el=document.getElementById("yt-inp"); if(el)el.value=s.ytLink; }
+    updateSDToggle();
+  }).catch(()=>{});
+}
+function toggleSD(){
+  _siteDown=!_siteDown;
+  updateSDToggle();
+}
+function updateSDToggle(){
+  const el=document.getElementById("sd-toggle");
+  if(!el)return;
+  el.style.background=_siteDown?"#ef4444":"rgba(255,255,255,.1)";
+  el.firstElementChild.style.left=_siteDown?"23px":"3px";
+}
+async function saveAdmSettings(){
+  const waLink=(document.getElementById("wa-inp")?.value||"").trim();
+  const ytLink=(document.getElementById("yt-inp")?.value||"").trim();
+  const siteDownMsg=(document.getElementById("sd-msg")?.value||"").trim();
+  try{
+    await window.FK_DB.saveSettings({siteDown:_siteDown,siteDownMsg,waLink,ytLink});
+    if(waLink){
+      GROUP_LINK=waLink;
+      const wf=document.getElementById("wa-float"); if(wf)wf.href=waLink;
+      const wc=document.getElementById("wa-connect-btn"); if(wc)wc.href=waLink;
+    }
+    if(ytLink){
+      YT=ytLink;
+      const yc=document.getElementById("yt-connect-btn"); if(yc)yc.href=ytLink;
+    }
+    showToast("Settings saved!");
+  }catch(e){showToast("Save failed — check connection");}
 }
 
 /* ── PRODUCTS ── */
@@ -692,7 +952,7 @@ function goCheckout(){
   document.getElementById("co-total").textContent="AED "+cartTotal();
   document.getElementById("f-date").value=new Date().toISOString().split("T")[0];
   const saved=localStorage.getItem("fk_last_info");
-  if(saved)document.getElementById("prefill-banner").classList.remove("hidden");
+  if(saved) document.getElementById("prefill-banner").classList.remove("hidden");
   document.getElementById("main-view").style.display="none";
   document.getElementById("checkout-view").style.display="block";
   window.scrollTo(0,0);
@@ -766,213 +1026,11 @@ function doLookup(){
   err.classList.add("hidden");closeLookup();location.href="receipt.html?orderId="+id;
 }
 
-/* ── ADMIN AUTH ── */
-function openAdminSignin(){
-  if(_adminUser&&window.FK_AUTH.isAdmin(_adminUser)){openAdmin();return;}
-  document.getElementById("admin-signin").classList.remove("hidden");
-  document.getElementById("signin-err").classList.add("hidden");
-}
-function closeAdminSignin(){document.getElementById("admin-signin").classList.add("hidden");}
-
-async function doAdminSignIn(){
-  const err=document.getElementById("signin-err");
-  try{
-    const user=await window.FK_AUTH.signInGoogle();
-    if(!window.FK_AUTH.isAdmin(user)){
-      await window.FK_AUTH.signOut();
-      err.textContent="Access denied. This account is not authorised.";
-      err.classList.remove("hidden");
-      return;
-    }
-    _adminUser=user;
-    closeAdminSignin();
-    openAdmin();
-  }catch(e){
-    err.textContent="Sign in failed. Try again.";
-    err.classList.remove("hidden");
-  }
-}
-
-async function doAdminSignOut(){
-  await window.FK_AUTH.signOut();
-  _adminUser=null;
-  closeAdmin();
-  showToast("Signed out");
-}
-
-/* ── ADMIN PANEL ── */
-function openAdmin(){
-  const panel=document.getElementById("admin-panel");
-  panel.classList.remove("hidden");
-  /* Show user info */
-  if(_adminUser){
-    const av=document.getElementById("admin-avatar");
-    if(av&&_adminUser.photoURL){av.src=_adminUser.photoURL;av.style.display="block";}
-    const el=document.getElementById("admin-email-label");
-    if(el)el.textContent=_adminUser.email;
-  }
-  adminTab("orders");
-  loadAdminOrders();
-  loadSettingsIntoUI();
-}
-function closeAdmin(){document.getElementById("admin-panel").classList.add("hidden");}
-
-function adminTab(name){
-  ["orders","products","themes","settings"].forEach(t=>{
-    document.getElementById("atab-"+t+"-content").classList.toggle("hidden",t!==name);
-    const btn=document.getElementById("atab-"+t);
-    if(btn){btn.classList.toggle("text-purple-400",t===name);btn.classList.toggle("border-purple-500",t===name);btn.classList.toggle("text-white/30",t!==name);btn.classList.toggle("border-transparent",t!==name);}
-  });
-  if(name==="products")renderAdminProducts();
-  if(name==="themes")renderThemeList();
-}
-
-async function loadAdminOrders(){
-  document.getElementById("adm-list").innerHTML=`<div class="text-center py-10"><i class="fas fa-spinner fa-spin text-purple-500 text-xl"></i></div>`;
-  try{
-    adminOrders=await window.FK_DB.getAllOrders();
-    const pend=adminOrders.filter(o=>o.status!=="complete").length;
-    const rev=adminOrders.filter(o=>o.status==="complete").reduce((s,o)=>s+(o.total||0),0);
-    document.getElementById("adm-total").textContent=adminOrders.length;
-    document.getElementById("adm-pend").textContent=pend;
-    document.getElementById("adm-rev").textContent="AED "+rev;
-    renderAdminList();
-  }catch(e){document.getElementById("adm-list").innerHTML=`<p class="text-center text-white/25 text-sm py-8">Failed to load</p>`;}
-}
-function renderAdminList(){
-  const search=(document.getElementById("adm-search").value||"").toLowerCase();
-  const filter=document.getElementById("adm-filter").value;
-  let list=adminOrders;
-  if(filter!=="all")list=list.filter(o=>o.status===filter);
-  if(search)list=list.filter(o=>(o.id||"").toLowerCase().includes(search)||(o.customer?.name||"").toLowerCase().includes(search));
-  if(!list.length){document.getElementById("adm-list").innerHTML=`<p class="text-center text-white/20 text-sm py-8">No orders found</p>`;return;}
-  document.getElementById("adm-list").innerHTML=list.map(o=>{
-    const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
-    const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
-    const its=(o.items||[]).map(i=>`${i.name}×${i.qty}`).join(", ");
-    return `<div class="rounded-2xl border p-3.5 mb-2.5 ${o.status==="complete"?"border-green-500/20 bg-green-500/[0.02]":"border-white/8 bg-white/[0.015]"}">
-      <div class="flex justify-between items-start mb-2">
-        <div><p class="text-purple-400 text-[11px] font-black">#${(o.id||"").substring(0,12)}</p><p class="font-black text-sm mt-0.5">${o.customer?.name||"Unknown"}</p></div>
-        <div class="text-right"><span class="text-[10px] font-black px-2.5 py-0.5 rounded-full ${o.status==="complete"?"bg-green-500/15 text-green-400 border border-green-500/25":"bg-amber-400/12 text-amber-400 border border-amber-400/25"}">${(o.status||"pending").toUpperCase()}</span><p class="text-white/25 text-[10px] mt-1">${ds}</p></div>
-      </div>
-      <p class="text-white/35 text-xs">${o.customer?.grade||""} · ${o.customer?.date||""}</p>
-      <p class="text-white/20 text-xs mt-0.5 truncate">${its}</p>
-      <div class="flex justify-between items-center mt-2.5">
-        <span class="text-purple-400 font-black">AED ${o.total||0}</span>
-        <div class="flex gap-2">
-          ${o.status!=="complete"?`<button onclick="adminDone('${o.id}')" class="bg-green-500/15 border border-green-500/25 rounded-xl px-3 py-1.5 text-green-400 text-xs font-black tap-active">✓ Complete</button>`:`<span class="text-green-400/50 text-xs">✓ Done</span>`}
-          <button onclick="adminDeleteOrder('${o.id}')" class="bg-red-500/10 border border-red-500/20 rounded-xl px-2 py-1.5 text-red-400 text-xs tap-active"><i class="fas fa-trash"></i></button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-}
-async function adminDone(id){
-  await window.FK_DB.markComplete(id);
-  const o=adminOrders.find(x=>x.id===id);if(o)o.status="complete";
-  document.getElementById("adm-pend").textContent=adminOrders.filter(o=>o.status!=="complete").length;
-  renderAdminList();showToast("Marked complete!");
-}
-async function adminDeleteOrder(id){
-  if(!confirm("Delete this order permanently?"))return;
-  await window.FK_DB.deleteOrder(id);
-  adminOrders=adminOrders.filter(x=>x.id!==id);
-  document.getElementById("adm-total").textContent=adminOrders.length;
-  document.getElementById("adm-pend").textContent=adminOrders.filter(o=>o.status!=="complete").length;
-  renderAdminList();showToast("Order deleted");
-}
-
-/* ── ADMIN PRODUCTS ── */
-function renderAdminProducts(){
-  const el=document.getElementById("adm-products-list");if(!el)return;
-  el.innerHTML=SNACKS.map(s=>`<div class="flex items-center gap-3 p-3 rounded-2xl border border-white/8 bg-white/[0.015] mb-2">
-    <img src="${s.img}" class="w-12 h-12 rounded-xl object-contain bg-purple-900/10 flex-shrink-0" loading="lazy">
-    <div class="flex-1 min-w-0"><p class="font-black text-sm truncate">${s.name}</p><p class="text-purple-400 text-xs">AED ${s.price} · ${s.category}</p></div>
-    <div class="flex gap-2">
-      <button onclick="openProductModal(${s.id})" class="w-8 h-8 rounded-xl bg-purple-600/20 border border-purple-600/30 flex items-center justify-center text-purple-400 tap-active text-xs"><i class="fas fa-pen"></i></button>
-      <button onclick="deleteProduct(${s.id})" class="w-8 h-8 rounded-xl bg-red-500/15 border border-red-500/25 flex items-center justify-center text-red-400 tap-active text-xs"><i class="fas fa-trash"></i></button>
-    </div>
-  </div>`).join("");
-}
-let _editingProductId=null;
-function openProductModal(id){
-  _editingProductId=id;
-  const title=document.getElementById("product-modal-title");
-  if(id){const s=SNACKS.find(x=>x.id===id);if(!s)return;title.textContent="Edit Product";document.getElementById("pm-name").value=s.name;document.getElementById("pm-price").value=s.price;document.getElementById("pm-desc").value=s.desc;document.getElementById("pm-img").value=s.img;document.getElementById("pm-cat").value=s.category;}
-  else{title.textContent="Add Product";["pm-name","pm-price","pm-desc","pm-img"].forEach(i=>document.getElementById(i).value="");document.getElementById("pm-cat").value="snacks";}
-  document.getElementById("product-modal").classList.remove("hidden");
-  setTimeout(()=>document.getElementById("product-sheet").classList.remove("translate-y-full"),10);
-}
-function closeProductModal(){
-  document.getElementById("product-sheet").classList.add("translate-y-full");
-  setTimeout(()=>document.getElementById("product-modal").classList.add("hidden"),400);
-}
-async function saveProductModal(){
-  const name=document.getElementById("pm-name").value.trim();
-  const price=parseFloat(document.getElementById("pm-price").value)||0;
-  const desc=document.getElementById("pm-desc").value.trim();
-  const img=document.getElementById("pm-img").value.trim();
-  const cat=document.getElementById("pm-cat").value;
-  if(!name||!price||!img){showToast("Fill in all fields");return;}
-  if(_editingProductId){const s=SNACKS.find(x=>x.id===_editingProductId);if(s){s.name=name;s.price=price;s.desc=desc;s.img=img;s.category=cat;}}
-  else{const newId=Math.max(0,...SNACKS.map(s=>s.id))+1;SNACKS.push({id:newId,name,price,desc,img,category:cat});}
-  /* Save to Firestore so all users see updated products */
-  try{await window.FK_DB.saveProducts(SNACKS);}catch(e){console.warn("Firestore product save failed",e);}
-  closeProductModal();renderAdminProducts();renderProducts(currentFilter);
-  showToast(_editingProductId?"Product updated!":"Product added!");
-}
-async function deleteProduct(id){
-  if(!confirm("Remove this product?"))return;
-  const idx=SNACKS.findIndex(s=>s.id===id);if(idx>-1)SNACKS.splice(idx,1);
-  try{await window.FK_DB.saveProducts(SNACKS);}catch(e){}
-  renderAdminProducts();renderProducts(currentFilter);showToast("Product removed");
-}
-
-/* ── THEMES ── */
-function renderThemeList(){
-  document.querySelectorAll(".theme-option").forEach(btn=>{
-    const k=btn.dataset.key;
-    const check=btn.querySelector(`.theme-check-${k}`);
-    if(check)check.style.display=k===currentTheme?"block":"none";
-  });
-}
-
-/* ── SETTINGS ── */
-let _siteDownState=false;
-async function loadSettingsIntoUI(){
-  try{
-    const s=await window.FK_DB.getSettings();
-    _siteDownState=!!s.siteDown;
-    updateSiteDownToggleUI();
-    if(s.siteDownMsg)document.getElementById("site-down-msg-inp").value=s.siteDownMsg;
-    if(s.waLink)document.getElementById("wa-link-inp").value=s.waLink;
-    if(s.ytLink)document.getElementById("yt-link-inp").value=s.ytLink;
-  }catch(e){}
-}
-function updateSiteDownToggleUI(){
-  const toggle=document.getElementById("site-down-toggle");
-  const knob=document.getElementById("site-down-knob");
-  if(!toggle||!knob)return;
-  if(_siteDownState){toggle.style.background="#ef4444";toggle.style.borderColor="#ef4444";knob.style.transform="translateX(24px)";knob.style.background="white";}
-  else{toggle.style.background="rgba(255,255,255,.1)";toggle.style.borderColor="rgba(255,255,255,.1)";knob.style.transform="translateX(0)";knob.style.background="rgba(255,255,255,.4)";}
-}
-function toggleSiteDown(){_siteDownState=!_siteDownState;updateSiteDownToggleUI();}
-async function saveSettings(){
-  const waLink=(document.getElementById("wa-link-inp").value||"").trim();
-  const ytLink=(document.getElementById("yt-link-inp").value||"").trim();
-  const siteDownMsg=(document.getElementById("site-down-msg-inp").value||"").trim();
-  try{
-    await window.FK_DB.saveSettings({siteDown:_siteDownState,siteDownMsg,waLink,ytLink});
-    /* Update live links */
-    if(waLink){GROUP_LINK=waLink;const wf=document.getElementById("wa-float");if(wf)wf.href=waLink;const wc=document.getElementById("wa-connect-btn");if(wc)wc.href=waLink;}
-    if(ytLink){YT=ytLink;const yc=document.getElementById("yt-connect-btn");if(yc)yc.href=ytLink;}
-    showToast("Settings saved!");
-  }catch(e){showToast("Save failed — check connection");}
-}
-
 /* ── TOAST ── */
 let _tt;
 function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
 </script>
 </body>
 </html>
+HTMLEOF
+echo "Written: $(wc -l < /mnt/user-data/outputs/index.html) lines"
