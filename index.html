@@ -1,7 +1,7 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -65,7 +65,7 @@
     @keyframes appEnter{from{opacity:0;transform:scale(.97) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
     @keyframes waPulse{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,0)}50%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 13px rgba(37,211,102,0)}}
     /* ADMIN TAP ZONE — large invisible area at bottom */
-    #tap-zone{position:fixed;bottom:0;left:0;right:0;height:60px;z-index:9998;cursor:default;}
+    #tap-zone{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;}
     /* SITE DOWN */
     #site-down-overlay{position:fixed;inset:0;background:#050505;z-index:8888;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
     @keyframes sdPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
@@ -74,14 +74,10 @@
     .google-btn:active{transform:scale(.97);}
   </style>
 </head>
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  }
-</script>
 <body>
 
 <!-- LOADER -->
+
 <div id="loader">
   <div id="logo-spin-wrap">
     <div id="logo-halo"></div>
@@ -99,6 +95,7 @@
 </div>
 
 <!-- SITE DOWN PAGE -->
+
 <div id="site-down-overlay">
   <img src="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500"
     style="width:80px;height:80px;border-radius:20px;object-fit:cover;margin-bottom:20px;border:2px solid rgba(168,85,247,.4);"
@@ -109,13 +106,14 @@
 </div>
 
 <!-- APP -->
+
 <div id="app"></div>
 <div id="toast" class="toast"></div>
 
-<!-- ADMIN TAP ZONE — sits on top of everything, 60px tall, invisible -->
 <div id="tap-zone"></div>
 
 <!-- FIREBASE -->
+
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAnalytics }     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
@@ -157,6 +155,7 @@ window.FK_DB = {
     return snap.docs.map(d=>({id:d.id,...d.data()}));
   },
   async markComplete(id){ await updateDoc(doc(db,"orders",id),{status:"complete"}); },
+  async updateOrderStatus(id, status){ await updateDoc(doc(db,"orders",id),{status}); },
   async deleteOrder(id){ await deleteDoc(doc(db,"orders",id)); },
   async getSettings(){
     try{ const snap=await getDoc(doc(db,"config","settings")); return snap.exists()?snap.data():{}; }
@@ -184,6 +183,7 @@ window.dispatchEvent(new Event("fk-ready"));
 </script>
 
 <!-- MAIN -->
+
 <script>
 const drive = id=>`https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
 const ICON_HOME = "https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500";
@@ -265,84 +265,119 @@ applyTheme(currentTheme);
           <span style="color:#ef4444;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;">Website Detected</span>
         </div>
         <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}@keyframes glow2{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}</style>
-        <div style="position:relative;margin-bottom:20px;">
-          <div style="position:absolute;inset:-16px;border-radius:28px;background:radial-gradient(circle,rgba(168,85,247,.3) 0%,transparent 70%);animation:glow2 2s ease-in-out infinite;"></div>
-          <img src="${ICON_HOME}" style="width:90px;height:90px;border-radius:24px;object-fit:cover;border:2px solid rgba(168,85,247,.5);position:relative;z-index:1;box-shadow:0 8px 32px rgba(168,85,247,.3);" onerror="this.style.display='none'">
-        </div>
-        <h1 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:6px;text-align:center;">Fares King</h1>
-        <p style="font-size:12px;color:rgba(168,85,247,.8);letter-spacing:.3em;text-transform:uppercase;margin-bottom:10px;">SuperMarket</p>
-        <p style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6;margin-bottom:28px;max-width:280px;">This app must be installed to your Home Screen to work properly.</p>
-        <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);border-radius:16px;padding:14px 24px;margin-bottom:32px;box-shadow:0 8px 24px rgba(168,85,247,.4);">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          <span style="color:white;font-weight:900;font-size:13px;letter-spacing:.05em;text-transform:uppercase;">Add to Home Screen</span>
-        </div>
-        <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(168,85,247,.3),transparent);margin-bottom:24px;"></div>
-        <p style="font-size:10px;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;font-weight:900;margin-bottom:18px;align-self:flex-start;">${isAndroid?"Android — Chrome":"iOS — Safari"}</p>
-        <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
-          ${steps.map((s,i)=>`<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
-            <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
-            <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s[0]}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s[1]}</p></div>
-          </div>`).join("")}
-        </div>
-        <div style="margin-top:24px;padding:14px 18px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);border-radius:16px;text-align:center;width:100%;box-sizing:border-box;">
-          <p style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;">Once installed, open from your Home Screen and this screen won't appear again.</p>
-        </div>
-      </div>`;
-  }
 
-  if(isStandalone){ launchApp(); }
-  else{ showInstallGuide(); }
+```
+    <div style="position:relative;margin-bottom:20px;">
+      <div style="position:absolute;inset:-16px;border-radius:28px;background:radial-gradient(circle,rgba(168,85,247,.3) 0%,transparent 70%);animation:glow2 2s ease-in-out infinite;"></div>
+      <img src="${ICON_HOME}" style="width:90px;height:90px;border-radius:24px;object-fit:cover;border:2px solid rgba(168,85,247,.5);position:relative;z-index:1;box-shadow:0 8px 32px rgba(168,85,247,.3);" onerror="this.style.display='none'">
+    </div>
+    <h1 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:6px;text-align:center;">Fares King</h1>
+    <p style="font-size:12px;color:rgba(168,85,247,.8);letter-spacing:.3em;text-transform:uppercase;margin-bottom:10px;">SuperMarket</p>
+    <p style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6;margin-bottom:28px;max-width:280px;">This app must be installed to your Home Screen to work properly.</p>
+    <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);border-radius:16px;padding:14px 24px;margin-bottom:32px;box-shadow:0 8px 24px rgba(168,85,247,.4);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      <span style="color:white;font-weight:900;font-size:13px;letter-spacing:.05em;text-transform:uppercase;">Add to Home Screen</span>
+    </div>
+    <div style="width:100%;height:1px;background:linear-gradient(to right,transparent,rgba(168,85,247,.3),transparent);margin-bottom:24px;"></div>
+    <p style="font-size:10px;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;font-weight:900;margin-bottom:18px;align-self:flex-start;">${isAndroid?"Android — Chrome":"iOS — Safari"}</p>
+    <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
+      ${steps.map((s,i)=>`<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
+        <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
+        <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s[0]}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s[1]}</p></div>
+      </div>`).join("")}
+    </div>
+    <div style="margin-top:24px;padding:14px 18px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);border-radius:16px;text-align:center;width:100%;box-sizing:border-box;">
+      <p style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;">Once installed, open from your Home Screen and this screen won't appear again.</p>
+    </div>
+  </div>`;
+```
+
+}
+
+if(isStandalone){ launchApp(); }
+else{ showInstallGuide(); }
 })();
 
 /* ── BOOT ── */
 async function bootApp(){
-  if(!window.FK_DB) await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
-  try{
-    const settings=await window.FK_DB.getSettings();
-    if(settings.waLink) GROUP_LINK=settings.waLink;
-    if(settings.ytLink) YT=settings.ytLink;
-    if(settings.siteDown){
-      const msg=settings.siteDownMsg||"The shop is temporarily closed. Check back later.";
-      document.getElementById("site-down-msg").textContent=msg;
-      document.getElementById("site-down-overlay").style.display="flex";
-      /* Still set up tap zone for admin access even when site is down */
-      setupTapZone();
-      return;
-    }
-    const remote=await window.FK_DB.getProducts();
-    if(remote&&remote.length>0) SNACKS=remote;
-  }catch(e){ console.warn("Settings load failed",e); }
+if(!window.FK_DB) await new Promise(r=>{window.addEventListener(“fk-ready”,r,{once:true});});
+try{
+const settings=await window.FK_DB.getSettings();
+if(settings.waLink) GROUP_LINK=settings.waLink;
+if(settings.ytLink) YT=settings.ytLink;
+if(settings.siteDown){
+const msg=settings.siteDownMsg||“The shop is temporarily closed. Check back later.”;
+document.getElementById(“site-down-msg”).textContent=msg;
+document.getElementById(“site-down-overlay”).style.display=“flex”;
+/* Still set up tap zone for admin access even when site is down */
+setupTapZone();
+return;
+}
+const remote=await window.FK_DB.getProducts();
+if(remote&&remote.length>0) SNACKS=remote;
+}catch(e){ console.warn(“Settings load failed”,e); }
 
-  const app=document.getElementById("app");
-  app.style.display="block";
-  app.classList.add("entering");
-  buildApp();
-  setupTapZone();
+const app=document.getElementById(“app”);
+app.style.display=“block”;
+app.classList.add(“entering”);
+buildApp();
+setupTapZone();
 
-  window.FK_AUTH.onAuth(user=>{ _adminUser=user; });
+window.FK_AUTH.onAuth(user=>{ _adminUser=user; });
 }
 
 /* ── TAP ZONE — set up once, always works ── */
 function setupTapZone(){
-  const zone=document.getElementById("tap-zone");
-  if(!zone) return;
-  zone.addEventListener("touchend",handleAdminTap,{passive:true});
-  zone.addEventListener("click",handleAdminTap);
-}
-function handleAdminTap(){
+/* Tap the big “FARES KING” h1 title 5x within 2 seconds to open admin.
+5-minute cooldown after each trigger so it never opens by accident. */
+const NEEDED   = 5;
+const WINDOW   = 2000;   // ms — all 5 taps must be within 2s
+const COOLDOWN = 5*60*1000; // 5 min cooldown after trigger
+let lastTrigger = 0;
+
+function attachToTitle(){
+const title = document.querySelector(“h1.font-display”);
+if(!title) return;
+title.style.userSelect = “none”;
+title.style.webkitUserSelect = “none”;
+
+```
+function onTap(e){
+  e.stopPropagation();
+  const now = Date.now();
+  // Check cooldown
+  if(now - lastTrigger < COOLDOWN) return;
+  // Reset if window expired
+  if(tapCount > 0 && now - (window._lastAdminTap||0) > WINDOW){
+    tapCount = 0;
+  }
+  window._lastAdminTap = now;
   tapCount++;
-  clearTimeout(tapTimer);
-  tapTimer=setTimeout(()=>{ tapCount=0; },1000);
-  if(tapCount>=4){
-    tapCount=0;
+  if(tapCount >= NEEDED){
+    tapCount = 0;
+    lastTrigger = now;
     openAdminSignin();
   }
 }
+title.addEventListener("click", onTap);
+title.addEventListener("touchend", onTap, {passive:true});
+```
+
+}
+
+// Try immediately, then retry after render
+attachToTitle();
+setTimeout(attachToTitle, 500);
+setTimeout(attachToTitle, 1500);
+}
+function handleAdminTap(){ /* unused — kept for compat */ }
 
 /* ── BUILD APP HTML ── */
 function buildApp(){
-  document.getElementById("app").innerHTML=`
+document.getElementById(“app”).innerHTML=`
+
   <!-- TOP NAV -->
+
   <div class="fixed top-0 left-0 right-0 z-[100] bg-[#050505]/95 backdrop-blur-md border-b border-white/5" style="padding-top:var(--safe-top)">
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex items-center gap-3">
@@ -360,6 +395,7 @@ function buildApp(){
   </div>
 
   <!-- MAIN VIEW -->
+
   <div id="main-view" style="padding-top:calc(64px + var(--safe-top));padding-bottom:calc(72px + var(--safe-bottom))">
     <div class="px-4 pt-6 pb-4">
       <p class="text-[10px] tracking-[0.5em] text-purple-400/70 uppercase mb-1">Welcome to</p>
@@ -384,6 +420,7 @@ function buildApp(){
   </div>
 
   <!-- CHECKOUT VIEW -->
+
   <div id="checkout-view" style="display:none;padding-top:calc(64px + var(--safe-top));padding-bottom:calc(80px + var(--safe-bottom))">
     <div class="px-4 pt-6">
       <button onclick="showMain()" class="flex items-center gap-2 text-white/40 text-sm mb-5"><i class="fas fa-arrow-left text-xs"></i> Back</button>
@@ -423,13 +460,14 @@ function buildApp(){
   </div>
 
   <!-- CART -->
+
   <div id="cart-overlay" onclick="closeCart()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[400] hidden"></div>
   <div id="cart-panel" class="cart-sidebar fixed top-0 right-0 bottom-0 w-full max-w-sm bg-[#0a0a0a] border-l border-white/5 z-[401] flex flex-col" style="padding-top:var(--safe-top)">
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
       <div><h3 class="font-display text-xl uppercase italic">Your Bag</h3><p id="cart-count-txt" class="text-white/30 text-xs mt-0.5">0 items</p></div>
       <button onclick="closeCart()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white tap-active"><i class="fas fa-times text-sm"></i></button>
     </div>
-    <div id="cart-items" class="flex-1 overflow-y-auto px-5 py-3"></div>
+    <div id="cart-items" style="max-height:55vh;overflow-y:auto;padding:12px 20px;"></div>
     <div class="px-5 py-4 border-t border-white/5" style="padding-bottom:calc(1rem + var(--safe-bottom))">
       <div class="flex justify-between mb-3"><span class="text-white/40 text-sm">Total</span><span id="cart-total-txt" class="font-display text-xl">AED 0</span></div>
       <button onclick="goCheckout()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,#a855f7,#6b21a8);box-shadow:0 8px 30px rgba(168,85,247,.35)">Checkout <i class="fas fa-arrow-right ml-2"></i></button>
@@ -437,6 +475,7 @@ function buildApp(){
   </div>
 
   <!-- BOTTOM NAV -->
+
   <div class="fixed bottom-0 left-0 right-0 z-[100] bg-[#050505]/97 border-t border-white/5" style="padding-bottom:var(--safe-bottom)">
     <div class="flex justify-around py-2">
       <button onclick="showMain()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-store text-purple-500 text-lg"></i><span class="text-purple-500 text-[9px] font-black tracking-widest uppercase">Shop</span></button>
@@ -446,11 +485,13 @@ function buildApp(){
   </div>
 
   <!-- WA FLOAT -->
+
   <a id="wa-float" href="${GROUP_LINK}" target="_blank" class="fixed z-[300] flex items-center justify-center rounded-full" style="bottom:calc(72px + var(--safe-bottom) + 14px);right:16px;width:52px;height:52px;background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 4px 20px rgba(37,211,102,.4);animation:waPulse 2.2s ease-in-out infinite">
     <i class="fab fa-whatsapp text-white text-xl"></i>
   </a>
 
   <!-- ORDER LOOKUP MODAL -->
+
   <div id="lookup-modal" class="hidden fixed inset-0 z-[600] flex items-end bg-black/80 backdrop-blur-sm">
     <div class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
       <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
@@ -466,6 +507,7 @@ function buildApp(){
   </div>
 
   <!-- SHARE MODAL -->
+
   <div id="share-modal" class="hidden fixed inset-0 z-[700] flex items-end bg-black/85 backdrop-blur-sm">
     <div id="share-sheet" class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6 translate-y-full transition-transform duration-500" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
       <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
@@ -480,212 +522,182 @@ function buildApp(){
   </div>
   `;
 
-  renderProducts("all");
-  updateCartUI();
+renderProducts(“all”);
+updateCartUI();
 }
 
 /* ── ADMIN SIGN-IN SCREEN (rendered outside #app so always accessible) ── */
 function openAdminSignin(){
-  /* If already signed in as admin, go straight to panel */
-  if(_adminUser && window.FK_AUTH && window.FK_AUTH.isAdmin(_adminUser)){
-    openAdmin(); return;
-  }
-  /* Build sign-in screen if not already there */
-  let screen=document.getElementById("admin-signin-screen");
-  if(!screen){
-    screen=document.createElement("div");
-    screen.id="admin-signin-screen";
-    screen.style.cssText="position:fixed;inset:0;z-index:9990;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;";
-    screen.innerHTML=`
-      <div style="width:64px;height:64px;border-radius:18px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <i class="fas fa-shield-halved" style="color:#a855f7;font-size:1.4rem;"></i>
-      </div>
-      <h3 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Admin Access</h3>
-      <p style="font-size:13px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;margin-bottom:32px;max-width:260px;">Sign in with your Google account to access the admin panel.</p>
-      <button class="google-btn" onclick="doAdminSignIn()">
-        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Sign in with Google
-      </button>
-      <p id="admin-signin-err" style="color:#f87171;font-size:12px;margin-top:14px;text-align:center;display:none;max-width:260px;"></p>
-      <button onclick="closeAdminSignin()" style="margin-top:16px;background:none;border:none;color:rgba(255,255,255,.25);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
-    `;
-    document.body.appendChild(screen);
-  }
-  screen.style.display="flex";
+/* If already signed in as admin, go straight to panel */
+if(_adminUser && window.FK_AUTH && window.FK_AUTH.isAdmin(_adminUser)){
+openAdmin(); return;
+}
+/* Build sign-in screen if not already there */
+let screen=document.getElementById(“admin-signin-screen”);
+if(!screen){
+screen=document.createElement(“div”);
+screen.id=“admin-signin-screen”;
+screen.style.cssText=“position:fixed;inset:0;z-index:9990;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;”;
+screen.innerHTML=`<div style="width:64px;height:64px;border-radius:18px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"> <i class="fas fa-shield-halved" style="color:#a855f7;font-size:1.4rem;"></i> </div> <h3 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Admin Access</h3> <p style="font-size:13px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;margin-bottom:32px;max-width:260px;">Sign in with your Google account to access the admin panel.</p> <button class="google-btn" onclick="doAdminSignIn()"> <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google </button> <p id="admin-signin-err" style="color:#f87171;font-size:12px;margin-top:14px;text-align:center;display:none;max-width:260px;"></p> <button onclick="closeAdminSignin()" style="margin-top:16px;background:none;border:none;color:rgba(255,255,255,.25);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>`;
+document.body.appendChild(screen);
+}
+screen.style.display=“flex”;
 }
 function closeAdminSignin(){
-  const s=document.getElementById("admin-signin-screen");
-  if(s) s.style.display="none";
+const s=document.getElementById(“admin-signin-screen”);
+if(s) s.style.display=“none”;
 }
 async function doAdminSignIn(){
-  const err=document.getElementById("admin-signin-err");
-  err.style.display="none";
-  try{
-    const user=await window.FK_AUTH.signInGoogle();
-    if(!window.FK_AUTH.isAdmin(user)){
-      await window.FK_AUTH.signOut();
-      err.textContent="Access denied — this account is not authorised.";
-      err.style.display="block";
-      return;
-    }
-    _adminUser=user;
-    closeAdminSignin();
-    openAdmin();
-  }catch(e){
-    err.textContent="Sign in failed. Make sure popups are allowed and try again.";
-    err.style.display="block";
-  }
+const err=document.getElementById(“admin-signin-err”);
+err.style.display=“none”;
+try{
+const user=await window.FK_AUTH.signInGoogle();
+if(!window.FK_AUTH.isAdmin(user)){
+await window.FK_AUTH.signOut();
+err.textContent=“Access denied — this account is not authorised.”;
+err.style.display=“block”;
+return;
+}
+_adminUser=user;
+closeAdminSignin();
+openAdmin();
+}catch(e){
+err.textContent=“Sign in failed. Make sure popups are allowed and try again.”;
+err.style.display=“block”;
+}
 }
 async function doAdminSignOut(){
-  await window.FK_AUTH.signOut();
-  _adminUser=null;
-  closeAdmin();
-  showToast("Signed out");
+await window.FK_AUTH.signOut();
+_adminUser=null;
+closeAdmin();
+showToast(“Signed out”);
 }
 
 /* ── ADMIN PANEL ── */
 function openAdmin(){
-  let panel=document.getElementById("admin-panel");
-  if(!panel){
-    panel=document.createElement("div");
-    panel.id="admin-panel";
-    panel.style.cssText="position:fixed;inset:0;z-index:9980;background:#050505;display:flex;flex-direction:column;padding-top:var(--safe-top);";
-    document.body.appendChild(panel);
-  }
-  const t=THEMES[currentTheme]||THEMES.purple;
-  panel.innerHTML=`
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        ${_adminUser?.photoURL?`<img src="${_adminUser.photoURL}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);">`:''}
-        <div>
-          <p style="font-weight:800;font-size:14px;">Admin Panel</p>
-          <p style="font-size:10px;color:rgba(168,85,247,.6);letter-spacing:.1em;margin-top:1px;">${_adminUser?.email||''}</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button onclick="doAdminSignOut()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;color:rgba(255,255,255,.4);font-size:11px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Sign out</button>
-        <button onclick="closeAdmin()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;">✕</button>
-      </div>
-    </div>
-    <!-- Tabs -->
-    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;overflow-x:auto;" id="adm-tabs">
-      <button onclick="admTab('orders')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:${t.accent};border-bottom:2px solid ${t.accent};cursor:pointer;font-family:Inter,sans-serif;" id="atb-orders">Orders</button>
-      <button onclick="admTab('products')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button>
-      <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
-      <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
-    </div>
-    <!-- Content -->
-    <div style="flex:1;overflow-y:auto;" id="adm-content"></div>
-  `;
-  panel.style.display="flex";
-  admTab("orders");
-  loadAdminOrders();
+let panel=document.getElementById(“admin-panel”);
+if(!panel){
+panel=document.createElement(“div”);
+panel.id=“admin-panel”;
+panel.style.cssText=“position:fixed;inset:0;z-index:9980;background:#050505;display:flex;flex-direction:column;padding-top:var(–safe-top);”;
+document.body.appendChild(panel);
+}
+const t=THEMES[currentTheme]||THEMES.purple;
+panel.innerHTML=` <!-- Header --> <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;"> <div style="display:flex;align-items:center;gap:10px;"> ${_adminUser?.photoURL?`<img src="${_adminUser.photoURL}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);">`:''} <div> <p style="font-weight:800;font-size:14px;">Admin Panel</p> <p style="font-size:10px;color:rgba(168,85,247,.6);letter-spacing:.1em;margin-top:1px;">${_adminUser?.email||''}</p> </div> </div> <div style="display:flex;gap:8px;align-items:center;"> <button onclick="doAdminSignOut()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;color:rgba(255,255,255,.4);font-size:11px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Sign out</button> <button onclick="closeAdmin()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:14px;">✕</button> </div> </div> <!-- Tabs --> <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;overflow-x:auto;" id="adm-tabs"> <button onclick="admTab('orders')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:${t.accent};border-bottom:2px solid ${t.accent};cursor:pointer;font-family:Inter,sans-serif;" id="atb-orders">Orders</button> <button onclick="admTab('products')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button> <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button> <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button> </div> <!-- Content --> <div style="flex:1;overflow-y:auto;" id="adm-content"></div> `;
+panel.style.display=“flex”;
+admTab(“orders”);
+loadAdminOrders();
 }
 function closeAdmin(){
-  const p=document.getElementById("admin-panel");
-  if(p) p.style.display="none";
+const p=document.getElementById(“admin-panel”);
+if(p) p.style.display=“none”;
 }
 
 function admTab(name){
-  const t=THEMES[currentTheme]||THEMES.purple;
-  ["orders","products","themes","settings"].forEach(n=>{
-    const btn=document.getElementById("atb-"+n);
-    if(!btn)return;
-    const active=n===name;
-    btn.style.color=active?t.accent:"rgba(255,255,255,.3)";
-    btn.style.borderBottom=active?`2px solid ${t.accent}`:"2px solid transparent";
-  });
-  const c=document.getElementById("adm-content");
-  if(!c)return;
-  if(name==="orders")   renderAdmOrders(c);
-  if(name==="products") renderAdmProducts(c);
-  if(name==="themes")   renderAdmThemes(c);
-  if(name==="settings") renderAdmSettings(c);
+const t=THEMES[currentTheme]||THEMES.purple;
+[“orders”,“products”,“themes”,“settings”].forEach(n=>{
+const btn=document.getElementById(“atb-”+n);
+if(!btn)return;
+const active=n===name;
+btn.style.color=active?t.accent:“rgba(255,255,255,.3)”;
+btn.style.borderBottom=active?`2px solid ${t.accent}`:“2px solid transparent”;
+});
+const c=document.getElementById(“adm-content”);
+if(!c)return;
+if(name===“orders”)   renderAdmOrders(c);
+if(name===“products”) renderAdmProducts(c);
+if(name===“themes”)   renderAdmThemes(c);
+if(name===“settings”) renderAdmSettings(c);
 }
 
 /* ORDERS TAB */
 async function loadAdminOrders(){
-  const c=document.getElementById("adm-content");
-  if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.5rem;"></i></div>`;
-  try{
-    adminOrders=await window.FK_DB.getAllOrders();
-    const curTab=document.querySelector("#adm-tabs button[style*='border-bottom: 2px solid #']")||document.getElementById("atb-orders");
-    if(curTab&&curTab.id==="atb-orders") renderAdmOrders(document.getElementById("adm-content"));
-  }catch(e){ if(c) c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load</p>`; }
+const c=document.getElementById(“adm-content”);
+if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.5rem;"></i></div>`;
+try{
+adminOrders=await window.FK_DB.getAllOrders();
+const curTab=document.querySelector(”#adm-tabs button[style*=‘border-bottom: 2px solid #’]”)||document.getElementById(“atb-orders”);
+if(curTab&&curTab.id===“atb-orders”) renderAdmOrders(document.getElementById(“adm-content”));
+}catch(e){ if(c) c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load</p>`; }
 }
 function renderAdmOrders(c){
-  if(!c)return;
-  const pend=adminOrders.filter(o=>o.status!=="complete").length;
-  const rev=adminOrders.filter(o=>o.status==="complete").reduce((s,o)=>s+(o.total||0),0);
-  c.innerHTML=`
-    <div style="padding:14px 16px;">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-        <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;">
-          <p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p>
-          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL</p>
-        </div>
-        <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;">
-          <p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p>
-          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p>
-        </div>
-        <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;">
-          <p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p>
-          <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input id="adm-search" oninput="filterAdmOrders()" type="text" placeholder="Search..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:white;font-size:12px;outline:none;font-family:Inter,sans-serif;">
-        <select id="adm-filter" onchange="filterAdmOrders()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 10px;color:white;font-size:12px;outline:none;">
-          <option value="all">All</option><option value="pending">Pending</option><option value="complete">Complete</option>
-        </select>
-        <button onclick="loadAdminOrders()" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:9px 12px;color:#a855f7;font-size:12px;cursor:pointer;">↻</button>
-      </div>
-      <div id="adm-orders-list"></div>
-    </div>`;
-  filterAdmOrders();
+if(!c)return;
+const pend=adminOrders.filter(o=>o.status!==“complete”).length;
+const rev=adminOrders.filter(o=>o.status===“complete”).reduce((s,o)=>s+(o.total||0),0);
+c.innerHTML=` <div style="padding:14px 16px;"> <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;"> <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;"> <p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p> <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL</p> </div> <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;"> <p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p> <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p> </div> <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;"> <p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p> <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p> </div> </div> <div style="display:flex;gap:8px;margin-bottom:12px;"> <input id="adm-search" oninput="filterAdmOrders()" type="text" placeholder="Search..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:white;font-size:12px;outline:none;font-family:Inter,sans-serif;"> <select id="adm-filter" onchange="filterAdmOrders()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 10px;color:white;font-size:12px;outline:none;"> <option value="all">All</option><option value="pending">Pending</option><option value="complete">Complete</option> </select> <button onclick="loadAdminOrders()" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:9px 12px;color:#a855f7;font-size:12px;cursor:pointer;">↻</button> </div> <div id="adm-orders-list"></div> </div>`;
+filterAdmOrders();
 }
 function filterAdmOrders(){
-  const search=(document.getElementById("adm-search")?.value||"").toLowerCase();
-  const filter=document.getElementById("adm-filter")?.value||"all";
-  let list=adminOrders;
-  if(filter!=="all") list=list.filter(o=>o.status===filter);
-  if(search) list=list.filter(o=>(o.id||"").toLowerCase().includes(search)||(o.customer?.name||"").toLowerCase().includes(search)||(o.customer?.grade||"").toLowerCase().includes(search));
-  const el=document.getElementById("adm-orders-list");
-  if(!el)return;
-  if(!list.length){el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No orders found</p>`;return;}
-  el.innerHTML=list.map(o=>{
-    const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
-    const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
-    const its=(o.items||[]).map(i=>`${i.name}×${i.qty}`).join(", ");
-    const done=o.status==="complete";
-    return `<div style="border-radius:14px;border:1px solid ${done?"rgba(34,197,94,.2)":"rgba(255,255,255,.08)"};background:${done?"rgba(34,197,94,.02)":"rgba(255,255,255,.015)"};padding:13px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <div>
-          <p style="font-size:11px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p>
-          <p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Unknown"}</p>
-        </div>
-        <div style="text-align:right;">
-          <span style="font-size:10px;font-weight:900;padding:2px 10px;border-radius:100px;${done?"background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);":"background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);"}">${(o.status||"pending").toUpperCase()}</span>
-          <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
-        </div>
-      </div>
-      <p style="font-size:12px;color:rgba(255,255,255,.35);">${o.customer?.grade||""} · ${o.customer?.date||""}</p>
-      <p style="font-size:11px;color:rgba(255,255,255,.2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${its}</p>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
-        <div style="display:flex;gap:7px;">
-          ${!done?`<button onclick="admMarkDone('${o.id}')" style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);border-radius:10px;padding:6px 12px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">✓ Complete</button>`:`<span style="font-size:11px;color:rgba(34,197,94,.5);">✓ Done</span>`}
-          <button onclick="admDeleteOrder('${o.id}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:6px 10px;color:#f87171;font-size:11px;cursor:pointer;">🗑</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
+const search=(document.getElementById(“adm-search”)?.value||””).toLowerCase();
+const filter=document.getElementById(“adm-filter”)?.value||“all”;
+let list=adminOrders;
+if(filter!==“all”) list=list.filter(o=>o.status===filter);
+if(search) list=list.filter(o=>(o.id||””).toLowerCase().includes(search)||(o.customer?.name||””).toLowerCase().includes(search)||(o.customer?.grade||””).toLowerCase().includes(search));
+const el=document.getElementById(“adm-orders-list”);
+if(!el)return;
+if(!list.length){el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No orders found</p>`;return;}
+el.innerHTML=list.map(o=>{
+const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
+const ds=new Date(ts).toLocaleDateString(“en-AE”,{day:“2-digit”,month:“short”});
+const tm=new Date(ts).toLocaleTimeString(“en-AE”,{hour:“2-digit”,minute:“2-digit”});
+const its=(o.items||[]).map(i=>`${i.name} ×${i.qty}`).join(”, “);
+const st=getStatusStyle(o.status||“pending”);
+return `<div style="border-radius:16px;border:1px solid ${st.border};background:${st.bg.replace(".1)",".03)")};padding:14px;margin-bottom:12px;"> <!-- Top row: order ID + status badge --> <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"> <div> <p style="font-size:10px;font-weight:900;color:#a855f7;letter-spacing:.05em;">#${(o.id||"").substring(0,14)}</p> <p style="font-weight:800;font-size:15px;margin-top:2px;">${o.customer?.name||"Unknown"}</p> </div> <div style="text-align:right;"> <span style="font-size:10px;font-weight:900;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label.toUpperCase()}</span> <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds} · ${tm}</p> </div> </div> <!-- Customer info --> <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:3px;"> 🎓 ${o.customer?.grade||"—"} &nbsp;·&nbsp; 📅 ${o.customer?.date||"—"} </p> <!-- Items summary --> <p style="font-size:11px;color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px;">${its}</p> <!-- Items detail (collapsed, tap to expand) --> <div id="items-detail-${o.id}" style="display:none;margin-bottom:10px;background:rgba(255,255,255,.03);border-radius:10px;padding:10px;"> ${(o.items||[]).map(i=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:rgba(255,255,255,.6);">${i.name} ×${i.qty}</span><span style="font-weight:700;">AED ${i.price*i.qty}</span></div>`).join("")} <div style="border-top:1px solid rgba(255,255,255,.06);margin-top:6px;padding-top:6px;display:flex;justify-content:space-between;font-size:13px;font-weight:900;"><span style="color:rgba(255,255,255,.4);">Total</span><span style="color:#a855f7;">AED ${o.total||0}</span></div> </div> <!-- Bottom row: total + actions --> <div style="display:flex;justify-content:space-between;align-items:center;"> <div style="display:flex;align-items:center;gap:8px;"> <span style="font-weight:900;color:#a855f7;font-size:15px;">AED ${o.total||0}</span> <button onclick="(function(){var d=document.getElementById('items-detail-${o.id}');d.style.display=d.style.display==='none'?'block':'none';})()" style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:4px 10px;color:rgba(168,85,247,.8);font-size:10px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">ITEMS ▾</button> </div> <div style="display:flex;gap:6px;"> <button onclick="openStatusPicker('${o.id}','${o.status||"pending"}')" style="background:${st.bg};border:1px solid ${st.border};border-radius:10px;padding:7px 12px;color:${st.color};font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">Status ▾</button> <button onclick="admDeleteOrder('${o.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">🗑</button> </div> </div> </div>`;
+}).join(””);
 }
+const ORDER_STATUSES = [
+{ key:“pending”,           label:“Pending”,               color:”#fbbf24”, bg:“rgba(251,191,36,.1)”,  border:“rgba(251,191,36,.25)” },
+{ key:“confirmed”,         label:“Order Confirmed”,        color:”#60a5fa”, bg:“rgba(96,165,250,.1)”,  border:“rgba(96,165,250,.25)” },
+{ key:“getting_product”,   label:“Getting Product”,        color:”#c084fc”, bg:“rgba(192,132,252,.1)”, border:“rgba(192,132,252,.25)” },
+{ key:“waiting_school_day”,label:“Waiting for School Day”, color:”#f97316”, bg:“rgba(249,115,22,.1)”,  border:“rgba(249,115,22,.25)” },
+{ key:“complete”,          label:“Ready for Pickup ✓”,     color:”#22c55e”, bg:“rgba(34,197,94,.12)”,  border:“rgba(34,197,94,.3)” },
+];
+
+function getStatusStyle(key){
+return ORDER_STATUSES.find(s=>s.key===key) || ORDER_STATUSES[0];
+}
+
 async function admMarkDone(id){
-  await window.FK_DB.markComplete(id);
-  const o=adminOrders.find(x=>x.id===id);if(o)o.status="complete";
-  filterAdmOrders();showToast("Marked complete!");
+await window.FK_DB.markComplete(id);
+const o=adminOrders.find(x=>x.id===id);if(o)o.status=“complete”;
+filterAdmOrders();showToast(“Marked complete!”);
+}
+
+async function admSetStatus(id, status){
+await window.FK_DB.updateOrderStatus(id, status);
+const o=adminOrders.find(x=>x.id===id);if(o)o.status=status;
+filterAdmOrders();
+showToast(“Status updated!”);
+// Also close any open status picker
+const picker=document.getElementById(“status-picker-”+id);
+if(picker) picker.remove();
+}
+
+function openStatusPicker(id, currentStatus){
+// Remove any existing picker
+document.querySelectorAll(”.status-picker-overlay”).forEach(x=>x.remove());
+const overlay=document.createElement(“div”);
+overlay.className=“status-picker-overlay”;
+overlay.id=“status-picker-”+id;
+overlay.style.cssText=“position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);”;
+overlay.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:20px;padding-bottom:calc(20px + var(--safe-bottom));"> <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 16px;"></div> <p style="font-family:'Archivo Black',sans-serif;font-size:16px;text-transform:uppercase;letter-spacing:-0.02em;margin-bottom:14px;">Update Status</p> <div style="display:flex;flex-direction:column;gap:8px;"> ${ORDER_STATUSES.map(s=>`
+<button onclick=“admSetStatus(’${id}’,’${s.key}’)” style=”
+display:flex;align-items:center;justify-content:space-between;
+padding:13px 16px;border-radius:14px;
+background:${s.key===currentStatus?s.bg:“rgba(255,255,255,.03)”};
+border:1px solid ${s.key===currentStatus?s.border:“rgba(255,255,255,.07)”};
+cursor:pointer;font-family:Inter,sans-serif;
+transition:all .15s ease;
+“>
+<span style=“font-weight:800;font-size:13px;color:${s.key===currentStatus?s.color:“white”};”>${s.label}</span>
+${s.key===currentStatus?`<span style="font-size:12px;color:${s.color};">✓ Current</span>`:””}
+</button>`).join(””)}
+</div>
+<button onclick="document.getElementById('status-picker-${id}').remove()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
+
+  </div>`;
+  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 async function admDeleteOrder(id){
   if(!confirm("Delete this order permanently?"))return;
@@ -696,25 +708,20 @@ async function admDeleteOrder(id){
 
 /* PRODUCTS TAB */
 function renderAdmProducts(c){
-  if(!c)return;
-  c.innerHTML=`<div style="padding:14px 16px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;">Products</p>
-      <button onclick="openProductModal(null)" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:7px 14px;color:#a855f7;font-size:11px;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;">+ Add</button>
-    </div>
-    <div id="adm-prod-list">
-      ${SNACKS.map(s=>`<div style="display:flex;align-items:center;gap:12px;padding:11px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015);margin-bottom:8px;">
-        <img src="${s.img}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;background:rgba(168,85,247,.05);flex-shrink:0;" loading="lazy">
-        <div style="flex:1;min-width:0;">
-          <p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</p>
-          <p style="font-size:11px;color:#a855f7;margin-top:2px;">AED ${s.price} · ${s.category}</p>
-        </div>
-        <div style="display:flex;gap:7px;">
-          <button onclick="openProductModal(${s.id})" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a855f7;font-size:12px;">✏️</button>
-          <button onclick="admDeleteProduct(${s.id})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#f87171;font-size:12px;">🗑</button>
-        </div>
-      </div>`).join("")}
-    </div>
+if(!c)return;
+c.innerHTML=`<div style="padding:14px 16px;"> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"> <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;">Products</p> <button onclick="openProductModal(null)" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:7px 14px;color:#a855f7;font-size:11px;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;">+ Add</button> </div> <div id="adm-prod-list"> ${SNACKS.map(s=>`<div style="display:flex;align-items:center;gap:12px;padding:11px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015);margin-bottom:8px;">
+<img src="${s.img}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;background:rgba(168,85,247,.05);flex-shrink:0;" loading="lazy">
+<div style="flex:1;min-width:0;">
+<p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</p>
+<p style="font-size:11px;color:#a855f7;margin-top:2px;">AED ${s.price} · ${s.category}</p>
+</div>
+<div style="display:flex;gap:7px;">
+<button onclick="openProductModal(${s.id})" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a855f7;font-size:12px;">✏️</button>
+<button onclick="admDeleteProduct(${s.id})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#f87171;font-size:12px;">🗑</button>
+</div>
+</div>`).join(””)}
+</div>
+
   </div>`;
 }
 let _editProdId=null;
@@ -771,135 +778,124 @@ async function admDeleteProduct(id){
 
 /* THEMES TAB */
 function renderAdmThemes(c){
-  if(!c)return;
-  c.innerHTML=`<div style="padding:14px 16px;">
-    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">App Theme</p>
-    ${Object.entries(THEMES).map(([k,t])=>`
-    <button onclick="applyTheme('${k}');renderAdmThemes(document.getElementById('adm-content'))" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});"></div>
-        <span style="font-weight:800;font-size:14px;color:white;">${t.label}</span>
-      </div>
-      ${k===currentTheme?`<i class="fas fa-check" style="color:${t.accent};"></i>`:""}
-    </button>`).join("")}
+if(!c)return;
+c.innerHTML=`<div style="padding:14px 16px;"> <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">App Theme</p> ${Object.entries(THEMES).map(([k,t])=>`
+<button onclick="applyTheme('${k}');renderAdmThemes(document.getElementById('adm-content'))" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
+<div style="display:flex;align-items:center;gap:12px;">
+<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});"></div>
+<span style="font-weight:800;font-size:14px;color:white;">${t.label}</span>
+</div>
+${k===currentTheme?`<i class="fas fa-check" style="color:${t.accent};"></i>`:””}
+</button>`).join(””)}
+
   </div>`;
 }
 
 /* SETTINGS TAB */
 let _siteDown=false;
 function renderAdmSettings(c){
-  if(!c)return;
-  c.innerHTML=`<div style="padding:14px 16px;">
-    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Site Settings</p>
+if(!c)return;
+c.innerHTML=`<div style="padding:14px 16px;">
+<p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Site Settings</p>
 
-    <!-- Close shop toggle -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div>
-          <p style="font-weight:800;font-size:14px;">Close Shop</p>
-          <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Show maintenance page to everyone</p>
-        </div>
-        <div id="sd-toggle" onclick="toggleSD()" style="width:48px;height:26px;border-radius:100px;background:${_siteDown?"#ef4444":"rgba(255,255,255,.1)"};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
-          <div style="position:absolute;top:3px;left:${_siteDown?"23px":"3px"};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
-        </div>
-      </div>
-      <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Closed Message</label>
-      <input id="sd-msg" type="text" placeholder="The shop is temporarily closed..." value="${document.getElementById("site-down-msg")?.textContent||""}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+```
+<!-- Close shop toggle -->
+<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div>
+      <p style="font-weight:800;font-size:14px;">Close Shop</p>
+      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Show maintenance page to everyone</p>
     </div>
-
-    <!-- WA Link -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
-      <p style="font-weight:800;font-size:14px;margin-bottom:4px;">WhatsApp Group Link</p>
-      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;">Updates the group button and order sharing</p>
-      <input id="wa-inp" type="url" value="${GROUP_LINK}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+    <div id="sd-toggle" onclick="toggleSD()" style="width:48px;height:26px;border-radius:100px;background:${_siteDown?"#ef4444":"rgba(255,255,255,.1)"};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
+      <div style="position:absolute;top:3px;left:${_siteDown?"23px":"3px"};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
     </div>
+  </div>
+  <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Closed Message</label>
+  <input id="sd-msg" type="text" placeholder="The shop is temporarily closed..." value="${document.getElementById("site-down-msg")?.textContent||""}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+</div>
 
-    <!-- YT Link -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:16px;">
-      <p style="font-weight:800;font-size:14px;margin-bottom:10px;">YouTube Link</p>
-      <input id="yt-inp" type="url" value="${YT}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
-    </div>
+<!-- WA Link -->
+<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+  <p style="font-weight:800;font-size:14px;margin-bottom:4px;">WhatsApp Group Link</p>
+  <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;">Updates the group button and order sharing</p>
+  <input id="wa-inp" type="url" value="${GROUP_LINK}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+</div>
 
-    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(168,85,247,.35);">Save Settings</button>
+<!-- YT Link -->
+<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:16px;">
+  <p style="font-weight:800;font-size:14px;margin-bottom:10px;">YouTube Link</p>
+  <input id="yt-inp" type="url" value="${YT}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+</div>
+
+<button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(168,85,247,.35);">Save Settings</button>
+```
+
   </div>`;
 
-  /* Load current settings */
-  window.FK_DB.getSettings().then(s=>{
-    _siteDown=!!s.siteDown;
-    if(s.siteDownMsg){ const el=document.getElementById("sd-msg"); if(el)el.value=s.siteDownMsg; }
-    if(s.waLink){ const el=document.getElementById("wa-inp"); if(el)el.value=s.waLink; }
-    if(s.ytLink){ const el=document.getElementById("yt-inp"); if(el)el.value=s.ytLink; }
-    updateSDToggle();
-  }).catch(()=>{});
+/* Load current settings */
+window.FK_DB.getSettings().then(s=>{
+_siteDown=!!s.siteDown;
+if(s.siteDownMsg){ const el=document.getElementById(“sd-msg”); if(el)el.value=s.siteDownMsg; }
+if(s.waLink){ const el=document.getElementById(“wa-inp”); if(el)el.value=s.waLink; }
+if(s.ytLink){ const el=document.getElementById(“yt-inp”); if(el)el.value=s.ytLink; }
+updateSDToggle();
+}).catch(()=>{});
 }
 function toggleSD(){
-  _siteDown=!_siteDown;
-  updateSDToggle();
+_siteDown=!_siteDown;
+updateSDToggle();
 }
 function updateSDToggle(){
-  const el=document.getElementById("sd-toggle");
-  if(!el)return;
-  el.style.background=_siteDown?"#ef4444":"rgba(255,255,255,.1)";
-  el.firstElementChild.style.left=_siteDown?"23px":"3px";
+const el=document.getElementById(“sd-toggle”);
+if(!el)return;
+el.style.background=_siteDown?”#ef4444”:“rgba(255,255,255,.1)”;
+el.firstElementChild.style.left=_siteDown?“23px”:“3px”;
 }
 async function saveAdmSettings(){
-  const waLink=(document.getElementById("wa-inp")?.value||"").trim();
-  const ytLink=(document.getElementById("yt-inp")?.value||"").trim();
-  const siteDownMsg=(document.getElementById("sd-msg")?.value||"").trim();
-  try{
-    await window.FK_DB.saveSettings({siteDown:_siteDown,siteDownMsg,waLink,ytLink});
-    if(waLink){
-      GROUP_LINK=waLink;
-      const wf=document.getElementById("wa-float"); if(wf)wf.href=waLink;
-      const wc=document.getElementById("wa-connect-btn"); if(wc)wc.href=waLink;
-    }
-    if(ytLink){
-      YT=ytLink;
-      const yc=document.getElementById("yt-connect-btn"); if(yc)yc.href=ytLink;
-    }
-    showToast("Settings saved!");
-  }catch(e){showToast("Save failed — check connection");}
+const waLink=(document.getElementById(“wa-inp”)?.value||””).trim();
+const ytLink=(document.getElementById(“yt-inp”)?.value||””).trim();
+const siteDownMsg=(document.getElementById(“sd-msg”)?.value||””).trim();
+try{
+await window.FK_DB.saveSettings({siteDown:_siteDown,siteDownMsg,waLink,ytLink});
+if(waLink){
+GROUP_LINK=waLink;
+const wf=document.getElementById(“wa-float”); if(wf)wf.href=waLink;
+const wc=document.getElementById(“wa-connect-btn”); if(wc)wc.href=waLink;
+}
+if(ytLink){
+YT=ytLink;
+const yc=document.getElementById(“yt-connect-btn”); if(yc)yc.href=ytLink;
+}
+showToast(“Settings saved!”);
+}catch(e){showToast(“Save failed — check connection”);}
 }
 
 /* ── PRODUCTS ── */
 function renderProducts(filter){
-  currentFilter=filter;
-  const list=filter==="all"?SNACKS:SNACKS.filter(s=>s.category===filter);
-  const el=document.getElementById("product-list");if(!el)return;
-  el.innerHTML=list.map(s=>{
-    const qty=getQty(s.id);
-    const isSel=selectedSnack===s.id;
-    const imgCls=`snack-shadow${s.isBoba?" boba-adjust":""}${s.isTiger?" tiger-milk-pos":""}`;
-    return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}" onclick="selectSnack(${s.id})">
-      <div class="image-container"><img src="${s.img}" class="${imgCls}" alt="${s.name}" loading="lazy"></div>
-      <div class="px-4 pb-5">
-        <div class="flex items-start justify-between gap-3 mb-1">
-          <div><p class="font-black text-base leading-tight">${s.name}</p><p class="text-white/30 text-xs mt-1">${s.desc}</p></div>
-          <span class="text-purple-400 font-black text-lg whitespace-nowrap">AED ${s.price}</span>
-        </div>
-        <div class="flex items-center justify-between mt-3">
-          ${qty===0
-            ?`<button onclick="event.stopPropagation();addToCart(${s.id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>`
-            :`<div class="flex items-center gap-3" onclick="event.stopPropagation()">
-               <button onclick="changeQty(${s.id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button>
-               <span class="font-black text-base">${qty}</span>
-               <button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
-             </div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`}
-        </div>
-      </div>
-    </div>`;
-  }).join("");
+currentFilter=filter;
+const list=filter===“all”?SNACKS:SNACKS.filter(s=>s.category===filter);
+const el=document.getElementById(“product-list”);if(!el)return;
+el.innerHTML=list.map(s=>{
+const qty=getQty(s.id);
+const isSel=selectedSnack===s.id;
+const imgCls=`snack-shadow${s.isBoba?" boba-adjust":""}${s.isTiger?" tiger-milk-pos":""}`;
+return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}" onclick="selectSnack(${s.id})"> <div class="image-container"><img src="${s.img}" class="${imgCls}" alt="${s.name}" loading="lazy"></div> <div class="px-4 pb-5"> <div class="flex items-start justify-between gap-3 mb-1"> <div><p class="font-black text-base leading-tight">${s.name}</p><p class="text-white/30 text-xs mt-1">${s.desc}</p></div> <span class="text-purple-400 font-black text-lg whitespace-nowrap">AED ${s.price}</span> </div> <div class="flex items-center justify-between mt-3"> ${qty===0 ?`<button onclick="event.stopPropagation();addToCart(${s.id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>` :`<div class="flex items-center gap-3" onclick="event.stopPropagation()">
+<button onclick="changeQty(${s.id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button>
+<span class="font-black text-base">${qty}</span>
+<button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
+</div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`} </div> </div> </div>`;
+}).join(””);
 }
 function filterTab(btn,cat){
-  document.querySelectorAll(".tab-btn").forEach(b=>{b.classList.remove("active","text-white");b.classList.add("text-white/40");});
-  btn.classList.add("active","text-white");btn.classList.remove("text-white/40");
-  renderProducts(cat);
+document.querySelectorAll(”.tab-btn”).forEach(b=>{b.classList.remove(“active”,“text-white”);b.classList.add(“text-white/40”);});
+btn.classList.add(“active”,“text-white”);btn.classList.remove(“text-white/40”);
+renderProducts(cat);
 }
 function selectSnack(id){
-  const prev=selectedSnack;
-  selectedSnack=selectedSnack===id?null:id;
-  if(prev){const c=document.getElementById("card-"+prev);if(c)c.classList.remove("selected");}
-  if(selectedSnack){const c=document.getElementById("card-"+selectedSnack);if(c)c.classList.add("selected");}
+const prev=selectedSnack;
+selectedSnack=selectedSnack===id?null:id;
+if(prev){const c=document.getElementById(“card-”+prev);if(c)c.classList.remove(“selected”);}
+if(selectedSnack){const c=document.getElementById(“card-”+selectedSnack);if(c)c.classList.add(“selected”);}
 }
 
 /* ── CART ── */
@@ -907,133 +903,187 @@ function getQty(id){const i=cart.find(x=>x.id===id);return i?i.qty:0;}
 function cartTotal(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
 function cartCount(){return cart.reduce((s,i)=>s+i.qty,0);}
 function addToCart(id){
-  const s=SNACKS.find(x=>x.id===id);if(!s)return;
-  const e=cart.find(x=>x.id===id);if(e)e.qty++;else cart.push({...s,qty:1});
-  saveCart();updateCartUI();updateCardControls(id);showToast(`${s.name} added!`);
+const s=SNACKS.find(x=>x.id===id);if(!s)return;
+const e=cart.find(x=>x.id===id);if(e)e.qty++;else cart.push({…s,qty:1});
+saveCart();updateCartUI();updateCardControls(id);showToast(`${s.name} added!`);
 }
 function changeQty(id,d){
-  const i=cart.find(x=>x.id===id);if(!i)return;
-  i.qty=Math.max(0,i.qty+d);if(i.qty===0)cart=cart.filter(x=>x.id!==id);
-  saveCart();updateCartUI();updateCardControls(id);renderCartItems();
+const i=cart.find(x=>x.id===id);if(!i)return;
+i.qty=Math.max(0,i.qty+d);if(i.qty===0)cart=cart.filter(x=>x.id!==id);
+saveCart();updateCartUI();updateCardControls(id);renderCartItems();
 }
 function updateCardControls(id){
-  const card=document.getElementById("card-"+id);if(!card)return;
-  const s=SNACKS.find(x=>x.id===id);if(!s)return;
-  const qty=getQty(id);
-  const ctrl=card.querySelector(".flex.items-center.justify-between.mt-3");if(!ctrl)return;
-  ctrl.innerHTML=qty===0
-    ?`<button onclick="event.stopPropagation();addToCart(${id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>`
-    :`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`;
+const card=document.getElementById(“card-”+id);if(!card)return;
+const s=SNACKS.find(x=>x.id===id);if(!s)return;
+const qty=getQty(id);
+const ctrl=card.querySelector(”.flex.items-center.justify-between.mt-3”);if(!ctrl)return;
+ctrl.innerHTML=qty===0
+?`<button onclick="event.stopPropagation();addToCart(${id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>`
+:`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`;
 }
-function saveCart(){localStorage.setItem("fk_cart",JSON.stringify(cart));}
+function saveCart(){localStorage.setItem(“fk_cart”,JSON.stringify(cart));}
 function updateCartUI(){
-  const n=cartCount(),t=cartTotal();
-  const b=document.getElementById("cart-badge");if(b){b.textContent=n;b.classList.toggle("hidden",n===0);}
-  const ct=document.getElementById("cart-total-txt");if(ct)ct.textContent="AED "+t;
-  const cc=document.getElementById("cart-count-txt");if(cc)cc.textContent=n+(n===1?" item":" items");
+const n=cartCount(),t=cartTotal();
+const b=document.getElementById(“cart-badge”);if(b){b.textContent=n;b.classList.toggle(“hidden”,n===0);}
+const ct=document.getElementById(“cart-total-txt”);if(ct)ct.textContent=“AED “+t;
+const cc=document.getElementById(“cart-count-txt”);if(cc)cc.textContent=n+(n===1?” item”:” items”);
 }
 function renderCartItems(){
-  const el=document.getElementById("cart-items");if(!el)return;
-  if(!cart.length){el.innerHTML=`<p class="text-center text-white/20 text-sm py-12">Your bag is empty</p>`;return;}
-  el.innerHTML=cart.map(i=>`<div class="flex items-center gap-3 py-3 border-b border-white/5">
-    <img src="${i.img}" class="w-12 h-12 rounded-2xl object-contain bg-purple-900/10 border border-white/5" loading="lazy">
-    <div class="flex-1 min-w-0"><p class="font-black text-sm truncate">${i.name}</p><p class="text-purple-400 text-xs mt-0.5">AED ${i.price}</p></div>
-    <div class="flex items-center gap-2">
-      <button onclick="changeQty(${i.id},-1)" class="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-sm font-black tap-active">−</button>
-      <span class="font-black text-sm w-4 text-center">${i.qty}</span>
-      <button onclick="changeQty(${i.id},1)" class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-black tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
-    </div>
+const el=document.getElementById(“cart-items”);if(!el)return;
+if(!cart.length){el.innerHTML=`<p class="text-center text-white/20 text-sm py-12">Your bag is empty</p>`;return;}
+el.innerHTML=cart.map(i=>`<div class="flex items-center gap-3 py-3 border-b border-white/5">
+<img src="${i.img}" class="w-12 h-12 rounded-2xl object-contain bg-purple-900/10 border border-white/5" loading="lazy">
+<div class="flex-1 min-w-0"><p class="font-black text-sm truncate">${i.name}</p><p class="text-purple-400 text-xs mt-0.5">AED ${i.price}</p></div>
+<div class="flex items-center gap-2">
+<button onclick="changeQty(${i.id},-1)" class="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-sm font-black tap-active">−</button>
+<span class="font-black text-sm w-4 text-center">${i.qty}</span>
+<button onclick="changeQty(${i.id},1)" class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-black tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
+</div>
+
   </div>`).join("");
 }
 function openCart(){renderCartItems();document.getElementById("cart-overlay").classList.remove("hidden");setTimeout(()=>document.getElementById("cart-panel").classList.add("open"),10);}
 function closeCart(){document.getElementById("cart-panel").classList.remove("open");setTimeout(()=>document.getElementById("cart-overlay").classList.add("hidden"),500);}
 
 /* ── CHECKOUT ── */
-function showMain(){document.getElementById("main-view").style.display="block";document.getElementById("checkout-view").style.display="none";}
+function showMain(){document.getElementById(“main-view”).style.display=“block”;document.getElementById(“checkout-view”).style.display=“none”;}
 function goCheckout(){
-  if(!cart.length){showToast("Your bag is empty!");return;}
-  closeCart();
-  document.getElementById("co-summary").innerHTML=cart.map(i=>`<div class="flex justify-between text-sm py-0.5"><span class="text-white/60">${i.name} ×${i.qty}</span><span class="font-bold">AED ${i.price*i.qty}</span></div>`).join("")+`<div class="border-t border-white/10 mt-2 pt-2 flex justify-between"><span class="text-white/40 text-sm">Total</span><span class="font-black text-purple-400">AED ${cartTotal()}</span></div>`;
-  document.getElementById("co-total").textContent="AED "+cartTotal();
-  document.getElementById("f-date").value=new Date().toISOString().split("T")[0];
-  const saved=localStorage.getItem("fk_last_info");
-  if(saved) document.getElementById("prefill-banner").classList.remove("hidden");
-  document.getElementById("main-view").style.display="none";
-  document.getElementById("checkout-view").style.display="block";
-  window.scrollTo(0,0);
+if(!cart.length){showToast(“Your bag is empty!”);return;}
+closeCart();
+document.getElementById(“co-summary”).innerHTML=cart.map(i=>`<div class="flex justify-between text-sm py-0.5"><span class="text-white/60">${i.name} ×${i.qty}</span><span class="font-bold">AED ${i.price*i.qty}</span></div>`).join(””)+`<div class="border-t border-white/10 mt-2 pt-2 flex justify-between"><span class="text-white/40 text-sm">Total</span><span class="font-black text-purple-400">AED ${cartTotal()}</span></div>`;
+document.getElementById(“co-total”).textContent=“AED “+cartTotal();
+document.getElementById(“f-date”).value=new Date().toISOString().split(“T”)[0];
+const saved=localStorage.getItem(“fk_last_info”);
+if(saved) document.getElementById(“prefill-banner”).classList.remove(“hidden”);
+document.getElementById(“main-view”).style.display=“none”;
+document.getElementById(“checkout-view”).style.display=“block”;
+window.scrollTo(0,0);
 }
 function useSavedInfo(){
-  try{
-    const info=JSON.parse(localStorage.getItem("fk_last_info")||"{}");
-    document.getElementById("f-name").value=info.name||"";
-    document.getElementById("f-grade").value=info.grade||"";
-    document.getElementById("prefill-banner").classList.add("hidden");
-    showToast("Info filled in!");
-  }catch(e){}
+try{
+const info=JSON.parse(localStorage.getItem(“fk_last_info”)||”{}”);
+document.getElementById(“f-name”).value=info.name||””;
+document.getElementById(“f-grade”).value=info.grade||””;
+document.getElementById(“prefill-banner”).classList.add(“hidden”);
+showToast(“Info filled in!”);
+}catch(e){}
 }
 async function placeOrder(){
-  const name=(document.getElementById("f-name").value||"").trim();
-  const grade=(document.getElementById("f-grade").value||"").trim();
-  const date=(document.getElementById("f-date").value||"").trim();
-  let ok=true;
-  const setE=(id,show)=>{document.getElementById("e-"+id).classList.toggle("hidden",!show);if(show)ok=false;};
-  setE("name",!name);setE("grade",!grade);setE("date",!date);
-  if(!ok)return;
-  const btn=document.getElementById("place-btn");
-  btn.disabled=true;btn.innerHTML=`<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order...`;
-  localStorage.setItem("fk_last_info",JSON.stringify({name,grade}));
-  const orderData={customer:{name,grade,date},items:cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),total:cartTotal(),status:"pending",created:Date.now()};
-  try{
-    if(!window.FK_DB)await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
-    const orderId=await window.FK_DB.saveOrder(orderData);
-    const full={...orderData,id:orderId};
-    localStorage.setItem("fk_last_order",orderId);
-    localStorage.setItem("fk_order_"+orderId,JSON.stringify(full));
-    cart=[];saveCart();updateCartUI();
-    btn.disabled=false;btn.innerHTML="Place Order";
-    openShareModal(full);
-  }catch(err){
-    console.error(err);btn.disabled=false;btn.innerHTML="Place Order";
-    showToast("Order failed — check connection");
-  }
+const name=(document.getElementById(“f-name”).value||””).trim();
+const grade=(document.getElementById(“f-grade”).value||””).trim();
+const date=(document.getElementById(“f-date”).value||””).trim();
+let ok=true;
+const setE=(id,show)=>{document.getElementById(“e-”+id).classList.toggle(“hidden”,!show);if(show)ok=false;};
+setE(“name”,!name);setE(“grade”,!grade);setE(“date”,!date);
+if(!ok)return;
+const btn=document.getElementById(“place-btn”);
+btn.disabled=true;btn.innerHTML=`<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order...`;
+localStorage.setItem(“fk_last_info”,JSON.stringify({name,grade}));
+const orderData={customer:{name,grade,date},items:cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),total:cartTotal(),status:“pending”,created:Date.now()};
+try{
+if(!window.FK_DB)await new Promise(r=>{window.addEventListener(“fk-ready”,r,{once:true});});
+const orderId=await window.FK_DB.saveOrder(orderData);
+const full={…orderData,id:orderId};
+localStorage.setItem(“fk_last_order”,orderId);
+localStorage.setItem(“fk_order_”+orderId,JSON.stringify(full));
+cart=[];saveCart();updateCartUI();
+btn.disabled=false;btn.innerHTML=“Place Order”;
+openShareModal(full);
+}catch(err){
+console.error(err);btn.disabled=false;btn.innerHTML=“Place Order”;
+showToast(“Order failed — check connection”);
+}
 }
 
 /* ── SHARE ── */
-function receiptUrl(id){return location.origin+location.pathname.replace(/\/[^/]*$/,"/")+`receipt.html?orderId=${id}`;}
+function receiptUrl(id){return location.origin+location.pathname.replace(//[^/]*$/,”/”)+`receipt.html?orderId=${id}`;}
 function buildMsg(o){
-  const items=o.items.map(i=>`  • ${i.name} ×${i.qty}  —  AED ${i.price*i.qty}`).join("\n");
-  return `🛍️ *NEW ORDER — Fares King*\n\n🆔 *${o.id}*\n👤 ${o.customer.name}\n🎓 ${o.customer.grade}\n📅 ${o.customer.date}\n\n🛒 Items:\n${items}\n\n💰 *Total: AED ${o.total}*\n\n🧾 Receipt: ${receiptUrl(o.id)}`;
+const items=o.items.map(i=>`  • ${i.name} ×${i.qty}  —  AED ${i.price*i.qty}`).join(”\n”);
+return `🛍️ *NEW ORDER — Fares King*\n\n🆔 *${o.id}*\n👤 ${o.customer.name}\n🎓 ${o.customer.grade}\n📅 ${o.customer.date}\n\n🛒 Items:\n${items}\n\n💰 *Total: AED ${o.total}*\n\n🧾 Receipt: ${receiptUrl(o.id)}`;
 }
 function openShareModal(o){
-  _pendingOrder=o;
-  document.getElementById("share-preview").textContent=buildMsg(o);
-  document.getElementById("share-modal").classList.remove("hidden");
-  setTimeout(()=>document.getElementById("share-sheet").classList.remove("translate-y-full"),10);
-  try{navigator.clipboard.writeText(receiptUrl(o.id));}catch(e){}
+_pendingOrder=o;
+document.getElementById(“share-preview”).textContent=buildMsg(o);
+document.getElementById(“share-modal”).classList.remove(“hidden”);
+setTimeout(()=>document.getElementById(“share-sheet”).classList.remove(“translate-y-full”),10);
+try{navigator.clipboard.writeText(receiptUrl(o.id));}catch(e){}
 }
 function closeShareModal(){
-  document.getElementById("share-sheet").classList.add("translate-y-full");
-  setTimeout(()=>{document.getElementById("share-modal").classList.add("hidden");if(_pendingOrder)location.href="receipt.html?orderId="+_pendingOrder.id;},420);
+document.getElementById(“share-sheet”).classList.add(“translate-y-full”);
+setTimeout(()=>{document.getElementById(“share-modal”).classList.add(“hidden”);if(_pendingOrder)location.href=“receipt.html?orderId=”+_pendingOrder.id;},420);
 }
 function sendToWhatsApp(){
-  if(!_pendingOrder)return;
-  window.open("https://wa.me/?text="+encodeURIComponent(buildMsg(_pendingOrder)),"_blank");
-  closeShareModal();
+if(!_pendingOrder)return;
+window.open(“https://wa.me/?text=”+encodeURIComponent(buildMsg(_pendingOrder)),”_blank”);
+closeShareModal();
 }
 
 /* ── LOOKUP ── */
-function openOrderLookup(){const last=localStorage.getItem("fk_last_order");if(last)document.getElementById("lookup-inp").value=last;document.getElementById("lookup-modal").classList.remove("hidden");}
-function closeLookup(){document.getElementById("lookup-modal").classList.add("hidden");}
+function openOrderLookup(){
+// Show history drawer with all past orders + lookup
+buildHistoryDrawer();
+}
+function buildHistoryDrawer(){
+let drawer=document.getElementById(“history-drawer”);
+if(!drawer){
+drawer=document.createElement(“div”);
+drawer.id=“history-drawer”;
+document.body.appendChild(drawer);
+}
+const STATUS_COLORS={
+pending:”#fbbf24”,confirmed:”#60a5fa”,getting_product:”#c084fc”,
+waiting_school_day:”#f97316”,complete:”#22c55e”
+};
+const STATUS_LABELS={
+pending:“Pending”,confirmed:“Order Confirmed”,getting_product:“Getting Product”,
+waiting_school_day:“Waiting for School Day”,complete:“Ready for Pickup ✓”
+};
+// Collect history from localStorage
+const historyIds=[];
+for(let i=0;i<localStorage.length;i++){
+const k=localStorage.key(i);
+if(k&&k.startsWith(“fk_order_”)) historyIds.push(k.replace(“fk_order_”,””));
+}
+const orders=historyIds.map(id=>{try{return JSON.parse(localStorage.getItem(“fk_order_”+id));}catch(e){return null;}}).filter(Boolean).sort((a,b)=>(b.created||0)-(a.created||0));
+
+drawer.style.cssText=“position:fixed;inset:0;z-index:6000;display:flex;align-items:flex-end;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);”;
+drawer.innerHTML=`<div style="width:100%;background:#0a0a14;border-top:1px solid rgba(168,85,247,.15);border-radius:24px 24px 0 0;max-height:85vh;display:flex;flex-direction:column;padding-bottom:var(--safe-bottom);"> <div style="padding:16px 20px 12px;flex-shrink:0;"> <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 16px;"></div> <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"> <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:-0.02em;">My Orders</h3> <button onclick="document.getElementById('history-drawer').remove()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:13px;">✕</button> </div> <!-- Lookup input --> <div style="position:relative;margin-bottom:4px;"> <input id="hist-lookup-inp" type="text" placeholder="Paste Order ID to look up..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 48px 11px 14px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;"> <button onclick="doLookup()" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:#a855f7;border:none;border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:white;">🔍</button> </div> </div> <div style="flex:1;overflow-y:auto;padding:0 20px 20px;"> ${orders.length===0?`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:40px 0;">No order history on this device</p>`:orders.map(o=>{ const ts=o.created||Date.now(); const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",year:"numeric"}); const sc=STATUS_COLORS[o.status]||"#fbbf24"; const sl=STATUS_LABELS[o.status]||"Pending"; const its=(o.items||[]).map(i=>i.name+(i.qty>1?" ×"+i.qty:"")).join(", "); return`<div onclick="document.getElementById('history-drawer').remove();location.href='receipt.html?orderId=${o.id}'"
+style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer;transition:all .15s ease;-webkit-tap-highlight-color:transparent;">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+<div>
+<p style="font-size:10px;font-weight:900;color:#a855f7;">#${(o.id||””).substring(0,14)}</p>
+<p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||“Order”}</p>
+</div>
+<div style="text-align:right;">
+<span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:${sc}18;color:${sc};border:1px solid ${sc}33;">${sl}</span>
+<p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
+</div>
+</div>
+<p style="font-size:11px;color:rgba(255,255,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">${its}</p>
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
+<span style="font-size:11px;color:rgba(168,85,247,.6);font-weight:700;">View Receipt →</span>
+</div>
+</div>`;
+}).join(””)}
+</div>
+
+  </div>`;
+  drawer.addEventListener("click",e=>{if(e.target===drawer)drawer.remove();});
+}
+function closeLookup(){const d=document.getElementById("history-drawer");if(d)d.remove();}
 function doLookup(){
-  const id=(document.getElementById("lookup-inp").value||"").trim();
-  const err=document.getElementById("lookup-err");
-  if(!id){err.textContent="Please enter an Order ID";err.classList.remove("hidden");return;}
-  err.classList.add("hidden");closeLookup();location.href="receipt.html?orderId="+id;
+  const inp=document.getElementById("hist-lookup-inp")||document.getElementById("lookup-inp");
+  const id=(inp?.value||"").trim();
+  if(!id){showToast("Enter an Order ID");return;}
+  const d=document.getElementById("history-drawer");if(d)d.remove();
+  location.href="receipt.html?orderId="+id;
 }
 
 /* ── TOAST ── */
 let _tt;
-function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
+function showToast(msg){const t=document.getElementById(“toast”);t.textContent=msg;t.classList.add(“show”);clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove(“show”),2200);}
 </script>
+
 </body>
 </html>
