@@ -74,13 +74,23 @@
       filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
     }
 
-    /* Boba: start small-ish, grow bigger on select */
-    .boba-adjust{transform:scale(1.7) translate(10px,38px);}
-    .selected .boba-adjust{transform:scale(2.3) translate(10px,42px);}
+    /* ── BOBA: start small, grow bigger on select ── */
+    .boba-adjust{
+      transform:scale(1.4) translate(10px,28px);
+    }
+    .snack-card.selected .boba-adjust{
+      transform:scale(2.1) translate(10px,38px);
+      filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
+    }
 
-    /* Tiger milk: keep exact position, just slightly larger on select */
-    .tiger-milk-pos{transform:scale(1.8) translate(65px,20px);}
-    .selected .tiger-milk-pos{transform:scale(1.95) translate(70px,20px);}
+    /* ── TIGER MILK: positioned left, subtle scale on select ── */
+    .tiger-milk-pos{
+      transform:scale(1.8) translate(-30px, 20px);
+    }
+    .snack-card.selected .tiger-milk-pos{
+      transform:scale(1.95) translate(-28px, 20px);
+      filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
+    }
 
     .image-container{
       height:480px;display:flex;align-items:center;justify-content:center;
@@ -104,7 +114,7 @@
     .tab-btn{position:relative;}
     .tab-btn.active::after{content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:#a855f7;border-radius:2px;}
 
-    /* ── BOTTOM NAV: very transparent ── */
+    /* ── BOTTOM NAV: 25% opacity (very transparent) ── */
     .bottom-nav{
       position:fixed;bottom:0;left:0;right:0;z-index:100;
       background:rgba(5,5,5,0.25);
@@ -166,7 +176,7 @@
   </div>
   <div id="prog-bar"><div id="prog-fill"></div></div>
   <div id="loader-label">Loading</div>
-  <button id="loader-skip-btn" onclick="skipLoading()">Skip Loading</button>
+  <button id="loader-skip-btn" onclick="skipLoading()">Taking long time — Skip</button>
 </div>
 
 <!-- SITE DOWN PAGE -->
@@ -324,25 +334,44 @@ function applyTheme(key,saveGlobal=false){
 applyTheme(currentTheme);
 
 /* ─────────────────────────────────────────
-   IMAGE PRELOADER WITH 30s TIMEOUT
+   IMAGE PRELOADER — waits for ALL images,
+   shows skip after 30 seconds
 ───────────────────────────────────────── */
 let _skipAllowed = false;
 let _skipTimer   = null;
 
 function preloadImages(urls){
-  return Promise.all(urls.map(url=>new Promise(resolve=>{
-    const img=new Image();
-    img.onload=img.onerror=resolve; // resolve on either load or error — never stall
-    img.src=url;
-  })));
+  // Returns a promise that resolves only when EVERY image has loaded or errored
+  return new Promise(resolveAll => {
+    let loaded = 0;
+    const total = urls.length;
+    if(total === 0){ resolveAll(); return; }
+
+    const fill   = document.getElementById("prog-fill");
+    const label  = document.getElementById("loader-label");
+
+    function onOne(){
+      loaded++;
+      const pct = Math.round((loaded / total) * 100);
+      if(fill) fill.style.width = pct + "%";
+      if(loaded >= total) resolveAll();
+    }
+
+    urls.forEach(url=>{
+      const img = new Image();
+      img.onload  = onOne;
+      img.onerror = onOne; // count errors too — never stall
+      img.src = url;
+    });
+  });
 }
 
 function skipLoading(){
   if(!_skipAllowed) return;
   clearTimeout(_skipTimer);
-  _loaderDone=true;
+  _loaderDone = true;
   hideLoader();
-  setTimeout(()=>{ revealApp(); bootApp(); },100);
+  setTimeout(()=>{ revealApp(); bootApp(); }, 100);
 }
 
 /* ── LOADER HELPERS ── */
@@ -361,47 +390,30 @@ function revealApp(){
   if(app){ app.style.display="block"; app.classList.add("entering"); }
 }
 
-/* ── LOADER: wait for all images, then launch ── */
+/* ── LOADER: wait for ALL images, then launch ── */
 function runLoaderWithImages(cb){
-  const fill  = document.getElementById("prog-fill");
-  const label = document.getElementById("loader-label");
+  const label   = document.getElementById("loader-label");
   const skipBtn = document.getElementById("loader-skip-btn");
   showLoader();
 
+  // Collect every image URL that will be displayed
   const imgUrls = [LOGO_URL, ...DEFAULT_SNACKS.map(s=>s.img)];
-  let pct = 0;
-  let imagesLoaded = false;
 
-  // Animate progress bar regardless
-  const pi = setInterval(()=>{
-    if(imagesLoaded){
-      pct = Math.min(pct+15, 100);
-      fill.style.width = pct+"%";
-      if(pct>=100){ clearInterval(pi); }
-    } else {
-      pct = Math.min(pct+(Math.random()*8+3), 88);
-      fill.style.width = pct+"%";
-    }
-  }, 160);
-
-  // Show skip button after 30 seconds
+  // Show skip button + message after 30 seconds
   _skipTimer = setTimeout(()=>{
     _skipAllowed = true;
-    if(label) label.textContent = "Taking long time...";
+    if(label)   label.textContent = "Taking long time...";
     if(skipBtn) skipBtn.style.display = "block";
   }, 30000);
 
-  // Load all images
+  // Wait for every single image to finish (load or error)
   preloadImages(imgUrls).then(()=>{
-    imagesLoaded = true;
-    clearInterval(pi);
-    // Small extra pause so bar visibly hits 100%
-    fill.style.width = "100%";
+    clearTimeout(_skipTimer);
+    // Bar is already at 100% from preloadImages progress
     setTimeout(()=>{
-      clearTimeout(_skipTimer);
       hideLoader();
       setTimeout(cb, 100);
-    }, 400);
+    }, 350);
   });
 }
 
@@ -415,15 +427,18 @@ function runLoaderWithImages(cb){
   const wasInstalled = !!localStorage.getItem("fk_was_installed");
 
   if(isStandalone || wasInstalled){
+    // Running as installed PWA — remember this
     if(isStandalone) localStorage.setItem("fk_was_installed","1");
     runLoaderWithImages(()=>{ revealApp(); bootApp(); });
   } else {
+    // Running in browser — check if user dismissed the install guide
     const dismissed = localStorage.getItem("fk_install_dismissed");
     if(!dismissed){
-      // Hide loader and show install guide instead
-      document.getElementById("loader").style.display="none";
+      // Hide loader spinner, show install guide instead
+      document.getElementById("loader").style.display = "none";
       showInstallGuide();
     } else {
+      // Dismissed before — just load normally
       runLoaderWithImages(()=>{ revealApp(); bootApp(); });
     }
   }
@@ -432,7 +447,7 @@ function runLoaderWithImages(cb){
 /* ── INSTALL GUIDE ── */
 function showInstallGuide(){
   const loader = document.getElementById("loader");
-  loader.style.display = "flex";
+  loader.style.display   = "flex";
   loader.style.overflowY = "auto";
 
   const isAndroid = /android/i.test(navigator.userAgent);
@@ -508,7 +523,7 @@ function showInstallGuide(){
     if(btn){
       btn.addEventListener("click", function(){
         localStorage.setItem("fk_install_dismissed","1");
-        // Rebuild the spinner
+        // Rebuild the spinner HTML and start loading
         loader.style.overflowY = "hidden";
         loader.innerHTML = `
           <div id="logo-spin-wrap" style="position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;">
@@ -523,7 +538,7 @@ function showInstallGuide(){
             <div id="prog-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#c084fc);border-radius:2px;transition:width .25s ease;"></div>
           </div>
           <div id="loader-label" style="margin-top:14px;font-weight:900;letter-spacing:.55em;font-size:10px;text-transform:uppercase;color:rgba(168,85,247,.6);font-style:italic;animation:labelPulse 1.4s ease-in-out infinite;">Loading</div>
-          <button id="loader-skip-btn" onclick="skipLoading()" style="margin-top:18px;background:none;border:1px solid rgba(168,85,247,.3);color:rgba(168,85,247,.7);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:800;letter-spacing:.08em;cursor:pointer;font-family:Inter,sans-serif;display:none;text-transform:uppercase;">Skip Loading</button>`;
+          <button id="loader-skip-btn" onclick="skipLoading()" style="margin-top:18px;background:none;border:1px solid rgba(168,85,247,.3);color:rgba(168,85,247,.7);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:800;letter-spacing:.08em;cursor:pointer;font-family:Inter,sans-serif;display:none;text-transform:uppercase;">Taking long time — Skip</button>`;
         runLoaderWithImages(()=>{ revealApp(); bootApp(); });
       });
     }
@@ -708,7 +723,7 @@ function buildApp(){
       </div>
     </div>
 
-    <!-- BOTTOM NAV — very transparent -->
+    <!-- BOTTOM NAV -->
     <div class="bottom-nav">
       <div class="flex justify-around py-2">
         <button onclick="showMain()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-store text-lg" style="color:var(--accent)"></i><span class="text-[9px] font-black tracking-widest uppercase" style="color:var(--accent)">Shop</span></button>
