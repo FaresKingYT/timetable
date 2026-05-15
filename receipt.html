@@ -156,8 +156,9 @@
       <!-- STATUS — this is the element that gets live-updated -->
       <div class="flex flex-col items-center mt-4 gap-2">
         <span id="r-status-badge" class="text-[11px] font-black px-4 py-1.5 rounded-full status-updated">PENDING</span>
-        <p class="text-[9px] text-white/20 tracking-widest uppercase">
-          <span class="live-dot"></span>Live status
+        <p class="text-[9px] text-white/20 tracking-widest uppercase flex items-center gap-2">
+          <span><span class="live-dot"></span>Live status</span>
+          <button onclick="refreshStatus()" id="refresh-btn" style="background:none;border:none;color:rgba(168,85,247,.55);font-size:11px;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;padding:0;letter-spacing:.04em;">↻ Refresh</button>
         </p>
       </div>
     </div>
@@ -294,31 +295,29 @@ if (!orderId) {
 
   // Step 2: Set up REAL-TIME listener on Firestore
   // This fires immediately with current data, then again whenever status changes
+  const orderRef = doc(db, "orders", orderId);
+
+  // Shared update function used by both onSnapshot and polling
+  function applyLiveOrder(liveOrder) {
+    const receiptVisible = !document.getElementById("receipt-state").classList.contains("hidden");
+    if (receiptVisible) {
+      applyStatus(liveOrder.status || "pending");
+      window._order = liveOrder;
+    } else {
+      renderReceipt(liveOrder);
+    }
+    try { localStorage.setItem("fk_order_" + orderId, JSON.stringify(liveOrder)); } catch(e) {}
+  }
+
   try {
-    const orderRef = doc(db, "orders", orderId);
     onSnapshot(orderRef, (snap) => {
       if (!snap.exists()) {
         if (!cached) showError(`Order "${orderId}" not found.`);
         return;
       }
-      const liveOrder = { id: snap.id, ...snap.data() };
-
-      // If receipt is already rendered, only update the status badge (smooth)
-      const receiptVisible = !document.getElementById("receipt-state").classList.contains("hidden");
-      if (receiptVisible) {
-        // Just update the status — don't re-render everything
-        applyStatus(liveOrder.status || "pending");
-        window._order = liveOrder;
-      } else {
-        // First load — render the full receipt
-        renderReceipt(liveOrder);
-      }
-
-      // Always keep localStorage in sync
-      try { localStorage.setItem("fk_order_" + orderId, JSON.stringify(liveOrder)); } catch(e) {}
+      applyLiveOrder({ id: snap.id, ...snap.data() });
     }, (err) => {
       console.warn("Firestore listener error:", err);
-      // If we never showed the receipt, try localStorage fallback
       if (document.getElementById("receipt-state").classList.contains("hidden")) {
         if (cached) {
           try { renderReceipt(JSON.parse(cached)); } catch(e) {}
@@ -331,10 +330,34 @@ if (!orderId) {
     console.warn("onSnapshot setup failed:", err);
     if (!cached) showError("Failed to load order. Check your connection.");
   }
+
+  // Polling fallback: re-check every 30 seconds in case onSnapshot is blocked
+  setInterval(async () => {
+    try {
+      const snap = await getDoc(orderRef);
+      if (snap.exists()) applyLiveOrder({ id: snap.id, ...snap.data() });
+    } catch(e) {}
+  }, 30000);
+
+  // Manual refresh exposed to the page
+  window._refreshStatus = async function() {
+    const btn = document.getElementById("refresh-btn");
+    if (btn) { btn.textContent = "↻ Checking..."; btn.style.opacity = ".5"; }
+    try {
+      const snap = await getDoc(orderRef);
+      if (snap.exists()) applyLiveOrder({ id: snap.id, ...snap.data() });
+    } catch(e) {}
+    if (btn) { btn.textContent = "↻ Refresh"; btn.style.opacity = ""; }
+  };
 }
 </script>
 
 <script>
+function refreshStatus() {
+  if (window._refreshStatus) {
+    window._refreshStatus().then(() => showToast("Status refreshed!"));
+  }
+}
 function shareWA() {
   const o = window._order; if (!o) return;
   const url   = location.href;
