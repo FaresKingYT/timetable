@@ -876,10 +876,17 @@ const ORDER_STATUSES=[
 ];
 function getStatusStyle(key){return ORDER_STATUSES.find(s=>s.key===key)||ORDER_STATUSES[0];}
 async function admSetStatus(id,status){
-  await window.FK_DB.updateOrderStatus(id,status);
-  const o=adminOrders.find(x=>x.id===id);if(o)o.status=status;
-  filterAdmOrders();showToast("Status updated!");
   const picker=document.getElementById("status-picker-"+id);if(picker)picker.remove();
+  try{
+    await window.FK_DB.updateOrderStatus(id,status);
+    const o=adminOrders.find(x=>x.id===id);if(o)o.status=status;
+    const f=document.getElementById("adm-filter");if(f)f.value="all";
+    filterAdmOrders();
+    showToast("Status updated ✓");
+  }catch(e){
+    showToast("Update failed — check connection");
+    filterAdmOrders();
+  }
 }
 function openStatusPicker(id,currentStatus){
   document.querySelectorAll(".status-picker-overlay").forEach(x=>x.remove());
