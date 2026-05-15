@@ -76,11 +76,11 @@
 
     /* ── BOBA: shifted right so product (on left of image) centres visually ── */
 
-.boba-adjust:not(.tiger-milk-pos){
+   .boba-adjust{
   transform:scale(1.8) translate(0px,20px);
 }
 
-.snack-card.selected .boba-adjust:not(.tiger-milk-pos){
+.snack-card.selected .boba-adjust{
   transform:scale(1.95) translate(0px,20px);
   filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
 }
@@ -1128,7 +1128,7 @@ function renderProducts(filter){
   el.innerHTML=list.map(s=>{
     const qty=getQty(s.id);
     const isSel=selectedSnack===s.id;
-    const imgCls=`snack-shadow${s.isBoba?" boba-adjust":""}${s.isTiger?" tiger-milk-pos":""}`;
+    const imgCls=`snack-shadow${s.isTiger?" tiger-milk-pos":s.isBoba?" boba-adjust":""}`;
     return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}${s.outOfStock?" opacity-50":""}" onclick="${s.outOfStock?"":"selectSnack("+s.id+")"}" style="position:relative;">
       ${s.sticker?`<div style="position:absolute;top:10px;left:10px;z-index:20;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#ffffff"};font-family:'Archivo Black',sans-serif;font-size:10px;font-weight:900;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 2px 8px rgba(0,0,0,.5);">${s.sticker}</div>`:""}
       ${s.featured?`<div style="position:absolute;top:10px;right:10px;z-index:20;background:linear-gradient(135deg,var(--accent),var(--accent-dark));font-size:9px;padding:3px 8px;border-radius:100px;font-weight:900;color:white;letter-spacing:.05em;">⭐ TOP</div>`:""}
