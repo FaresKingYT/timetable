@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Fares King">
+  <meta name="apple-mobile-web-app-title" content="FK|Supermarket">
   <meta name="theme-color" content="#050505">
   <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
   <title>Fares King | Supermarket</title>
@@ -17,14 +17,44 @@
     body{font-family:"Inter",sans-serif;background:#050505;color:white;overflow-x:hidden;-webkit-tap-highlight-color:transparent;margin:0;}
     .font-display{font-family:"Archivo Black",sans-serif;letter-spacing:-0.04em;}
     .king-gradient{background:linear-gradient(to right,#a855f7,#6b21a8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .snack-card{cursor:pointer;transition:all .4s cubic-bezier(.175,.885,.32,1.275);}
-    .snack-card.selected{border-color:rgba(168,85,247,.5)!important;background:#0e0e0e;}
-    .snack-shadow{filter:drop-shadow(0 20px 40px rgba(168,85,247,.3));transition:transform .8s cubic-bezier(.22,1,.36,1);object-fit:contain;width:100%;height:100%;pointer-events:none;}
-    .boba-adjust{transform:scale(2.2) translate(10px,40px);}
-    .selected .boba-adjust{transform:scale(2.3) translate(10px,42px);}
-    .tiger-milk-pos{transform:scale(1.8) translate(65px,20px);}
-    .selected .tiger-milk-pos{transform:scale(1.9) translate(70px,20px);}
-    .image-container{height:480px;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden;background:radial-gradient(circle at center,rgba(168,85,247,.05) 0%,transparent 70%);}
+    .snack-card{
+        cursor:pointer;
+        transition:all .4s cubic-bezier(.175,.885,.32,1.275);
+        border-color:transparent !important;
+        position:relative;
+      }
+      .snack-card::before{
+        content:"";
+        position:absolute;inset:-1px;
+        border-radius:inherit;
+        padding:1.5px;
+        background:conic-gradient(from var(--angle,0deg), transparent 0%, #a855f7 25%, #c084fc 50%, transparent 75%);
+        -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite:xor;
+        mask-composite:exclude;
+        opacity:0;
+        transition:opacity .3s ease;
+        pointer-events:none;
+        z-index:1;
+      }
+      .snack-card.selected::before{
+        opacity:1;
+        animation:borderSpin 1.8s linear infinite;
+      }
+      @property --angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
+      @keyframes borderSpin{to{--angle:360deg;}}
+      .snack-card.selected{background:#0e0e0e;box-shadow:0 0 28px rgba(168,85,247,.18);}
+      .snack-shadow{filter:drop-shadow(0 20px 40px rgba(168,85,247,.3));transition:transform .8s cubic-bezier(.22,1,.36,1);object-fit:contain;width:100%;height:100%;pointer-events:none;}
+      .snack-card.selected .snack-shadow{transform:scale(1.08) translateY(-8px);}
+      .boba-adjust{transform:scale(2.2) translate(10px,40px);}
+      .selected .boba-adjust{transform:scale(2.35) translate(10px,42px);}
+      .tiger-milk-pos{transform:scale(1.8) translate(65px,20px);}
+      .selected .tiger-milk-pos{transform:scale(1.95) translate(70px,20px);}
+      .snack-card.selected .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos){
+        transform:scale(1.12) translateY(-10px);
+        filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
+      }
+      .image-container{height:480px;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden;background:radial-gradient(circle at center,rgba(168,85,247,.05) 0%,transparent 70%);}
     .cart-sidebar{transition:transform .5s cubic-bezier(.32,.72,0,1);transform:translateX(100%);}
     .cart-sidebar.open{transform:translateX(0);}
     @keyframes shine-sweep{0%{transform:translateX(-200%) skewX(-20deg)}100%{transform:translateX(300%) skewX(-20deg)}}
@@ -158,7 +188,40 @@ window.FK_DB = {
     catch(e){ return null; }
   },
   async saveProducts(list){ await setDoc(doc(db,"config","products"),{list}); },
-};
+
+    async saveUserInfo(hwid, info){
+      await setDoc(doc(db,"users",hwid), info, {merge:true});
+    },
+    async getAllUsers(){
+      try{
+        const snap = await getDocs(collection(db,"users"));
+        return snap.docs.map(d=>({hwid:d.id,...d.data()}));
+      }catch(e){ return []; }
+    },
+    async banUser(hwid, reason, durationHours){
+      const until = durationHours===0 ? 0 : Date.now() + durationHours*60*60*1000;
+      await setDoc(doc(db,"bans",hwid),{reason, until, bannedAt:Date.now()},{merge:true});
+    },
+    async unbanUser(hwid){ await deleteDoc(doc(db,"bans",hwid)); },
+    async checkBan(hwid){
+      try{
+        const snap = await getDoc(doc(db,"bans",hwid));
+        if(!snap.exists()) return null;
+        const ban = snap.data();
+        if(ban.until !== 0 && Date.now() > ban.until){
+          await deleteDoc(doc(db,"bans",hwid));
+          return null;
+        }
+        return ban;
+      }catch(e){ return null; }
+    },
+    async getAllBans(){
+      try{
+        const snap = await getDocs(collection(db,"bans"));
+        return snap.docs.map(d=>({hwid:d.id,...d.data()}));
+      }catch(e){ return []; }
+    },
+  };
 
 window.FK_AUTH = {
   async signInGoogle(){
@@ -204,6 +267,12 @@ let GROUP_LINK   ="https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
 let YT           ="https://youtube.com/@faresking";
 
 let tapCount=0, tapTimer=null;
+
+  function getOrCreateHWID(){
+    let h=localStorage.getItem("fk_hwid");
+    if(!h){ h="hwid_"+Math.random().toString(36).substr(2,16)+"_"+Date.now().toString(36); localStorage.setItem("fk_hwid",h); }
+    return h;
+  }
 
 function applyTheme(key){
   const t=THEMES[key]||THEMES.purple;
@@ -375,11 +444,30 @@ async function bootApp(){
       }
       const remote=await window.FK_DB.getProducts();
       if(remote&&remote.length>0) SNACKS=remote;
-    }
-  }catch(e){ console.warn("Settings load failed, using defaults",e); }
 
-  buildApp();
-  setupTapZone();
+      const HWID = getOrCreateHWID();
+      const ban = await window.FK_DB.checkBan(HWID);
+      if(ban){
+        const until = ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE");
+        const loader=document.getElementById("loader");
+        if(loader) loader.style.display="none";
+        const app=document.getElementById("app");
+        if(app){ app.style.display="block"; }
+        app.innerHTML=`<div style="position:fixed;inset:0;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
+          <div style="width:64px;height:64px;border-radius:18px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <i class="fas fa-ban" style="color:#ef4444;font-size:1.6rem;"></i>
+          </div>
+          <h2 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Access Restricted</h2>
+          <p style="font-size:13px;color:rgba(255,255,255,.4);line-height:1.7;max-width:280px;margin-bottom:12px;">${ban.reason||"You have been restricted from this app."}</p>
+          <p style="font-size:11px;color:rgba(239,68,68,.6);">Until: ${until}</p>
+        </div>`;
+        return;
+      }
+      }
+    }catch(e){ console.warn("Settings load failed, using defaults",e); }
+
+    buildApp();
+    setupTapZone();
 
   if(window.FK_AUTH){
     window.FK_AUTH.onAuth(user=>{ _adminUser=user; });
@@ -635,8 +723,9 @@ function openAdmin(){
       <button onclick="admTab('products')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button>
       <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
       <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
-    </div>
-    <div style="flex:1;overflow-y:auto;" id="adm-content"></div>`;
+        <button onclick="admTab('users')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-users">Users</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;" id="adm-content"></div>`;
   panel.style.display="flex";
   admTab("orders");
   loadAdminOrders();
@@ -648,7 +737,7 @@ function closeAdmin(){
 
 function admTab(name){
   const t=THEMES[currentTheme]||THEMES.purple;
-  ["orders","products","themes","settings"].forEach(n=>{
+  ["orders","products","themes","settings","users"].forEach(n=>{
     const btn=document.getElementById("atb-"+n);
     if(!btn)return;
     const active=n===name;
@@ -661,6 +750,7 @@ function admTab(name){
   if(name==="products") renderAdmProducts(c);
   if(name==="themes")   renderAdmThemes(c);
   if(name==="settings") renderAdmSettings(c);
+  if(name==="users")    renderAdmUsers(c);
 }
 
 /* ORDERS TAB */
@@ -695,7 +785,7 @@ function renderAdmOrders(c){
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <input id="adm-search" oninput="filterAdmOrders()" type="text" placeholder="Search..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:white;font-size:12px;outline:none;font-family:Inter,sans-serif;">
       <select id="adm-filter" onchange="filterAdmOrders()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 10px;color:white;font-size:12px;outline:none;">
-        <option value="all">All</option><option value="pending">Pending</option><option value="complete">Complete</option>
+        <option value="all">Active</option><option value="pending">Pending</option><option value="complete">Complete</option><option value="archived">Archived</option>
       </select>
       <button onclick="loadAdminOrders()" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:9px 12px;color:#a855f7;font-size:12px;cursor:pointer;">↻</button>
     </div>
@@ -706,8 +796,9 @@ function renderAdmOrders(c){
 function filterAdmOrders(){
   const search=(document.getElementById("adm-search")?.value||"").toLowerCase();
   const filter=document.getElementById("adm-filter")?.value||"all";
-  let list=adminOrders;
-  if(filter!=="all") list=list.filter(o=>o.status===filter);
+  let list=adminOrders.filter(o=>o.status!=="archived");
+    if(filter==="archived") list=adminOrders.filter(o=>o.status==="archived");
+    else if(filter!=="all") list=list.filter(o=>o.status===filter);
   if(search) list=list.filter(o=>(o.id||"").toLowerCase().includes(search)||(o.customer?.name||"").toLowerCase().includes(search)||(o.customer?.grade||"").toLowerCase().includes(search));
   const el=document.getElementById("adm-orders-list");
   if(!el)return;
@@ -742,7 +833,7 @@ function filterAdmOrders(){
         </div>
         <div style="display:flex;gap:6px;">
           <button onclick="openStatusPicker('${o.id}','${o.status||"pending"}')" style="background:${st.bg};border:1px solid ${st.border};border-radius:10px;padding:7px 12px;color:${st.color};font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">Status ▾</button>
-          <button onclick="admDeleteOrder('${o.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">🗑</button>
+          <button onclick="admArchiveOrder('${o.id}')" title="Archive" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">✓ Done</button>
         </div>
       </div>
     </div>`;
@@ -755,7 +846,8 @@ const ORDER_STATUSES = [
   { key:"getting_product",    label:"Getting Product",        color:"#c084fc", bg:"rgba(192,132,252,.1)", border:"rgba(192,132,252,.25)" },
   { key:"waiting_school_day", label:"Waiting for School Day", color:"#f97316", bg:"rgba(249,115,22,.1)",  border:"rgba(249,115,22,.25)" },
   { key:"complete",           label:"Ready for Pickup ✓",     color:"#22c55e", bg:"rgba(34,197,94,.12)",  border:"rgba(34,197,94,.3)" },
-];
+    { key:"archived",           label:"Archived",               color:"rgba(255,255,255,.3)", bg:"rgba(255,255,255,.04)", border:"rgba(255,255,255,.1)" },
+  ];
 
 function getStatusStyle(key){
   return ORDER_STATUSES.find(s=>s.key===key) || ORDER_STATUSES[0];
@@ -788,12 +880,19 @@ function openStatusPicker(id, currentStatus){
   overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
 }
-async function admDeleteOrder(id){
-  if(!confirm("Delete this order permanently?"))return;
-  await window.FK_DB.deleteOrder(id);
-  adminOrders=adminOrders.filter(x=>x.id!==id);
-  filterAdmOrders();showToast("Order deleted");
-}
+  async function admArchiveOrder(id){
+    await window.FK_DB.updateOrderStatus(id,"archived");
+    adminOrders=adminOrders.filter(x=>x.id!==id);
+    filterAdmOrders();
+    renderAdmOrders(document.getElementById("adm-content"));
+    showToast("Order archived ✓");
+  }
+  async function admDeleteOrder(id){
+    if(!confirm("Permanently delete this order?"))return;
+    await window.FK_DB.deleteOrder(id);
+    adminOrders=adminOrders.filter(x=>x.id!==id);
+    filterAdmOrders();showToast("Order deleted");
+  }
 
 /* PRODUCTS TAB */
 function renderAdmProducts(c){
@@ -1066,6 +1165,10 @@ async function placeOrder(){
   const btn=document.getElementById("place-btn");
   btn.disabled=true;btn.innerHTML=`<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order...`;
   localStorage.setItem("fk_last_info",JSON.stringify({name,grade}));
+    try{
+      const hwid=getOrCreateHWID();
+      if(window.FK_DB) window.FK_DB.saveUserInfo(hwid,{name,grade,lastSeen:Date.now()}).catch(()=>{});
+    }catch(e){}
   const orderData={customer:{name,grade,date},items:cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),total:cartTotal(),status:"pending",created:Date.now()};
   try{
     if(!window.FK_DB) await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
@@ -1168,9 +1271,93 @@ function doLookup(){
   location.href="receipt.html?orderId="+id;
 }
 
-/* ── TOAST ── */
-let _tt;
-function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
+  /* ── USERS TAB ── */
+  async function renderAdmUsers(c){
+    if(!c)return;
+    c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.3rem;"></i></div>`;
+    try{
+      const [users, bans] = await Promise.all([
+        window.FK_DB.getAllUsers(),
+        window.FK_DB.getAllBans()
+      ]);
+      const banMap={};
+      bans.forEach(b=>{ banMap[b.hwid]=b; });
+      c.innerHTML=`<div style="padding:14px 16px;">
+        <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Users (${users.length})</p>
+        ${users.length===0?`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No users yet</p>`:
+          users.sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0)).map(u=>{
+            const ban=banMap[u.hwid];const isBanned=!!ban;
+            const untilStr=ban?(ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE")):"";
+            const lastSeen=u.lastSeen?new Date(u.lastSeen).toLocaleDateString("en-AE",{day:"2-digit",month:"short"}):"—";
+            return `<div style="background:rgba(255,255,255,.03);border:1px solid ${isBanned?"rgba(239,68,68,.2)":"rgba(255,255,255,.07)"};border-radius:14px;padding:13px;margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <div>
+                  <p style="font-weight:800;font-size:14px;">${u.name||"Unknown"}</p>
+                  <p style="font-size:12px;color:rgba(168,85,247,.7);margin-top:2px;">🎓 ${u.grade||"—"}</p>
+                  <p style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px;font-family:monospace;">ID: ${u.hwid?.substring(0,20)}...</p>
+                </div>
+                <div style="text-align:right;">
+                  ${isBanned?`<span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);">BANNED</span>`:""}
+                  <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">Last: ${lastSeen}</p>
+                </div>
+              </div>
+              ${isBanned?`<p style="font-size:11px;color:rgba(239,68,68,.7);margin-bottom:8px;">Reason: ${ban.reason||"No reason"} · Until: ${untilStr}</p>`:""}
+              <div style="display:flex;gap:7px;">
+                ${!isBanned
+                  ?`<button onclick="openBanModal('${u.hwid}','${(u.name||"").replace(/'/g,"\\'")}','${(u.grade||"").replace(/'/g,"\\'")}' )" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:6px 12px;color:#f87171;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">🚫 Ban</button>`
+                  :`<button onclick="admUnban('${u.hwid}')" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:6px 12px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">✓ Unban</button>`
+                }
+              </div>
+            </div>`;
+          }).join("")
+        }
+      </div>`;
+    }catch(e){
+      c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load users</p>`;
+    }
+  }
+
+  function openBanModal(hwid, name, grade){
+    let m=document.getElementById("ban-modal");
+    if(!m){m=document.createElement("div");m.id="ban-modal";document.body.appendChild(m);}
+    m.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);";
+    m.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(239,68,68,.2);border-radius:24px 24px 0 0;padding:24px;padding-bottom:calc(24px + var(--safe-bottom));">
+      <div style="width:40px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 18px;"></div>
+      <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:4px;">Ban User</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;">${name} · ${grade}</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Reason</label>
+          <input id="ban-reason" type="text" placeholder="e.g. Spam, misconduct..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+        </div>
+        <div>
+          <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Duration</label>
+          <select id="ban-duration" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;font-family:Inter,sans-serif;">
+            <option value="1">1 Hour</option><option value="24">1 Day</option><option value="168">1 Week</option><option value="720">1 Month</option><option value="0">Permanent</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="admBan('${hwid}')" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;border:none;border-radius:12px;font-weight:900;font-size:14px;text-transform:uppercase;cursor:pointer;font-family:Inter,sans-serif;">🚫 Confirm Ban</button>
+      <button onclick="document.getElementById('ban-modal').style.display='none'" style="width:100%;margin-top:8px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
+    </div>`;
+  }
+  async function admBan(hwid){
+    const reason=document.getElementById("ban-reason")?.value.trim()||"No reason given";
+    const duration=parseInt(document.getElementById("ban-duration")?.value||"24");
+    await window.FK_DB.banUser(hwid,reason,duration);
+    document.getElementById("ban-modal").style.display="none";
+    showToast("User banned");
+    renderAdmUsers(document.getElementById("adm-content"));
+  }
+  async function admUnban(hwid){
+    await window.FK_DB.unbanUser(hwid);
+    showToast("User unbanned");
+    renderAdmUsers(document.getElementById("adm-content"));
+  }
+
+  /* ── TOAST ── */
+  let _tt;
+  function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
 </script>
 </body>
 </html>
