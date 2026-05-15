@@ -32,55 +32,88 @@
     .w-anim-1{opacity:0;animation:wSub .55s ease .1s forwards;}
     .w-anim-2{opacity:0;animation:wIn  .7s cubic-bezier(.22,1,.36,1) .25s forwards;}
     .w-anim-3{opacity:0;animation:wSub .5s ease .5s forwards;}
+
+    /* ── CARD & IMAGE ── */
     .snack-card{
-        cursor:pointer;
-        transition:all .4s cubic-bezier(.175,.885,.32,1.275);
-        border-color:transparent !important;
-        position:relative;
-      }
-      .snack-card::before{
-        content:"";
-        position:absolute;inset:-1px;
-        border-radius:inherit;
-        padding:1.5px;
-        background:conic-gradient(from var(--angle,0deg), transparent 0%, #a855f7 25%, #c084fc 50%, transparent 75%);
-        -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite:xor;
-        mask-composite:exclude;
-        opacity:0;
-        transition:opacity .3s ease;
-        pointer-events:none;
-        z-index:1;
-      }
-      .snack-card.selected::before{
-        opacity:1;
-        animation:borderSpin 1.8s linear infinite;
-      }
-      @property --angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
-      @keyframes borderSpin{to{--angle:360deg;}}
-      .snack-card.selected{background:#0e0e0e;box-shadow:0 0 28px rgba(168,85,247,.18);}
-      .snack-shadow{filter:drop-shadow(0 20px 40px rgba(168,85,247,.3));transition:transform .8s cubic-bezier(.22,1,.36,1);object-fit:contain;width:100%;height:100%;pointer-events:none;}
-      .snack-card.selected .snack-shadow{transform:scale(1.08) translateY(-8px);}
-      .boba-adjust{transform:scale(2.2) translate(10px,40px);}
-      .selected .boba-adjust{transform:scale(2.35) translate(10px,42px);}
-      .tiger-milk-pos{transform:scale(1.8) translate(65px,20px);}
-      .selected .tiger-milk-pos{transform:scale(1.95) translate(70px,20px);}
-      .snack-card.selected .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos){
-        transform:scale(1.12) translateY(-10px);
-        filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
-      }
-      .image-container{height:480px;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden;background:radial-gradient(circle at center,rgba(168,85,247,.05) 0%,transparent 70%);}
+      cursor:pointer;
+      transition:all .4s cubic-bezier(.175,.885,.32,1.275);
+      border-color:transparent !important;
+      position:relative;
+    }
+    .snack-card::before{
+      content:"";
+      position:absolute;inset:-1px;
+      border-radius:inherit;
+      padding:1.5px;
+      background:conic-gradient(from var(--angle,0deg), transparent 0%, #a855f7 25%, #c084fc 50%, transparent 75%);
+      -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;
+      mask-composite:exclude;
+      opacity:0;
+      transition:opacity .3s ease;
+      pointer-events:none;
+      z-index:1;
+    }
+    .snack-card.selected::before{opacity:1;animation:borderSpin 1.8s linear infinite;}
+    @property --angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
+    @keyframes borderSpin{to{--angle:360deg;}}
+    .snack-card.selected{background:#0e0e0e;box-shadow:0 0 28px rgba(168,85,247,.18);}
+
+    .snack-shadow{
+      filter:drop-shadow(0 20px 40px rgba(168,85,247,.3));
+      transition:transform .8s cubic-bezier(.22,1,.36,1), filter .4s;
+      object-fit:contain;width:100%;height:100%;pointer-events:none;
+    }
+
+    /* Default (non-special) cards: start small, go big on select */
+    .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos){
+      transform:scale(0.82);
+    }
+    .snack-card.selected .snack-shadow:not(.boba-adjust):not(.tiger-milk-pos){
+      transform:scale(1.12) translateY(-10px);
+      filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
+    }
+
+    /* Boba: start small-ish, grow bigger on select */
+    .boba-adjust{transform:scale(1.7) translate(10px,38px);}
+    .selected .boba-adjust{transform:scale(2.3) translate(10px,42px);}
+
+    /* Tiger milk: keep exact position, just slightly larger on select */
+    .tiger-milk-pos{transform:scale(1.8) translate(65px,20px);}
+    .selected .tiger-milk-pos{transform:scale(1.95) translate(70px,20px);}
+
+    .image-container{
+      height:480px;display:flex;align-items:center;justify-content:center;
+      padding:1rem;position:relative;overflow:hidden;
+      background:radial-gradient(circle at center,rgba(168,85,247,.05) 0%,transparent 70%);
+    }
+
+    /* ── CART ── */
     .cart-sidebar{transition:transform .5s cubic-bezier(.32,.72,0,1);transform:translateX(100%);}
     .cart-sidebar.open{transform:translateX(0);}
+
+    /* ── SHINE ── */
     @keyframes shine-sweep{0%{transform:translateX(-200%) skewX(-20deg)}100%{transform:translateX(300%) skewX(-20deg)}}
     .shiny-wrap{position:relative;overflow:hidden;border-radius:9999px;}
     .shiny-wrap::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);animation:shine-sweep 2.4s linear infinite;border-radius:9999px;pointer-events:none;}
+
+    /* ── TOAST ── */
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);background:#a855f7;color:white;padding:1rem 2.5rem;border-radius:2rem;font-weight:900;text-transform:uppercase;font-style:italic;transition:all .4s;z-index:9000;box-shadow:0 15px 40px rgba(168,85,247,.5);opacity:0;pointer-events:none;}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
     .tap-active:active{transform:scale(.96);}
     .tab-btn{position:relative;}
     .tab-btn.active::after{content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:#a855f7;border-radius:2px;}
-    /* LOADER */
+
+    /* ── BOTTOM NAV: very transparent ── */
+    .bottom-nav{
+      position:fixed;bottom:0;left:0;right:0;z-index:100;
+      background:rgba(5,5,5,0.25);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border-top:1px solid rgba(255,255,255,0.04);
+      padding-bottom:var(--safe-bottom);
+    }
+
+    /* ── LOADER ── */
     #loader{position:fixed;inset:0;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;overflow-y:auto;}
     #loader.fade-out{animation:loaderExit .6s ease forwards;}
     @keyframes loaderExit{0%{opacity:1}100%{opacity:0;visibility:hidden}}
@@ -103,11 +136,12 @@
     #prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#c084fc);border-radius:2px;transition:width .25s ease;}
     #loader-label{margin-top:14px;font-weight:900;letter-spacing:.55em;font-size:10px;text-transform:uppercase;color:rgba(168,85,247,.6);font-style:italic;animation:labelPulse 1.4s ease-in-out infinite;}
     @keyframes labelPulse{0%,100%{opacity:.3}50%{opacity:1}}
+    #loader-skip-btn{margin-top:18px;background:none;border:1px solid rgba(168,85,247,.3);color:rgba(168,85,247,.7);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:800;letter-spacing:.08em;cursor:pointer;font-family:Inter,sans-serif;display:none;text-transform:uppercase;}
+    #loader-skip-btn:active{transform:scale(.95);}
     #app{display:none;}
     #app.entering{animation:appEnter .6s cubic-bezier(.22,1,.36,1) forwards;}
     @keyframes appEnter{from{opacity:0}to{opacity:1}}
     @keyframes waPulse{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,0)}50%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 13px rgba(37,211,102,0)}}
-    #tap-zone{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;}
     /* SITE DOWN */
     #site-down-overlay{position:fixed;inset:0;background:#050505;z-index:8888;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
     @keyframes sdPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
@@ -132,6 +166,7 @@
   </div>
   <div id="prog-bar"><div id="prog-fill"></div></div>
   <div id="loader-label">Loading</div>
+  <button id="loader-skip-btn" onclick="skipLoading()">Skip Loading</button>
 </div>
 
 <!-- SITE DOWN PAGE -->
@@ -147,7 +182,6 @@
 <!-- APP -->
 <div id="app"></div>
 <div id="toast" class="toast"></div>
-<div id="tap-zone"></div>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -173,7 +207,6 @@ try{ getAnalytics(fbApp); }catch(e){}
 const db        = getFirestore(fbApp);
 const auth      = getAuth(fbApp);
 const gProvider = new GoogleAuthProvider();
-
 const ADMIN_EMAIL = "narisaidova@gmail.com";
 
 window.FK_DB = {
@@ -191,10 +224,10 @@ window.FK_DB = {
     return snap.docs.map(d=>({id:d.id,...d.data()}));
   },
   async markComplete(id){ await updateDoc(doc(db,"orders",id),{status:"complete"}); },
-  async updateOrderStatus(id, status){ await updateDoc(doc(db,"orders",id),{status}); },
+  async updateOrderStatus(id,status){ await updateDoc(doc(db,"orders",id),{status}); },
   async deleteOrder(id){ await deleteDoc(doc(db,"orders",id)); },
   async getSettings(){
-    try{ const snap=await getDoc(doc(db,"config","settings")); return snap.exists()?snap.data():{}; }
+    try{ const snap=await getDoc(doc(db,"config","settings")); return snap.exists()?snap.data():{} }
     catch(e){ return {}; }
   },
   async saveSettings(data){ await setDoc(doc(db,"config","settings"),data,{merge:true}); },
@@ -203,52 +236,38 @@ window.FK_DB = {
     catch(e){ return null; }
   },
   async saveProducts(list){ await setDoc(doc(db,"config","products"),{list}); },
-
-    async saveUserInfo(hwid, info){
-      await setDoc(doc(db,"users",hwid), info, {merge:true});
-    },
-    async getAllUsers(){
-      try{
-        const snap = await getDocs(collection(db,"users"));
-        return snap.docs.map(d=>({hwid:d.id,...d.data()}));
-      }catch(e){ return []; }
-    },
-    async banUser(hwid, reason, durationHours){
-      const until = durationHours===0 ? 0 : Date.now() + durationHours*60*60*1000;
-      await setDoc(doc(db,"bans",hwid),{reason, until, bannedAt:Date.now()},{merge:true});
-    },
-    async unbanUser(hwid){ await deleteDoc(doc(db,"bans",hwid)); },
-    async checkBan(hwid){
-      try{
-        const snap = await getDoc(doc(db,"bans",hwid));
-        if(!snap.exists()) return null;
-        const ban = snap.data();
-        if(ban.until !== 0 && Date.now() > ban.until){
-          await deleteDoc(doc(db,"bans",hwid));
-          return null;
-        }
-        return ban;
-      }catch(e){ return null; }
-    },
-    async getAllBans(){
-      try{
-        const snap = await getDocs(collection(db,"bans"));
-        return snap.docs.map(d=>({hwid:d.id,...d.data()}));
-      }catch(e){ return []; }
-    },
-  };
-
-window.FK_AUTH = {
-  async signInGoogle(){
-    const result = await signInWithPopup(auth,gProvider);
-    return result.user;
+  async saveUserInfo(hwid,info){ await setDoc(doc(db,"users",hwid),info,{merge:true}); },
+  async getAllUsers(){
+    try{ const snap=await getDocs(collection(db,"users")); return snap.docs.map(d=>({hwid:d.id,...d.data()})); }
+    catch(e){ return []; }
   },
-  async signOut(){ await signOut(auth); },
-  onAuth(cb){ return onAuthStateChanged(auth,cb); },
-  isAdmin(user){ return user && user.email===ADMIN_EMAIL; }
+  async banUser(hwid,reason,durationHours){
+    const until=durationHours===0?0:Date.now()+durationHours*60*60*1000;
+    await setDoc(doc(db,"bans",hwid),{reason,until,bannedAt:Date.now()},{merge:true});
+  },
+  async unbanUser(hwid){ await deleteDoc(doc(db,"bans",hwid)); },
+  async checkBan(hwid){
+    try{
+      const snap=await getDoc(doc(db,"bans",hwid));
+      if(!snap.exists()) return null;
+      const ban=snap.data();
+      if(ban.until!==0&&Date.now()>ban.until){ await deleteDoc(doc(db,"bans",hwid)); return null; }
+      return ban;
+    }catch(e){ return null; }
+  },
+  async getAllBans(){
+    try{ const snap=await getDocs(collection(db,"bans")); return snap.docs.map(d=>({hwid:d.id,...d.data()})); }
+    catch(e){ return []; }
+  }
 };
 
-// FIX: Set flag BEFORE dispatching so bootApp never misses the event
+window.FK_AUTH = {
+  async signInGoogle(){ const r=await signInWithPopup(auth,gProvider); return r.user; },
+  async signOut(){ await signOut(auth); },
+  onAuth(cb){ return onAuthStateChanged(auth,cb); },
+  isAdmin(user){ return user&&user.email===ADMIN_EMAIL; }
+};
+
 window._fkReady = true;
 window.dispatchEvent(new Event("fk-ready"));
 </script>
@@ -257,6 +276,7 @@ window.dispatchEvent(new Event("fk-ready"));
 <script>
 const drive = id=>`https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
 const ICON_HOME = "https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500";
+const LOGO_URL  = "https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w1000";
 
 const DEFAULT_SNACKS = [
   {id:1,name:"Tiger Fresh Milk",   price:20,img:drive("19o__91KB2EsotwLSIr0x63ygLdE0QhfR"),isTiger:true, category:"boba",  desc:"premium fresh milk with tiger sugar stripes and boba"},
@@ -280,14 +300,14 @@ let selectedSnack=null, currentFilter="all";
 let adminOrders  =[], _adminUser=null, _pendingOrder=null;
 let GROUP_LINK   ="https://chat.whatsapp.com/H0lRM4emjMO4sVlsjyGGlq";
 let YT           ="https://youtube.com/@faresking";
-
 let tapCount=0, tapTimer=null;
+let _loaderDone  = false;
 
-  function getOrCreateHWID(){
-    let h=localStorage.getItem("fk_hwid");
-    if(!h){ h="hwid_"+Math.random().toString(36).substr(2,16)+"_"+Date.now().toString(36); localStorage.setItem("fk_hwid",h); }
-    return h;
-  }
+function getOrCreateHWID(){
+  let h=localStorage.getItem("fk_hwid");
+  if(!h){ h="hwid_"+Math.random().toString(36).substr(2,16)+"_"+Date.now().toString(36); localStorage.setItem("fk_hwid",h); }
+  return h;
+}
 
 function applyTheme(key,saveGlobal=false){
   const t=THEMES[key]||THEMES.purple;
@@ -303,7 +323,29 @@ function applyTheme(key,saveGlobal=false){
 }
 applyTheme(currentTheme);
 
-/* ── HELPERS ── */
+/* ─────────────────────────────────────────
+   IMAGE PRELOADER WITH 30s TIMEOUT
+───────────────────────────────────────── */
+let _skipAllowed = false;
+let _skipTimer   = null;
+
+function preloadImages(urls){
+  return Promise.all(urls.map(url=>new Promise(resolve=>{
+    const img=new Image();
+    img.onload=img.onerror=resolve; // resolve on either load or error — never stall
+    img.src=url;
+  })));
+}
+
+function skipLoading(){
+  if(!_skipAllowed) return;
+  clearTimeout(_skipTimer);
+  _loaderDone=true;
+  hideLoader();
+  setTimeout(()=>{ revealApp(); bootApp(); },100);
+}
+
+/* ── LOADER HELPERS ── */
 function showLoader(){
   const l=document.getElementById("loader");
   if(l){ l.style.display="flex"; l.classList.remove("fade-out"); }
@@ -319,54 +361,87 @@ function revealApp(){
   if(app){ app.style.display="block"; app.classList.add("entering"); }
 }
 
-/* ── LAUNCH WITH PROGRESS BAR ── */
-function runLoader(cb){
-  const fill=document.getElementById("prog-fill");
+/* ── LOADER: wait for all images, then launch ── */
+function runLoaderWithImages(cb){
+  const fill  = document.getElementById("prog-fill");
+  const label = document.getElementById("loader-label");
+  const skipBtn = document.getElementById("loader-skip-btn");
   showLoader();
-  let pct=0;
-  const pi=setInterval(()=>{ pct=Math.min(pct+(Math.random()*18+5),92); fill.style.width=pct+"%"; },160);
-  setTimeout(()=>{
-    clearInterval(pi); fill.style.width="100%";
-    setTimeout(()=>{ hideLoader(); setTimeout(cb,100); },300);
-  },1800);
+
+  const imgUrls = [LOGO_URL, ...DEFAULT_SNACKS.map(s=>s.img)];
+  let pct = 0;
+  let imagesLoaded = false;
+
+  // Animate progress bar regardless
+  const pi = setInterval(()=>{
+    if(imagesLoaded){
+      pct = Math.min(pct+15, 100);
+      fill.style.width = pct+"%";
+      if(pct>=100){ clearInterval(pi); }
+    } else {
+      pct = Math.min(pct+(Math.random()*8+3), 88);
+      fill.style.width = pct+"%";
+    }
+  }, 160);
+
+  // Show skip button after 30 seconds
+  _skipTimer = setTimeout(()=>{
+    _skipAllowed = true;
+    if(label) label.textContent = "Taking long time...";
+    if(skipBtn) skipBtn.style.display = "block";
+  }, 30000);
+
+  // Load all images
+  preloadImages(imgUrls).then(()=>{
+    imagesLoaded = true;
+    clearInterval(pi);
+    // Small extra pause so bar visibly hits 100%
+    fill.style.width = "100%";
+    setTimeout(()=>{
+      clearTimeout(_skipTimer);
+      hideLoader();
+      setTimeout(cb, 100);
+    }, 400);
+  });
 }
 
-/* ── PWA CHECK + LOADER ── */
+/* ── PWA / INSTALL DETECTION ── */
 (function(){
   const isStandalone =
     window.navigator.standalone === true ||
     window.matchMedia("(display-mode:standalone)").matches ||
     window.matchMedia("(display-mode:fullscreen)").matches;
 
-  // FIX: also treat as "installed" if user previously completed a boot from installed mode
   const wasInstalled = !!localStorage.getItem("fk_was_installed");
 
-  if(isStandalone){
-    // Running as installed PWA — mark it and launch
-    localStorage.setItem("fk_was_installed","1");
-    runLoader(()=>{ revealApp(); bootApp(); });
-
+  if(isStandalone || wasInstalled){
+    if(isStandalone) localStorage.setItem("fk_was_installed","1");
+    runLoaderWithImages(()=>{ revealApp(); bootApp(); });
   } else {
-    // Running in browser
     const dismissed = localStorage.getItem("fk_install_dismissed");
     if(!dismissed){
+      // Hide loader and show install guide instead
+      document.getElementById("loader").style.display="none";
       showInstallGuide();
     } else {
-      runLoader(()=>{ revealApp(); bootApp(); });
+      runLoaderWithImages(()=>{ revealApp(); bootApp(); });
     }
   }
 })();
 
 /* ── INSTALL GUIDE ── */
 function showInstallGuide(){
-  const loader=document.getElementById("loader");
-  const isAndroid=/android/i.test(navigator.userAgent);
-  const steps=isAndroid?[
+  const loader = document.getElementById("loader");
+  loader.style.display = "flex";
+  loader.style.overflowY = "auto";
+
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const steps = isAndroid ? [
     ["Open in Chrome","Make sure you're using Chrome, not another browser."],
     ["Tap the ⋮ menu","Tap the three dots in the top-right corner."],
     ["Add to Home screen","Tap \"Add to Home screen\" then tap Add."],
     ["Open from Home Screen","Tap the Fares King icon on your home screen."]
-  ]:[
+  ] : [
     ["Open in Safari","Must be Safari — not Chrome or any other browser."],
     ["Tap the Share icon","The box-with-arrow icon at the bottom of Safari."],
     ["Add to Home Screen","Scroll the share sheet and tap \"Add to Home Screen\"."],
@@ -374,10 +449,22 @@ function showInstallGuide(){
     ["Open from Home Screen","Open the app from your Home Screen icon — not Safari."]
   ];
 
-  loader.style.overflowY="auto";
-  loader.innerHTML=`
-    <style>@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}@keyframes glow2{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}</style>
+  loader.innerHTML = `
+    <style>
+      @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+      @keyframes glow2{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+      #install-continue-btn{
+        display:inline-flex;align-items:center;justify-content:center;gap:8px;
+        margin-top:24px;padding:14px 28px;
+        background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);
+        border-radius:100px;color:rgba(168,85,247,.8);
+        font-family:Inter,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;
+        text-transform:uppercase;cursor:pointer;
+      }
+      #install-continue-btn:active{transform:scale(.96);}
+    </style>
     <div style="width:100%;max-width:390px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 24px 48px;box-sizing:border-box;">
+
       <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:100px;padding:6px 16px;margin-bottom:32px;">
         <div style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.8);animation:blink 1s ease-in-out infinite;flex-shrink:0;"></div>
         <span style="color:#ef4444;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;">Website Detected</span>
@@ -401,7 +488,8 @@ function showInstallGuide(){
       <p style="font-size:10px;letter-spacing:.25em;color:rgba(255,255,255,.28);text-transform:uppercase;font-weight:900;margin-bottom:18px;align-self:flex-start;">${isAndroid?"Android — Chrome":"iOS — Safari"}</p>
 
       <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
-        ${steps.map((s,i)=>`<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
+        ${steps.map((s,i)=>`
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
           <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
           <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s[0]}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s[1]}</p></div>
         </div>`).join("")}
@@ -411,42 +499,46 @@ function showInstallGuide(){
         <p style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;">Once installed, open from your Home Screen and this screen won't appear again.</p>
       </div>
 
+      <button id="install-continue-btn">Continue anyway →</button>
     </div>`;
 
-  // FIX: Use addEventListener instead of inline onclick so bootApp is always in scope
-  const _continueBtnEl=document.getElementById("continue-btn");
-  if(_continueBtnEl) _continueBtnEl.addEventListener("click", function(){
-    localStorage.setItem("fk_install_dismissed","1");
-    // Rebuild the loader spinner HTML then run
-    loader.style.overflowY="hidden";
-    loader.innerHTML=`
-      <div id="logo-spin-wrap" style="position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;">
-        <div id="logo-halo" style="position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.25) 0%,transparent 70%);animation:haloPulse 1.8s ease-in-out infinite;"></div>
-        <div id="logo-ring" style="position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;border-top-color:#a855f7;border-right-color:rgba(168,85,247,.3);animation:ringRotate 1s linear infinite;"></div>
-        <div id="logo-ring2" style="position:absolute;inset:-13px;border-radius:50%;border:1px solid transparent;border-bottom-color:rgba(168,85,247,.2);animation:ringRotate 1.7s linear infinite reverse;"></div>
-        <img id="logo-img" src="https://drive.google.com/thumbnail?id=1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I&sz=w1000" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(168,85,247,.6);position:relative;z-index:2;animation:logoSpin 1.4s cubic-bezier(.22,1,.36,1) infinite;box-shadow:0 0 30px rgba(168,85,247,.35);">
-      </div>
-      <div id="prog-bar" style="width:120px;height:2px;background:rgba(168,85,247,.12);border-radius:2px;overflow:hidden;margin-top:28px;">
-        <div id="prog-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#c084fc);border-radius:2px;transition:width .25s ease;"></div>
-      </div>
-      <div id="loader-label" style="margin-top:14px;font-weight:900;letter-spacing:.55em;font-size:10px;text-transform:uppercase;color:rgba(168,85,247,.6);font-style:italic;animation:labelPulse 1.4s ease-in-out infinite;">Loading</div>`;
-    runLoader(()=>{ revealApp(); bootApp(); });
-  });
+  // Attach handler after DOM is written
+  setTimeout(()=>{
+    const btn = document.getElementById("install-continue-btn");
+    if(btn){
+      btn.addEventListener("click", function(){
+        localStorage.setItem("fk_install_dismissed","1");
+        // Rebuild the spinner
+        loader.style.overflowY = "hidden";
+        loader.innerHTML = `
+          <div id="logo-spin-wrap" style="position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;">
+            <div id="logo-halo" style="position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.25) 0%,transparent 70%);animation:haloPulse 1.8s ease-in-out infinite;"></div>
+            <div id="logo-ring" style="position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;border-top-color:#a855f7;border-right-color:rgba(168,85,247,.3);animation:ringRotate 1s linear infinite;"></div>
+            <div id="logo-ring2" style="position:absolute;inset:-13px;border-radius:50%;border:1px solid transparent;border-bottom-color:rgba(168,85,247,.2);animation:ringRotate 1.7s linear infinite reverse;"></div>
+            <img id="logo-img" src="${LOGO_URL}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(168,85,247,.6);position:relative;z-index:2;animation:logoSpin 1.4s cubic-bezier(.22,1,.36,1) infinite;box-shadow:0 0 30px rgba(168,85,247,.35);"
+              onerror="this.style.display='none';document.getElementById('logo-img-fb2').style.display='flex'">
+            <div id="logo-img-fb2" style="display:none;width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#6b21a8,#3b0764);align-items:center;justify-content:center;font-family:'Archivo Black',sans-serif;font-size:2.5rem;color:white;border:2px solid rgba(168,85,247,.6);animation:logoSpin 1.4s cubic-bezier(.22,1,.36,1) infinite;box-shadow:0 0 30px rgba(168,85,247,.35);">F</div>
+          </div>
+          <div id="prog-bar" style="width:120px;height:2px;background:rgba(168,85,247,.12);border-radius:2px;overflow:hidden;margin-top:28px;">
+            <div id="prog-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#c084fc);border-radius:2px;transition:width .25s ease;"></div>
+          </div>
+          <div id="loader-label" style="margin-top:14px;font-weight:900;letter-spacing:.55em;font-size:10px;text-transform:uppercase;color:rgba(168,85,247,.6);font-style:italic;animation:labelPulse 1.4s ease-in-out infinite;">Loading</div>
+          <button id="loader-skip-btn" onclick="skipLoading()" style="margin-top:18px;background:none;border:1px solid rgba(168,85,247,.3);color:rgba(168,85,247,.7);padding:8px 20px;border-radius:100px;font-size:11px;font-weight:800;letter-spacing:.08em;cursor:pointer;font-family:Inter,sans-serif;display:none;text-transform:uppercase;">Skip Loading</button>`;
+        runLoaderWithImages(()=>{ revealApp(); bootApp(); });
+      });
+    }
+  }, 50);
 }
 
 /* ── BOOT ── */
 async function bootApp(){
-  // FIX: Check flag first — event may have already fired before bootApp was called
   if(!window.FK_DB && !window._fkReady){
     await new Promise(r=>{
-      const t = setTimeout(r, 5000); // max 5s fallback
-      window.addEventListener("fk-ready", ()=>{ clearTimeout(t); r(); }, {once:true});
+      const t=setTimeout(r,5000);
+      window.addEventListener("fk-ready",()=>{clearTimeout(t);r();},{once:true});
     });
   }
-  // Small extra wait if FK_DB still isn't assigned (race condition)
-  if(!window.FK_DB){
-    await new Promise(r=>setTimeout(r,500));
-  }
+  if(!window.FK_DB){ await new Promise(r=>setTimeout(r,500)); }
 
   try{
     if(window.FK_DB){
@@ -466,75 +558,64 @@ async function bootApp(){
       }
       const remote=await window.FK_DB.getProducts();
       if(remote&&remote.length>0) SNACKS=remote;
-
-      const HWID = getOrCreateHWID();
-      const ban = await window.FK_DB.checkBan(HWID);
+      const HWID=getOrCreateHWID();
+      const ban=await window.FK_DB.checkBan(HWID);
       if(ban){
-        const until = ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE");
-        const loader=document.getElementById("loader");
-        if(loader) loader.style.display="none";
+        const until=ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE");
         const app=document.getElementById("app");
-        if(app){ app.style.display="block"; }
-        app.innerHTML=`<div style="position:fixed;inset:0;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
-          <div style="width:64px;height:64px;border-radius:18px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-            <i class="fas fa-ban" style="color:#ef4444;font-size:1.6rem;"></i>
-          </div>
-          <h2 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Access Restricted</h2>
-          <p style="font-size:13px;color:rgba(255,255,255,.4);line-height:1.7;max-width:280px;margin-bottom:12px;">${ban.reason||"You have been restricted from this app."}</p>
-          <p style="font-size:11px;color:rgba(239,68,68,.6);">Until: ${until}</p>
-        </div>`;
+        if(app){
+          app.style.display="block";
+          app.innerHTML=`<div style="position:fixed;inset:0;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;">
+            <div style="width:64px;height:64px;border-radius:18px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+              <i class="fas fa-ban" style="color:#ef4444;font-size:1.6rem;"></i>
+            </div>
+            <h2 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Access Restricted</h2>
+            <p style="font-size:13px;color:rgba(255,255,255,.4);line-height:1.7;max-width:280px;margin-bottom:12px;">${ban.reason||"You have been restricted from this app."}</p>
+            <p style="font-size:11px;color:rgba(239,68,68,.6);">Until: ${until}</p>
+          </div>`;
+        }
         return;
       }
-      }
-    }catch(e){ console.warn("Settings load failed, using defaults",e); }
+    }
+  }catch(e){ console.warn("Settings load failed, using defaults",e); }
 
-    buildApp();
-    setupTapZone();
-
-  if(window.FK_AUTH){
-    window.FK_AUTH.onAuth(user=>{ _adminUser=user; });
-  }
+  buildApp();
+  setupTapZone();
+  if(window.FK_AUTH){ window.FK_AUTH.onAuth(user=>{ _adminUser=user; }); }
 }
 
-/* ── TAP ZONE ── */
+/* ── TAP ZONE (title tap 5×) ── */
 function setupTapZone(){
-  const NEEDED   = 5;
-  const WINDOW   = 2000;
-  const COOLDOWN = 5*60*1000;
-  let lastTrigger = 0;
-
+  const NEEDED=5, WINDOW=2000, COOLDOWN=5*60*1000;
+  let lastTrigger=0;
   function attachToTitle(){
-    const title = document.querySelector("h1.font-display");
-    if(!title) return;
-    title.style.userSelect = "none";
-    title.style.webkitUserSelect = "none";
-
+    const title=document.querySelector("h1.font-display");
+    if(!title)return;
+    title.style.userSelect="none";title.style.webkitUserSelect="none";
     function onTap(e){
       e.stopPropagation();
-      const now = Date.now();
-      if(now - lastTrigger < COOLDOWN) return;
-      if(tapCount > 0 && now - (window._lastAdminTap||0) > WINDOW){ tapCount = 0; }
-      window._lastAdminTap = now;
-      tapCount++;
-      if(tapCount >= NEEDED){ tapCount = 0; lastTrigger = now; openAdminSignin(); }
+      const now=Date.now();
+      if(now-lastTrigger<COOLDOWN)return;
+      if(tapCount>0&&now-(window._lastAdminTap||0)>WINDOW) tapCount=0;
+      window._lastAdminTap=now; tapCount++;
+      if(tapCount>=NEEDED){tapCount=0;lastTrigger=now;openAdminSignin();}
     }
-    title.addEventListener("click", onTap);
-    title.addEventListener("touchend", onTap, {passive:true});
+    title.addEventListener("click",onTap);
+    title.addEventListener("touchend",onTap,{passive:true});
   }
-
   attachToTitle();
-  setTimeout(attachToTitle, 500);
-  setTimeout(attachToTitle, 1500);
+  setTimeout(attachToTitle,500);
+  setTimeout(attachToTitle,1500);
 }
 
-/* ── BUILD APP HTML ── */
+/* ── BUILD APP ── */
 function buildApp(){
   document.getElementById("app").innerHTML=`
     <!-- TOP NAV -->
     <div class="fixed top-0 left-0 right-0 z-[100] bg-[#050505]/95 backdrop-blur-md border-b border-white/5" style="padding-top:var(--safe-top)">
       <div class="flex items-center justify-between px-4 py-3">
         <div class="flex items-center gap-3">
-          <img src="${drive("1jBkacG_Wj8_o7OcVYp6U1rjVb5iLts6I")}" class="w-9 h-9 rounded-full border border-purple-600/50 object-cover" loading="lazy" onerror="this.style.display='none'">
+          <img src="${LOGO_URL}" class="w-9 h-9 rounded-full border border-purple-600/50 object-cover" loading="lazy" onerror="this.style.display='none'">
           <div>
             <p class="font-display text-[15px] uppercase italic">Fares <span class="king-gradient">King</span></p>
             <p class="text-[9px] tracking-[0.4em] text-purple-400/60 uppercase -mt-0.5">SuperMarket</p>
@@ -607,7 +688,8 @@ function buildApp(){
           <span class="text-white/40 text-sm">Total</span>
           <span id="co-total" class="font-display text-2xl">AED 0</span>
         </div>
-        <button id="place-btn" onclick="placeOrder()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(168,85,247,.4)">Place Order</button>
+        <button id="place-btn" onclick="placeOrder()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden"
+          style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(var(--accent-rgb),.4)">Place Order</button>
       </div>
     </div>
 
@@ -621,32 +703,17 @@ function buildApp(){
       <div id="cart-items" style="max-height:55vh;overflow-y:auto;padding:12px 20px;"></div>
       <div class="px-5 py-4 border-t border-white/5" style="padding-bottom:calc(1rem + var(--safe-bottom))">
         <div class="flex justify-between mb-3"><span class="text-white/40 text-sm">Total</span><span id="cart-total-txt" class="font-display text-xl">AED 0</span></div>
-        <button onclick="goCheckout()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(168,85,247,.35)">Checkout <i class="fas fa-arrow-right ml-2"></i></button>
+        <button onclick="goCheckout()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden"
+          style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(var(--accent-rgb),.35)">Checkout <i class="fas fa-arrow-right ml-2"></i></button>
       </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <div class="fixed bottom-0 left-0 right-0 z-[100] bg-[#050505]/97 border-t border-white/5" style="padding-bottom:var(--safe-bottom)">
+    <!-- BOTTOM NAV — very transparent -->
+    <div class="bottom-nav">
       <div class="flex justify-around py-2">
-        <button onclick="showMain()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-store text-purple-500 text-lg"></i><span class="text-purple-500 text-[9px] font-black tracking-widest uppercase">Shop</span></button>
-        <button onclick="openCart()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-bag-shopping text-white/30 text-lg"></i><span class="text-white/30 text-[9px] font-black tracking-widest uppercase">Cart</span></button>
-        <button onclick="openOrderLookup()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-receipt text-white/30 text-lg"></i><span class="text-white/30 text-[9px] font-black tracking-widest uppercase">Orders</span></button>
-      </div>
-    </div>
-
-
-    <!-- ORDER LOOKUP MODAL -->
-    <div id="lookup-modal" class="hidden fixed inset-0 z-[600] flex items-end bg-black/80 backdrop-blur-sm">
-      <div class="w-full bg-[#0d0d16] border-t border-white/10 rounded-t-3xl p-6" style="padding-bottom:calc(1.5rem + var(--safe-bottom))">
-        <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-5"></div>
-        <h3 class="font-display text-xl uppercase italic mb-1">Track Order</h3>
-        <p class="text-white/30 text-xs mb-4">Enter your Order ID</p>
-        <div class="relative">
-          <input id="lookup-inp" type="text" placeholder="Paste your Order ID..." class="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 pr-14 py-3.5 text-white text-sm outline-none focus:border-purple-500 transition-all placeholder-white/20">
-          <button onclick="doLookup()" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center tap-active"><i class="fas fa-search text-white text-xs"></i></button>
-        </div>
-        <p id="lookup-err" class="text-red-400 text-xs mt-2 hidden"></p>
-        <button onclick="closeLookup()" class="w-full mt-3 py-3 text-white/30 text-sm border border-white/5 rounded-2xl">Cancel</button>
+        <button onclick="showMain()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-store text-lg" style="color:var(--accent)"></i><span class="text-[9px] font-black tracking-widest uppercase" style="color:var(--accent)">Shop</span></button>
+        <button onclick="openCart()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-bag-shopping text-white/40 text-lg"></i><span class="text-white/40 text-[9px] font-black tracking-widest uppercase">Cart</span></button>
+        <button onclick="openOrderLookup()" class="flex flex-col items-center gap-1 px-5 py-2"><i class="fas fa-receipt text-white/40 text-lg"></i><span class="text-white/40 text-[9px] font-black tracking-widest uppercase">Orders</span></button>
       </div>
     </div>
 
@@ -659,7 +726,8 @@ function buildApp(){
           <div><h3 class="font-display text-lg uppercase italic">Send Order</h3><p class="text-white/30 text-xs">Ready to share</p></div>
         </div>
         <div id="share-preview" class="bg-white/[0.025] border border-white/8 rounded-2xl p-4 mb-4 text-xs text-white/50 leading-relaxed font-mono whitespace-pre-wrap max-h-44 overflow-y-auto"></div>
-        <button onclick="sendToWhatsApp()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white flex items-center justify-center gap-2 mb-2" style="background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 8px 24px rgba(37,211,102,.35)"><i class="fab fa-whatsapp text-base"></i> Send to Group</button>
+        <button onclick="sendToWhatsApp()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white flex items-center justify-center gap-2 mb-2"
+          style="background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 8px 24px rgba(37,211,102,.35)"><i class="fab fa-whatsapp text-base"></i> Send to Group</button>
         <button onclick="closeShareModal()" class="w-full py-3 text-white/30 text-xs">Skip for now</button>
       </div>
     </div>
@@ -669,68 +737,48 @@ function buildApp(){
   updateCartUI();
 }
 
-/* ── ADMIN SIGN-IN ── */
+/* ── ADMIN SIGN IN ── */
 function openAdminSignin(){
-  if(_adminUser && window.FK_AUTH && window.FK_AUTH.isAdmin(_adminUser)){ openAdmin(); return; }
+  if(_adminUser&&window.FK_AUTH&&window.FK_AUTH.isAdmin(_adminUser)){openAdmin();return;}
   let screen=document.getElementById("admin-signin-screen");
   if(!screen){
-    screen=document.createElement("div");
-    screen.id="admin-signin-screen";
+    screen=document.createElement("div");screen.id="admin-signin-screen";
     screen.style.cssText="position:fixed;inset:0;z-index:9990;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;";
-    screen.innerHTML=`<div style="width:64px;height:64px;border-radius:18px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"> <i class="fas fa-shield-halved" style="color:#a855f7;font-size:1.4rem;"></i> </div> <h3 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Admin Access</h3> <p style="font-size:13px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;margin-bottom:32px;max-width:260px;">Sign in with your Google account to access the admin panel.</p> <button class="google-btn" onclick="doAdminSignIn()"> <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google </button> <p id="admin-signin-err" style="color:#f87171;font-size:12px;margin-top:14px;text-align:center;display:none;max-width:260px;"></p> <button onclick="closeAdminSignin()" style="margin-top:16px;background:none;border:none;color:rgba(255,255,255,.25);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>`;
+    screen.innerHTML=`
+      <div style="width:64px;height:64px;border-radius:18px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"><i class="fas fa-shield-halved" style="color:#a855f7;font-size:1.4rem;"></i></div>
+      <h3 style="font-family:'Archivo Black',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:-0.03em;margin-bottom:8px;">Admin Access</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;margin-bottom:32px;max-width:260px;">Sign in with your Google account to access the admin panel.</p>
+      <button class="google-btn" onclick="doAdminSignIn()">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign in with Google
+      </button>
+      <p id="admin-signin-err" style="color:#f87171;font-size:12px;margin-top:14px;text-align:center;display:none;max-width:260px;"></p>
+      <button onclick="closeAdminSignin()" style="margin-top:16px;background:none;border:none;color:rgba(255,255,255,.25);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>`;
     document.body.appendChild(screen);
   }
   screen.style.display="flex";
 }
-function closeAdminSignin(){
-  const s=document.getElementById("admin-signin-screen");
-  if(s) s.style.display="none";
-}
+function closeAdminSignin(){const s=document.getElementById("admin-signin-screen");if(s)s.style.display="none";}
 async function doAdminSignIn(){
-  const err=document.getElementById("admin-signin-err");
-  err.style.display="none";
+  const err=document.getElementById("admin-signin-err");err.style.display="none";
   try{
     const user=await window.FK_AUTH.signInGoogle();
-    if(!window.FK_AUTH.isAdmin(user)){
-      await window.FK_AUTH.signOut();
-      err.textContent="Access denied — this account is not authorised.";
-      err.style.display="block";
-      return;
-    }
-    _adminUser=user;
-    closeAdminSignin();
-    openAdmin();
-  }catch(e){
-    err.textContent="Sign in failed. Make sure popups are allowed and try again.";
-    err.style.display="block";
-  }
+    if(!window.FK_AUTH.isAdmin(user)){await window.FK_AUTH.signOut();err.textContent="Access denied — this account is not authorised.";err.style.display="block";return;}
+    _adminUser=user;closeAdminSignin();openAdmin();
+  }catch(e){err.textContent="Sign in failed. Make sure popups are allowed and try again.";err.style.display="block";}
 }
-async function doAdminSignOut(){
-  await window.FK_AUTH.signOut();
-  _adminUser=null;
-  closeAdmin();
-  showToast("Signed out");
-}
+async function doAdminSignOut(){await window.FK_AUTH.signOut();_adminUser=null;closeAdmin();showToast("Signed out");}
 
 /* ── ADMIN PANEL ── */
 function openAdmin(){
   let panel=document.getElementById("admin-panel");
-  if(!panel){
-    panel=document.createElement("div");
-    panel.id="admin-panel";
-    panel.style.cssText="position:fixed;inset:0;z-index:9980;background:#050505;display:flex;flex-direction:column;padding-top:var(--safe-top);";
-    document.body.appendChild(panel);
-  }
+  if(!panel){panel=document.createElement("div");panel.id="admin-panel";panel.style.cssText="position:fixed;inset:0;z-index:9980;background:#050505;display:flex;flex-direction:column;padding-top:var(--safe-top);";document.body.appendChild(panel);}
   const t=THEMES[currentTheme]||THEMES.purple;
   panel.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:10px;">
-        ${_adminUser?.photoURL?`<img src="${_adminUser.photoURL}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);">`:''
-        }
-        <div>
-          <p style="font-weight:800;font-size:14px;">Admin Panel</p>
-          <p style="font-size:10px;color:rgba(168,85,247,.6);letter-spacing:.1em;margin-top:1px;">${_adminUser?.email||''}</p>
-        </div>
+        ${_adminUser?.photoURL?`<img src="${_adminUser.photoURL}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(168,85,247,.4);">`:''}
+        <div><p style="font-weight:800;font-size:14px;">Admin Panel</p><p style="font-size:10px;color:rgba(168,85,247,.6);letter-spacing:.1em;margin-top:1px;">${_adminUser?.email||''}</p></div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button onclick="doAdminSignOut()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;color:rgba(255,255,255,.4);font-size:11px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">Sign out</button>
@@ -738,53 +786,43 @@ function openAdmin(){
       </div>
     </div>
     <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;overflow-x:auto;" id="adm-tabs">
-      <button onclick="admTab('orders')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:${t.accent};border-bottom:2px solid ${t.accent};cursor:pointer;font-family:Inter,sans-serif;" id="atb-orders">Orders</button>
-      <button onclick="admTab('products')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button>
-      <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
-      <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
-        <button onclick="admTab('users')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-users">Users</button>
-        <button onclick="admTab('web')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-web">🌐 Web</button>
-        <button onclick="admTab('analytics')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-analytics">📊 Stats</button>
-      </div>
-      <div style="flex:1;overflow-y:auto;" id="adm-content"></div>`;
+      <button onclick="admTab('orders')"    style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:${t.accent};border-bottom:2px solid ${t.accent};cursor:pointer;font-family:Inter,sans-serif;" id="atb-orders">Orders</button>
+      <button onclick="admTab('products')"  style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-products">Products</button>
+      <button onclick="admTab('themes')"    style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
+      <button onclick="admTab('settings')"  style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
+      <button onclick="admTab('users')"     style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-users">Users</button>
+      <button onclick="admTab('web')"       style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-web">🌐 Web</button>
+      <button onclick="admTab('analytics')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-analytics">📊 Stats</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;" id="adm-content"></div>`;
   panel.style.display="flex";
   admTab("orders");
   loadAdminOrders();
 }
-function closeAdmin(){
-  const p=document.getElementById("admin-panel");
-  if(p) p.style.display="none";
-}
+function closeAdmin(){const p=document.getElementById("admin-panel");if(p)p.style.display="none";}
 
 function admTab(name){
   const t=THEMES[currentTheme]||THEMES.purple;
   ["orders","products","themes","settings","users","web","analytics"].forEach(n=>{
-    const btn=document.getElementById("atb-"+n);
-    if(!btn)return;
-    const active=n===name;
-    btn.style.color=active?t.accent:"rgba(255,255,255,.3)";
-    btn.style.borderBottom=active?`2px solid ${t.accent}`:"2px solid transparent";
+    const btn=document.getElementById("atb-"+n);if(!btn)return;
+    const active=n===name;btn.style.color=active?t.accent:"rgba(255,255,255,.3)";btn.style.borderBottom=active?`2px solid ${t.accent}`:"2px solid transparent";
   });
-  const c=document.getElementById("adm-content");
-  if(!c)return;
-  if(name==="orders")   renderAdmOrders(c);
-  if(name==="products") renderAdmProducts(c);
-  if(name==="themes")   renderAdmThemes(c);
-  if(name==="settings") renderAdmSettings(c);
-  if(name==="users")    renderAdmUsers(c);
-  if(name==="web")      renderAdmWeb(c);
-  if(name==="analytics")renderAdmAnalytics(c);
+  const c=document.getElementById("adm-content");if(!c)return;
+  if(name==="orders")    renderAdmOrders(c);
+  if(name==="products")  renderAdmProducts(c);
+  if(name==="themes")    renderAdmThemes(c);
+  if(name==="settings")  renderAdmSettings(c);
+  if(name==="users")     renderAdmUsers(c);
+  if(name==="web")       renderAdmWeb(c);
+  if(name==="analytics") renderAdmAnalytics(c);
 }
 
-/* ORDERS TAB */
+/* ORDERS */
 async function loadAdminOrders(){
   const c=document.getElementById("adm-content");
-  if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.5rem;"></i></div>`;
-  try{
-    adminOrders=await window.FK_DB.getAllOrders();
-    const curTab=document.getElementById("atb-orders");
-    if(curTab) renderAdmOrders(document.getElementById("adm-content"));
-  }catch(e){ if(c) c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load</p>`; }
+  if(c)c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.5rem;"></i></div>`;
+  try{adminOrders=await window.FK_DB.getAllOrders();renderAdmOrders(document.getElementById("adm-content"));}
+  catch(e){if(c)c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load</p>`;}
 }
 function renderAdmOrders(c){
   if(!c)return;
@@ -798,30 +836,12 @@ function renderAdmOrders(c){
   const topItem=Object.entries(cts).sort((a,b)=>b[1]-a[1])[0];
   c.innerHTML=`<div style="padding:14px 16px;">
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;">
-      <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p>
-      </div>
-      <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p>
-      </div>
-      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL REV</p>
-      </div>
-      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.12);border-radius:14px;padding:12px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:#22c55e;">AED ${todayRev}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TODAY</p>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:rgba(255,255,255,.7);">AED ${avgOrder}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p>
-      </div>
-      <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.1);border-radius:14px;padding:12px;text-align:center;grid-column:span 1;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:12px;color:rgba(255,255,255,.7);">${topItem?topItem[0]+" ×"+topItem[1]:"—"}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOP ITEM</p>
-      </div>
+      <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p></div>
+      <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p></div>
+      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL REV</p></div>
+      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.12);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:#22c55e;">AED ${todayRev}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TODAY</p></div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:rgba(255,255,255,.7);">AED ${avgOrder}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p></div>
+      <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.1);border-radius:14px;padding:12px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:12px;color:rgba(255,255,255,.7);">${topItem?topItem[0]+" ×"+topItem[1]:"—"}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOP ITEM</p></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <input id="adm-search" oninput="filterAdmOrders()" type="text" placeholder="Search..." style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:9px 12px;color:white;font-size:12px;outline:none;font-family:Inter,sans-serif;">
@@ -838,11 +858,10 @@ function filterAdmOrders(){
   const search=(document.getElementById("adm-search")?.value||"").toLowerCase();
   const filter=document.getElementById("adm-filter")?.value||"all";
   let list=adminOrders.filter(o=>o.status!=="archived");
-    if(filter==="archived") list=adminOrders.filter(o=>o.status==="archived");
-    else if(filter!=="all") list=list.filter(o=>o.status===filter);
+  if(filter==="archived") list=adminOrders.filter(o=>o.status==="archived");
+  else if(filter!=="all") list=list.filter(o=>o.status===filter);
   if(search) list=list.filter(o=>(o.id||"").toLowerCase().includes(search)||(o.customer?.name||"").toLowerCase().includes(search)||(o.customer?.grade||"").toLowerCase().includes(search));
-  const el=document.getElementById("adm-orders-list");
-  if(!el)return;
+  const el=document.getElementById("adm-orders-list");if(!el)return;
   if(!list.length){el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No orders found</p>`;return;}
   el.innerHTML=list.map(o=>{
     const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
@@ -852,14 +871,8 @@ function filterAdmOrders(){
     const st=getStatusStyle(o.status||"pending");
     return `<div style="border-radius:16px;border:1px solid ${st.border};background:${st.bg.replace(".1)",".03)")};padding:14px;margin-bottom:12px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-        <div>
-          <p style="font-size:10px;font-weight:900;color:#a855f7;letter-spacing:.05em;">#${(o.id||"").substring(0,14)}</p>
-          <p style="font-weight:800;font-size:15px;margin-top:2px;">${o.customer?.name||"Unknown"}</p>
-        </div>
-        <div style="text-align:right;">
-          <span style="font-size:10px;font-weight:900;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label.toUpperCase()}</span>
-          <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds} · ${tm}</p>
-        </div>
+        <div><p style="font-size:10px;font-weight:900;color:#a855f7;letter-spacing:.05em;">#${(o.id||"").substring(0,14)}</p><p style="font-weight:800;font-size:15px;margin-top:2px;">${o.customer?.name||"Unknown"}</p></div>
+        <div style="text-align:right;"><span style="font-size:10px;font-weight:900;padding:3px 10px;border-radius:100px;background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label.toUpperCase()}</span><p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds} · ${tm}</p></div>
       </div>
       <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:3px;">🎓 ${o.customer?.grade||"—"} &nbsp;·&nbsp; 📅 ${o.customer?.date||"—"}</p>
       <p style="font-size:11px;color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:10px;">${its}</p>
@@ -874,38 +887,32 @@ function filterAdmOrders(){
         </div>
         <div style="display:flex;gap:6px;">
           <button onclick="openStatusPicker('${o.id}','${o.status||"pending"}')" style="background:${st.bg};border:1px solid ${st.border};border-radius:10px;padding:7px 12px;color:${st.color};font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">Status ▾</button>
-          <button onclick="admArchiveOrder('${o.id}')" title="Archive" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">✓ Done</button>
+          <button onclick="admArchiveOrder('${o.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">✓ Done</button>
         </div>
       </div>
     </div>`;
   }).join("");
 }
 
-const ORDER_STATUSES = [
-  { key:"pending",            label:"Pending",               color:"#fbbf24", bg:"rgba(251,191,36,.1)",  border:"rgba(251,191,36,.25)" },
-  { key:"confirmed",          label:"Order Confirmed",        color:"#60a5fa", bg:"rgba(96,165,250,.1)",  border:"rgba(96,165,250,.25)" },
-  { key:"getting_product",    label:"Getting Product",        color:"#c084fc", bg:"rgba(192,132,252,.1)", border:"rgba(192,132,252,.25)" },
-  { key:"waiting_school_day", label:"Waiting for School Day", color:"#f97316", bg:"rgba(249,115,22,.1)",  border:"rgba(249,115,22,.25)" },
-  { key:"complete",           label:"Ready for Pickup ✓",     color:"#22c55e", bg:"rgba(34,197,94,.12)",  border:"rgba(34,197,94,.3)" },
-    { key:"archived",           label:"Archived",               color:"rgba(255,255,255,.3)", bg:"rgba(255,255,255,.04)", border:"rgba(255,255,255,.1)" },
-  ];
-
-function getStatusStyle(key){
-  return ORDER_STATUSES.find(s=>s.key===key) || ORDER_STATUSES[0];
-}
-async function admSetStatus(id, status){
-  await window.FK_DB.updateOrderStatus(id, status);
+const ORDER_STATUSES=[
+  {key:"pending",            label:"Pending",               color:"#fbbf24",bg:"rgba(251,191,36,.1)", border:"rgba(251,191,36,.25)"},
+  {key:"confirmed",          label:"Order Confirmed",        color:"#60a5fa",bg:"rgba(96,165,250,.1)",border:"rgba(96,165,250,.25)"},
+  {key:"getting_product",    label:"Getting Product",        color:"#c084fc",bg:"rgba(192,132,252,.1)",border:"rgba(192,132,252,.25)"},
+  {key:"waiting_school_day", label:"Waiting for School Day", color:"#f97316",bg:"rgba(249,115,22,.1)", border:"rgba(249,115,22,.25)"},
+  {key:"complete",           label:"Ready for Pickup ✓",     color:"#22c55e",bg:"rgba(34,197,94,.12)", border:"rgba(34,197,94,.3)"},
+  {key:"archived",           label:"Archived",               color:"rgba(255,255,255,.3)",bg:"rgba(255,255,255,.04)",border:"rgba(255,255,255,.1)"},
+];
+function getStatusStyle(key){return ORDER_STATUSES.find(s=>s.key===key)||ORDER_STATUSES[0];}
+async function admSetStatus(id,status){
+  await window.FK_DB.updateOrderStatus(id,status);
   const o=adminOrders.find(x=>x.id===id);if(o)o.status=status;
-  filterAdmOrders();
-  showToast("Status updated!");
-  const picker=document.getElementById("status-picker-"+id);
-  if(picker) picker.remove();
+  filterAdmOrders();showToast("Status updated!");
+  const picker=document.getElementById("status-picker-"+id);if(picker)picker.remove();
 }
-function openStatusPicker(id, currentStatus){
+function openStatusPicker(id,currentStatus){
   document.querySelectorAll(".status-picker-overlay").forEach(x=>x.remove());
   const overlay=document.createElement("div");
-  overlay.className="status-picker-overlay";
-  overlay.id="status-picker-"+id;
+  overlay.className="status-picker-overlay";overlay.id="status-picker-"+id;
   overlay.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);";
   overlay.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:20px;padding-bottom:calc(20px + var(--safe-bottom));">
     <div style="width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 16px;"></div>
@@ -913,27 +920,20 @@ function openStatusPicker(id, currentStatus){
     <div style="display:flex;flex-direction:column;gap:8px;">
       ${ORDER_STATUSES.map(s=>`<button onclick="admSetStatus('${id}','${s.key}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;background:${s.key===currentStatus?s.bg:"rgba(255,255,255,.03)"};border:1px solid ${s.key===currentStatus?s.border:"rgba(255,255,255,.07)"};cursor:pointer;font-family:Inter,sans-serif;">
         <span style="font-weight:800;font-size:13px;color:${s.key===currentStatus?s.color:"white"};">${s.label}</span>
-        ${s.key===currentStatus?`<span style="font-size:12px;color:${s.color};">✓ Current</span>`:""}
+        ${s.key===currentStatus?`<span style="font-size:12px;color:${s.color};">✓</span>`:""}
       </button>`).join("")}
     </div>
     <button onclick="document.getElementById('status-picker-${id}').remove()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
   </div>`;
-  overlay.addEventListener("click", e=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.remove();});
   document.body.appendChild(overlay);
 }
-  async function admArchiveOrder(id){
-    await window.FK_DB.updateOrderStatus(id,"archived");
-    adminOrders=adminOrders.filter(x=>x.id!==id);
-    filterAdmOrders();
-    renderAdmOrders(document.getElementById("adm-content"));
-    showToast("Order archived ✓");
-  }
-  async function admDeleteOrder(id){
-    if(!confirm("Permanently delete this order?"))return;
-    await window.FK_DB.deleteOrder(id);
-    adminOrders=adminOrders.filter(x=>x.id!==id);
-    filterAdmOrders();showToast("Order deleted");
-  }
+async function admArchiveOrder(id){
+  await window.FK_DB.updateOrderStatus(id,"archived");
+  adminOrders=adminOrders.filter(x=>x.id!==id);
+  filterAdmOrders();renderAdmOrders(document.getElementById("adm-content"));
+  showToast("Order archived ✓");
+}
 
 /* PRODUCTS TAB */
 function renderAdmProducts(c){
@@ -949,11 +949,11 @@ function renderAdmProducts(c){
         <div style="flex:1;min-width:0;">
           <p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</p>
           <p style="font-size:11px;color:var(--accent);margin-top:2px;">AED ${s.price} · ${s.category}</p>
-        <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;">
-          ${s.sticker?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#fff"};">${s.sticker}</span>`:""}
-          ${s.featured?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(168,85,247,.2);color:#c084fc;">⭐ FEATURED</span>`:""}
-          ${s.outOfStock?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(239,68,68,.15);color:#f87171;">OUT OF STOCK</span>`:""}
-        </div>
+          <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;">
+            ${s.sticker?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#fff"};">${s.sticker}</span>`:""}
+            ${s.featured?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(168,85,247,.2);color:#c084fc;">⭐ FEATURED</span>`:""}
+            ${s.outOfStock?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(239,68,68,.15);color:#f87171;">OUT OF STOCK</span>`:""}
+          </div>
         </div>
         <div style="display:flex;gap:7px;">
           <button onclick="openProductModal(${s.id})" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a855f7;font-size:12px;">✏️</button>
@@ -984,27 +984,15 @@ function openProductModal(id){
       </select>
       <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;">
         <p style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:10px;">Sticker / Badge</p>
-        <input id="pm-sticker" type="text" placeholder='Sticker text (e.g. "NEW!" or "HOT")' value="${s?.sticker||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
+        <input id="pm-sticker" type="text" placeholder='Sticker text e.g. "NEW!" or "HOT"' value="${s?.sticker||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div>
-            <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Sticker BG</label>
-            <input id="pm-sticker-bg" type="color" value="${s?.stickerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
-          </div>
-          <div>
-            <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Sticker Text Color</label>
-            <input id="pm-sticker-color" type="color" value="${s?.stickerColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
-          </div>
+          <div><label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Sticker BG</label><input id="pm-sticker-bg" type="color" value="${s?.stickerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;"></div>
+          <div><label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Text Color</label><input id="pm-sticker-color" type="color" value="${s?.stickerColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;"></div>
         </div>
       </div>
       <div style="display:flex;gap:10px;">
-        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;">
-          <span style="font-size:13px;font-weight:700;">⭐ Featured</span>
-          <input id="pm-featured" type="checkbox" ${s?.featured?"checked":""} style="width:18px;height:18px;accent-color:#a855f7;cursor:pointer;">
-        </label>
-        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;">
-          <span style="font-size:13px;font-weight:700;">🚫 Out of Stock</span>
-          <input id="pm-oos" type="checkbox" ${s?.outOfStock?"checked":""} style="width:18px;height:18px;accent-color:#ef4444;cursor:pointer;">
-        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;"><span style="font-size:13px;font-weight:700;">⭐ Featured</span><input id="pm-featured" type="checkbox" ${s?.featured?"checked":""} style="width:18px;height:18px;accent-color:#a855f7;cursor:pointer;"></label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;"><span style="font-size:13px;font-weight:700;">🚫 Out of Stock</span><input id="pm-oos" type="checkbox" ${s?.outOfStock?"checked":""} style="width:18px;height:18px;accent-color:#ef4444;cursor:pointer;"></label>
       </div>
     </div>
     <button onclick="saveProductModal()" style="width:100%;margin-top:16px;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;">Save Product</button>
@@ -1050,7 +1038,8 @@ function renderAdmThemes(c){
   c.innerHTML=`<div style="padding:14px 16px;">
     <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">App Theme</p>
     ${Object.entries(THEMES).map(([k,t])=>`
-    <button onclick="applyTheme('${k}',true);showToast('Theme applied globally ✓');setTimeout(()=>renderAdmThemes(document.getElementById('adm-content')),200)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
+    <button onclick="applyTheme('${k}',true);showToast('Theme applied globally ✓');setTimeout(()=>renderAdmThemes(document.getElementById('adm-content')),200)"
+      style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;">
       <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});"></div>
         <span style="font-weight:800;font-size:14px;color:white;">${t.label}</span>
@@ -1068,41 +1057,35 @@ function renderAdmSettings(c){
     <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Site Settings</p>
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div>
-          <p style="font-weight:800;font-size:14px;">Close Shop</p>
-          <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Show maintenance page to everyone</p>
-        </div>
+        <div><p style="font-weight:800;font-size:14px;">Close Shop</p><p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Show maintenance page to everyone</p></div>
         <div id="sd-toggle" onclick="toggleSD()" style="width:48px;height:26px;border-radius:100px;background:${_siteDown?"#ef4444":"rgba(255,255,255,.1)"};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
           <div style="position:absolute;top:3px;left:${_siteDown?"23px":"3px"};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
         </div>
       </div>
       <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Closed Message</label>
-      <input id="sd-msg" type="text" placeholder="The shop is temporarily closed..." value="${document.getElementById("site-down-msg")?.textContent||""}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
+      <input id="sd-msg" type="text" placeholder="The shop is temporarily closed..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
     </div>
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
-      <p style="font-weight:800;font-size:14px;margin-bottom:4px;">WhatsApp Group Link</p>
-      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:10px;">Updates the group button and order sharing</p>
+      <p style="font-weight:800;font-size:14px;margin-bottom:10px;">WhatsApp Group Link</p>
       <input id="wa-inp" type="url" value="${GROUP_LINK}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
     </div>
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:16px;">
       <p style="font-weight:800;font-size:14px;margin-bottom:10px;">YouTube Link</p>
       <input id="yt-inp" type="url" value="${YT}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
     </div>
-    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(var(--accent-rgb),.35);">Save Settings</button>
+    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;">Save Settings</button>
   </div>`;
-
   window.FK_DB.getSettings().then(s=>{
     _siteDown=!!s.siteDown;
-    if(s.siteDownMsg){ const el=document.getElementById("sd-msg"); if(el)el.value=s.siteDownMsg; }
-    if(s.waLink){ const el=document.getElementById("wa-inp"); if(el)el.value=s.waLink; }
-    if(s.ytLink){ const el=document.getElementById("yt-inp"); if(el)el.value=s.ytLink; }
+    if(s.siteDownMsg){const el=document.getElementById("sd-msg");if(el)el.value=s.siteDownMsg;}
+    if(s.waLink){const el=document.getElementById("wa-inp");if(el)el.value=s.waLink;}
+    if(s.ytLink){const el=document.getElementById("yt-inp");if(el)el.value=s.ytLink;}
     updateSDToggle();
   }).catch(()=>{});
 }
-function toggleSD(){ _siteDown=!_siteDown; updateSDToggle(); }
+function toggleSD(){_siteDown=!_siteDown;updateSDToggle();}
 function updateSDToggle(){
-  const el=document.getElementById("sd-toggle");
-  if(!el)return;
+  const el=document.getElementById("sd-toggle");if(!el)return;
   el.style.background=_siteDown?"#ef4444":"rgba(255,255,255,.1)";
   el.firstElementChild.style.left=_siteDown?"23px":"3px";
 }
@@ -1112,13 +1095,13 @@ async function saveAdmSettings(){
   const siteDownMsg=(document.getElementById("sd-msg")?.value||"").trim();
   try{
     await window.FK_DB.saveSettings({siteDown:_siteDown,siteDownMsg,waLink,ytLink});
-    if(waLink){ GROUP_LINK=waLink; const wf=document.getElementById("wa-float"); if(wf)wf.href=waLink; const wc=document.getElementById("wa-connect-btn"); if(wc)wc.href=waLink; }
-    if(ytLink){ YT=ytLink; const yc=document.getElementById("yt-connect-btn"); if(yc)yc.href=ytLink; }
+    if(waLink){GROUP_LINK=waLink;const wc=document.getElementById("wa-connect-btn");if(wc)wc.href=waLink;}
+    if(ytLink){YT=ytLink;const yc=document.getElementById("yt-connect-btn");if(yc)yc.href=ytLink;}
     showToast("Settings saved!");
   }catch(e){showToast("Save failed — check connection");}
 }
 
-/* ── PRODUCTS ── */
+/* ── PRODUCTS RENDER ── */
 function renderProducts(filter){
   currentFilter=filter;
   const list=filter==="all"?SNACKS:SNACKS.filter(s=>s.category===filter);
@@ -1127,39 +1110,33 @@ function renderProducts(filter){
     const qty=getQty(s.id);
     const isSel=selectedSnack===s.id;
     const imgCls=`snack-shadow${s.isBoba?" boba-adjust":""}${s.isTiger?" tiger-milk-pos":""}`;
-    const cardClick=s.outOfStock?"":"selectSnack("+s.id+")";
-    return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}${s.outOfStock?" opacity-50":""}" onclick="${cardClick}" style="position:relative;">
+    return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}${s.outOfStock?" opacity-50":""}" onclick="${s.outOfStock?"":"selectSnack("+s.id+")"}" style="position:relative;">
       ${s.sticker?`<div style="position:absolute;top:10px;left:10px;z-index:20;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#ffffff"};font-family:'Archivo Black',sans-serif;font-size:10px;font-weight:900;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 2px 8px rgba(0,0,0,.5);">${s.sticker}</div>`:""}
       ${s.featured?`<div style="position:absolute;top:10px;right:10px;z-index:20;background:linear-gradient(135deg,var(--accent),var(--accent-dark));font-size:9px;padding:3px 8px;border-radius:100px;font-weight:900;color:white;letter-spacing:.05em;">⭐ TOP</div>`:""}
       ${s.outOfStock?`<div style="position:absolute;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);border-radius:inherit;"><span style="font-family:'Archivo Black',sans-serif;font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.12em;">Out of Stock</span></div>`:""}
-      <div class="image-container"><img src="${s.img}" class="${imgCls}" alt="${s.name}" loading="lazy"></div>
+      <div class="image-container"><img src="${s.img}" class="${imgCls}" alt="${s.name}" loading="lazy" onerror="this.style.opacity='.3'"></div>
       <div class="px-4 pb-5">
         <div class="flex items-start justify-between gap-3 mb-1">
           <div><p class="font-black text-base leading-tight">${s.name}</p><p class="text-white/30 text-xs mt-1">${s.desc}</p></div>
           <span class="font-black text-lg whitespace-nowrap" style="color:var(--accent)">AED ${s.price}</span>
         </div>
-        <div class="flex items-center justify-between mt-3">
+        <div class="flex items-center justify-between mt-3" id="ctrl-${s.id}">
           ${qty===0
             ?`<button onclick="event.stopPropagation();addToCart(${s.id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">Add to Bag</button>`
-            :`<div class="flex items-center gap-3" onclick="event.stopPropagation()">
-              <button onclick="changeQty(${s.id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button>
-              <span class="font-black text-base">${qty}</span>
-              <button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button>
-            </div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`
-          }
+            :`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${s.id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`}
         </div>
       </div>
     </div>`;
   }).join("");
 }
+
 function filterTab(btn,cat){
   document.querySelectorAll(".tab-btn").forEach(b=>{b.classList.remove("active","text-white");b.classList.add("text-white/40");});
   btn.classList.add("active","text-white");btn.classList.remove("text-white/40");
   renderProducts(cat);
 }
 function selectSnack(id){
-  const prev=selectedSnack;
-  selectedSnack=selectedSnack===id?null:id;
+  const prev=selectedSnack;selectedSnack=selectedSnack===id?null:id;
   if(prev){const c=document.getElementById("card-"+prev);if(c)c.classList.remove("selected");}
   if(selectedSnack){const c=document.getElementById("card-"+selectedSnack);if(c)c.classList.add("selected");}
 }
@@ -1179,10 +1156,9 @@ function changeQty(id,d){
   saveCart();updateCartUI();updateCardControls(id);renderCartItems();
 }
 function updateCardControls(id){
-  const card=document.getElementById("card-"+id);if(!card)return;
+  const ctrl=document.getElementById("ctrl-"+id);if(!ctrl)return;
   const s=SNACKS.find(x=>x.id===id);if(!s)return;
   const qty=getQty(id);
-  const ctrl=card.querySelector(".flex.items-center.justify-between.mt-3");if(!ctrl)return;
   ctrl.innerHTML=qty===0
     ?`<button onclick="event.stopPropagation();addToCart(${id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">Add to Bag</button>`
     :`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`;
@@ -1219,7 +1195,7 @@ function goCheckout(){
   document.getElementById("co-total").textContent="AED "+cartTotal();
   document.getElementById("f-date").value=new Date().toISOString().split("T")[0];
   const saved=localStorage.getItem("fk_last_info");
-  if(saved) document.getElementById("prefill-banner").classList.remove("hidden");
+  if(saved)document.getElementById("prefill-banner").classList.remove("hidden");
   document.getElementById("main-view").style.display="none";
   document.getElementById("checkout-view").style.display="block";
   window.scrollTo(0,0);
@@ -1244,13 +1220,10 @@ async function placeOrder(){
   const btn=document.getElementById("place-btn");
   btn.disabled=true;btn.innerHTML=`<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order...`;
   localStorage.setItem("fk_last_info",JSON.stringify({name,grade}));
-    try{
-      const hwid=getOrCreateHWID();
-      if(window.FK_DB) window.FK_DB.saveUserInfo(hwid,{name,grade,lastSeen:Date.now()}).catch(()=>{});
-    }catch(e){}
+  try{const hwid=getOrCreateHWID();if(window.FK_DB)window.FK_DB.saveUserInfo(hwid,{name,grade,lastSeen:Date.now()}).catch(()=>{});}catch(e){}
   const orderData={customer:{name,grade,date},items:cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),total:cartTotal(),status:"pending",created:Date.now()};
   try{
-    if(!window.FK_DB) await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
+    if(!window.FK_DB)await new Promise(r=>{window.addEventListener("fk-ready",r,{once:true});});
     const orderId=await window.FK_DB.saveOrder(orderData);
     const full={...orderData,id:orderId};
     localStorage.setItem("fk_last_order",orderId);
@@ -1287,9 +1260,8 @@ function sendToWhatsApp(){
   closeShareModal();
 }
 
-/* ── LOOKUP ── */
-function openOrderLookup(){ buildHistoryDrawer(); }
-async function buildHistoryDrawer(){
+/* ── ORDER HISTORY ── */
+async function openOrderLookup(){
   const STATUS_COLORS={pending:"#fbbf24",confirmed:"#60a5fa",getting_product:"#c084fc",waiting_school_day:"#f97316",complete:"#22c55e",archived:"#a855f7"};
   const STATUS_LABELS={pending:"Pending",confirmed:"Order Confirmed",getting_product:"Getting Product",waiting_school_day:"Waiting for School Day",complete:"Ready for Pickup ✓",archived:"Done ✓"};
   let drawer=document.getElementById("history-drawer");
@@ -1309,28 +1281,18 @@ async function buildHistoryDrawer(){
   </div>`;
   drawer.addEventListener("click",e=>{if(e.target===drawer)drawer.remove();});
 
-  /* Fetch live status from Firestore for every saved order */
   const historyIds=[];
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("fk_order_")) historyIds.push(k.replace("fk_order_",""));}
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("fk_order_"))historyIds.push(k.replace("fk_order_",""));}
   let orders=[];
   try{
-    const fetched = await Promise.all(historyIds.map(id=>window.FK_DB.getOrder(id).catch(()=>null)));
-    orders = fetched.filter(Boolean).sort((a,b)=>{
-      const ta=a.created?.seconds?a.created.seconds*1000:(a.created||0);
-      const tb=b.created?.seconds?b.created.seconds*1000:(b.created||0);
-      return tb-ta;
-    });
-    /* Update localStorage cache with fresh status */
-    orders.forEach(o=>{ try{ const local=JSON.parse(localStorage.getItem("fk_order_"+o.id)||"{}"); localStorage.setItem("fk_order_"+o.id,JSON.stringify({...local,...o})); }catch(e){} });
+    const fetched=await Promise.all(historyIds.map(id=>window.FK_DB.getOrder(id).catch(()=>null)));
+    orders=fetched.filter(Boolean).sort((a,b)=>{const ta=a.created?.seconds?a.created.seconds*1000:(a.created||0);const tb=b.created?.seconds?b.created.seconds*1000:(b.created||0);return tb-ta;});
+    orders.forEach(o=>{try{const l=JSON.parse(localStorage.getItem("fk_order_"+o.id)||"{}");localStorage.setItem("fk_order_"+o.id,JSON.stringify({...l,...o}));}catch(e){}});
   }catch(e){
     orders=historyIds.map(id=>{try{return JSON.parse(localStorage.getItem("fk_order_"+id));}catch(e2){return null;}}).filter(Boolean);
   }
-  const el=document.getElementById("history-orders-list");
-  if(!el)return;
-  if(orders.length===0){
-    el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:40px 0;">No order history on this device</p>`;
-    return;
-  }
+  const el=document.getElementById("history-orders-list");if(!el)return;
+  if(orders.length===0){el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:40px 0;">No order history on this device</p>`;return;}
   el.innerHTML=orders.map(o=>{
     const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
     const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",year:"numeric"});
@@ -1339,160 +1301,101 @@ async function buildHistoryDrawer(){
     const its=(o.items||[]).map(i=>i.name+(i.qty>1?" ×"+i.qty:"")).join(", ");
     return`<div onclick="document.getElementById('history-drawer').remove();location.href='receipt.html?orderId=${o.id}'" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <div>
-          <p style="font-size:10px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p>
-          <p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Order"}</p>
-        </div>
-        <div style="text-align:right;">
-          <span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:${sc}18;color:${sc};border:1px solid ${sc}33;">${sl}</span>
-          <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
-        </div>
+        <div><p style="font-size:10px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p><p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Order"}</p></div>
+        <div style="text-align:right;"><span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:${sc}18;color:${sc};border:1px solid ${sc}33;">${sl}</span><p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p></div>
       </div>
       <p style="font-size:11px;color:rgba(255,255,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">${its}</p>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
-        <span style="font-size:11px;color:rgba(168,85,247,.6);font-weight:700;">View Receipt →</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span><span style="font-size:11px;color:rgba(168,85,247,.6);font-weight:700;">View Receipt →</span></div>
     </div>`;
   }).join("");
 }
-function closeLookup(){const d=document.getElementById("history-drawer");if(d)d.remove();}
-function doLookup(){
-  const inp=document.getElementById("hist-lookup-inp")||document.getElementById("lookup-inp");
-  const id=(inp?.value||"").trim();
-  if(!id){showToast("Enter an Order ID");return;}
-  const d=document.getElementById("history-drawer");if(d)d.remove();
-  location.href="receipt.html?orderId="+id;
+
+/* USERS TAB */
+async function renderAdmUsers(c){
+  if(!c)return;
+  c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>`;
+  try{
+    const [users,bans]=await Promise.all([window.FK_DB.getAllUsers(),window.FK_DB.getAllBans()]);
+    const banMap={};bans.forEach(b=>{banMap[b.hwid]=b;});
+    c.innerHTML=`<div style="padding:14px 16px;">
+      <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Users (${users.length})</p>
+      ${users.length===0?`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No users yet</p>`:
+        users.sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0)).map(u=>{
+          const ban=banMap[u.hwid];const isBanned=!!ban;
+          const untilStr=ban?(ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE")):"";
+          const lastSeen=u.lastSeen?new Date(u.lastSeen).toLocaleDateString("en-AE",{day:"2-digit",month:"short"}):"—";
+          return`<div style="background:rgba(255,255,255,.03);border:1px solid ${isBanned?"rgba(239,68,68,.2)":"rgba(255,255,255,.07)"};border-radius:14px;padding:13px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <div><p style="font-weight:800;font-size:14px;">${u.name||"Unknown"}</p><p style="font-size:12px;color:rgba(168,85,247,.7);margin-top:2px;">🎓 ${u.grade||"—"}</p><p style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px;font-family:monospace;">ID: ${u.hwid?.substring(0,20)}...</p></div>
+              <div style="text-align:right;">${isBanned?`<span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);">BANNED</span>`:""}<p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">Last: ${lastSeen}</p></div>
+            </div>
+            ${isBanned?`<p style="font-size:11px;color:rgba(239,68,68,.7);margin-bottom:8px;">Reason: ${ban.reason||"No reason"} · Until: ${untilStr}</p>`:""}
+            <div style="display:flex;gap:7px;">${!isBanned
+              ?`<button onclick="openBanModal('${u.hwid}','${(u.name||"").replace(/'/g,"\\'")}','${(u.grade||"").replace(/'/g,"\\'")}' )" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:6px 12px;color:#f87171;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">🚫 Ban</button>`
+              :`<button onclick="admUnban('${u.hwid}')" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:6px 12px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">✓ Unban</button>`
+            }</div>
+          </div>`;
+        }).join("")
+      }
+    </div>`;
+  }catch(e){c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load users</p>`;}
+}
+function openBanModal(hwid,name,grade){
+  let m=document.getElementById("ban-modal");
+  if(!m){m=document.createElement("div");m.id="ban-modal";document.body.appendChild(m);}
+  m.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);";
+  m.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(239,68,68,.2);border-radius:24px 24px 0 0;padding:24px;padding-bottom:calc(24px + var(--safe-bottom));">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 18px;"></div>
+    <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:4px;">Ban User</h3>
+    <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;">${name} · ${grade}</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Reason</label><input id="ban-reason" type="text" placeholder="e.g. Spam, misconduct..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;"></div>
+      <div><label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Duration</label>
+      <select id="ban-duration" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;font-family:Inter,sans-serif;"><option value="1">1 Hour</option><option value="24">1 Day</option><option value="168">1 Week</option><option value="720">1 Month</option><option value="0">Permanent</option></select></div>
+    </div>
+    <button onclick="admBan('${hwid}')" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;border:none;border-radius:12px;font-weight:900;font-size:14px;text-transform:uppercase;cursor:pointer;font-family:Inter,sans-serif;">🚫 Confirm Ban</button>
+    <button onclick="document.getElementById('ban-modal').style.display='none'" style="width:100%;margin-top:8px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
+  </div>`;
+}
+async function admBan(hwid){
+  const reason=document.getElementById("ban-reason")?.value.trim()||"No reason given";
+  const duration=parseInt(document.getElementById("ban-duration")?.value||"24");
+  await window.FK_DB.banUser(hwid,reason,duration);
+  document.getElementById("ban-modal").style.display="none";
+  showToast("User banned");
+  renderAdmUsers(document.getElementById("adm-content"));
+}
+async function admUnban(hwid){
+  await window.FK_DB.unbanUser(hwid);showToast("User unbanned");
+  renderAdmUsers(document.getElementById("adm-content"));
 }
 
-  /* ── USERS TAB ── */
-  async function renderAdmUsers(c){
-    if(!c)return;
-    c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>`;
-    try{
-      const [users, bans] = await Promise.all([
-        window.FK_DB.getAllUsers(),
-        window.FK_DB.getAllBans()
-      ]);
-      const banMap={};
-      bans.forEach(b=>{ banMap[b.hwid]=b; });
-      c.innerHTML=`<div style="padding:14px 16px;">
-        <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">Users (${users.length})</p>
-        ${users.length===0?`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:32px 0;">No users yet</p>`:
-          users.sort((a,b)=>(b.lastSeen||0)-(a.lastSeen||0)).map(u=>{
-            const ban=banMap[u.hwid];const isBanned=!!ban;
-            const untilStr=ban?(ban.until===0?"Permanent":new Date(ban.until).toLocaleDateString("en-AE")):"";
-            const lastSeen=u.lastSeen?new Date(u.lastSeen).toLocaleDateString("en-AE",{day:"2-digit",month:"short"}):"—";
-            return `<div style="background:rgba(255,255,255,.03);border:1px solid ${isBanned?"rgba(239,68,68,.2)":"rgba(255,255,255,.07)"};border-radius:14px;padding:13px;margin-bottom:10px;">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div>
-                  <p style="font-weight:800;font-size:14px;">${u.name||"Unknown"}</p>
-                  <p style="font-size:12px;color:rgba(168,85,247,.7);margin-top:2px;">🎓 ${u.grade||"—"}</p>
-                  <p style="font-size:10px;color:rgba(255,255,255,.2);margin-top:2px;font-family:monospace;">ID: ${u.hwid?.substring(0,20)}...</p>
-                </div>
-                <div style="text-align:right;">
-                  ${isBanned?`<span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);">BANNED</span>`:""}
-                  <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">Last: ${lastSeen}</p>
-                </div>
-              </div>
-              ${isBanned?`<p style="font-size:11px;color:rgba(239,68,68,.7);margin-bottom:8px;">Reason: ${ban.reason||"No reason"} · Until: ${untilStr}</p>`:""}
-              <div style="display:flex;gap:7px;">
-                ${!isBanned
-                  ?`<button onclick="openBanModal('${u.hwid}','${(u.name||"").replace(/'/g,"\\'")}','${(u.grade||"").replace(/'/g,"\\'")}' )" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:6px 12px;color:#f87171;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">🚫 Ban</button>`
-                  :`<button onclick="admUnban('${u.hwid}')" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:6px 12px;color:#22c55e;font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">✓ Unban</button>`
-                }
-              </div>
-            </div>`;
-          }).join("")
-        }
-      </div>`;
-    }catch(e){
-      c.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.25);padding:40px;">Failed to load users</p>`;
-    }
-  }
-
-  function openBanModal(hwid, name, grade){
-    let m=document.getElementById("ban-modal");
-    if(!m){m=document.createElement("div");m.id="ban-modal";document.body.appendChild(m);}
-    m.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);";
-    m.innerHTML=`<div style="width:100%;background:#0d0d16;border-top:1px solid rgba(239,68,68,.2);border-radius:24px 24px 0 0;padding:24px;padding-bottom:calc(24px + var(--safe-bottom));">
-      <div style="width:40px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 auto 18px;"></div>
-      <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:4px;">Ban User</h3>
-      <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;">${name} · ${grade}</p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div>
-          <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Reason</label>
-          <input id="ban-reason" type="text" placeholder="e.g. Spam, misconduct..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
-        </div>
-        <div>
-          <label style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;font-weight:900;display:block;margin-bottom:6px;">Duration</label>
-          <select id="ban-duration" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;color:white;font-size:13px;outline:none;font-family:Inter,sans-serif;">
-            <option value="1">1 Hour</option><option value="24">1 Day</option><option value="168">1 Week</option><option value="720">1 Month</option><option value="0">Permanent</option>
-          </select>
-        </div>
-      </div>
-      <button onclick="admBan('${hwid}')" style="width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;border:none;border-radius:12px;font-weight:900;font-size:14px;text-transform:uppercase;cursor:pointer;font-family:Inter,sans-serif;">🚫 Confirm Ban</button>
-      <button onclick="document.getElementById('ban-modal').style.display='none'" style="width:100%;margin-top:8px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
-    </div>`;
-  }
-  async function admBan(hwid){
-    const reason=document.getElementById("ban-reason")?.value.trim()||"No reason given";
-    const duration=parseInt(document.getElementById("ban-duration")?.value||"24");
-    await window.FK_DB.banUser(hwid,reason,duration);
-    document.getElementById("ban-modal").style.display="none";
-    showToast("User banned");
-    renderAdmUsers(document.getElementById("adm-content"));
-  }
-  async function admUnban(hwid){
-    await window.FK_DB.unbanUser(hwid);
-    showToast("User unbanned");
-    renderAdmUsers(document.getElementById("adm-content"));
-  }
-
-/* ── WEB TAB ── */
+/* WEB TAB */
 async function renderAdmWeb(c){
   if(!c)return;
-  let cur={};
-  try{cur=await window.FK_DB.getSettings();}catch(e){}
+  let cur={};try{cur=await window.FK_DB.getSettings();}catch(e){}
   c.innerHTML=`<div style="padding:14px 16px;">
     <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">🌐 Web / App Appearance</p>
-
-    <!-- BANNER -->
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div>
-          <p style="font-weight:800;font-size:14px;">🏷️ Banner Sticker</p>
-          <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Shown below the logo on the home screen</p>
-        </div>
+        <div><p style="font-weight:800;font-size:14px;">🏷️ Banner Sticker</p><p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Shown below the logo on home screen</p></div>
         <div id="web-banner-toggle" onclick="this.dataset.on=this.dataset.on==='1'?'0':'1';this.style.background=this.dataset.on==='1'?'#a855f7':'rgba(255,255,255,.1)';this.children[0].style.left=this.dataset.on==='1'?'23px':'3px';" data-on="${cur.bannerEnabled?'1':'0'}" style="width:48px;height:26px;border-radius:100px;background:${cur.bannerEnabled?'#a855f7':'rgba(255,255,255,.1)'};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
           <div style="position:absolute;top:3px;left:${cur.bannerEnabled?'23px':'3px'};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
         </div>
       </div>
-      <input id="web-banner-text" type="text" placeholder="Banner text, e.g. 🔥 Limited Time Offer!" value="${cur.bannerText||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
+      <input id="web-banner-text" type="text" placeholder="Banner text e.g. 🔥 Limited Time!" value="${cur.bannerText||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <div>
-          <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Background Color</label>
-          <input id="web-banner-bg" type="color" value="${cur.bannerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
-        </div>
-        <div>
-          <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Text Color</label>
-          <input id="web-banner-tc" type="color" value="${cur.bannerTextColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
-        </div>
+        <div><label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Background Color</label><input id="web-banner-bg" type="color" value="${cur.bannerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;"></div>
+        <div><label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Text Color</label><input id="web-banner-tc" type="color" value="${cur.bannerTextColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;"></div>
       </div>
     </div>
-
-    <!-- THEME QUICK SELECT -->
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
       <p style="font-weight:800;font-size:14px;margin-bottom:10px;">🎨 Global Theme</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        ${Object.entries(THEMES).map(([k,t])=>`
-        <button onclick="applyTheme('${k}',true);showToast('Theme → ${t.label}');renderAdmWeb(document.getElementById('adm-content'))" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;border:2px solid ${k===currentTheme?t.accent:'rgba(255,255,255,.1)'};background:${k===currentTheme?t.accent+'18':'rgba(255,255,255,.04)'};cursor:pointer;font-size:12px;font-weight:800;color:${k===currentTheme?t.accent:'rgba(255,255,255,.5)'};font-family:Inter,sans-serif;">
-          <div style="width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});flex-shrink:0;"></div>${t.label}
-        </button>`).join("")}
+        ${Object.entries(THEMES).map(([k,t])=>`<button onclick="applyTheme('${k}',true);showToast('Theme → ${t.label}');renderAdmWeb(document.getElementById('adm-content'))" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;border:2px solid ${k===currentTheme?t.accent:'rgba(255,255,255,.1)'};background:${k===currentTheme?t.accent+'18':'rgba(255,255,255,.04)'};cursor:pointer;font-size:12px;font-weight:800;color:${k===currentTheme?t.accent:'rgba(255,255,255,.5)'};font-family:Inter,sans-serif;"><div style="width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});flex-shrink:0;"></div>${t.label}</button>`).join("")}
       </div>
     </div>
-
-    <button onclick="saveWebSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(var(--accent-rgb),.35);">Save Web Settings</button>
+    <button onclick="saveWebSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;cursor:pointer;font-family:Inter,sans-serif;">Save Web Settings</button>
   </div>`;
 }
 async function saveWebSettings(){
@@ -1507,75 +1410,44 @@ async function saveWebSettings(){
   }catch(e){showToast("Save failed");}
 }
 
-/* ── ANALYTICS TAB ── */
+/* ANALYTICS TAB */
 async function renderAdmAnalytics(c){
   if(!c)return;
   c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>`;
   let orders=adminOrders;
-  if(!orders||!orders.length){
-    try{orders=await window.FK_DB.getAllOrders();}catch(e){orders=[];}
-  }
+  if(!orders||!orders.length){try{orders=await window.FK_DB.getAllOrders();}catch(e){orders=[];}}
   const done=orders.filter(o=>o.status==="complete"||o.status==="archived");
   const rev=done.reduce((s,o)=>s+(o.total||0),0);
   const avg=done.length?Math.round(rev/done.length):0;
-  // Daily revenue for past 7 days
   const days={};for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days[d.toLocaleDateString("en-AE")]=0;}
   done.forEach(o=>{const ts=o.created?.seconds?o.created.seconds*1000:(o.created||0);const d=new Date(ts).toLocaleDateString("en-AE");if(days[d]!==undefined)days[d]+=(o.total||0);});
-  const dayKeys=Object.keys(days);
-  const maxVal=Math.max(...Object.values(days),1);
-  // Item frequency
+  const dayKeys=Object.keys(days);const maxVal=Math.max(...Object.values(days),1);
   const cts={};orders.forEach(o=>(o.items||[]).forEach(i=>{cts[i.name]=(cts[i.name]||0)+i.qty;}));
   const topItems=Object.entries(cts).sort((a,b)=>b[1]-a[1]).slice(0,5);
   c.innerHTML=`<div style="padding:14px 16px;">
     <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">📊 Analytics</p>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
-      <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:13px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:24px;">${orders.length}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p>
-      </div>
-      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:13px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:20px;color:#22c55e;">AED ${rev}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p>
-      </div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:20px;">AED ${avg}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p>
-      </div>
-      <div style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:13px;text-align:center;">
-        <p style="font-family:'Archivo Black',sans-serif;font-size:24px;color:#fbbf24;">${orders.filter(o=>o.status!=="complete"&&o.status!=="archived").length}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p>
-      </div>
+      <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:13px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:24px;">${orders.length}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p></div>
+      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:13px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:20px;color:#22c55e;">AED ${rev}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p></div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:20px;">AED ${avg}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p></div>
+      <div style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:13px;text-align:center;"><p style="font-family:'Archivo Black',sans-serif;font-size:24px;color:#fbbf24;">${orders.filter(o=>o.status!=="complete"&&o.status!=="archived").length}</p><p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p></div>
     </div>
-    <!-- Bar chart -->
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:12px;">
       <p style="font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:12px;">Revenue — Last 7 Days</p>
       <div style="display:flex;align-items:flex-end;gap:5px;height:80px;">
-        ${dayKeys.map(d=>{const v=days[d];const pct=Math.round((v/maxVal)*100);return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <div style="width:100%;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--accent),var(--accent-dark));height:${pct}%;min-height:${v>0?4:1}px;"></div>
-          <span style="font-size:8px;color:rgba(255,255,255,.25);">${d.split("/").slice(0,2).join("/")}</span>
-        </div>`;}).join("")}
+        ${dayKeys.map(d=>{const v=days[d];const pct=Math.round((v/maxVal)*100);return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:100%;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--accent),var(--accent-dark));height:${pct}%;min-height:${v>0?4:1}px;"></div><span style="font-size:8px;color:rgba(255,255,255,.25);">${d.split("/").slice(0,2).join("/")}</span></div>`;}).join("")}
       </div>
     </div>
-    <!-- Top items -->
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;">
       <p style="font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:10px;">Top Items</p>
-      ${topItems.length?topItems.map(([n,q],i)=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:10px;color:rgba(255,255,255,.2);width:14px;">${i+1}</span>
-          <span style="font-size:13px;font-weight:700;">${n}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="height:4px;border-radius:2px;background:linear-gradient(to right,var(--accent),var(--accent-dark));width:${Math.round((q/topItems[0][1])*80)}px;"></div>
-          <span style="font-size:12px;font-weight:800;color:var(--accent);">×${q}</span>
-        </div>
-      </div>`).join(""):`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:20px 0;">No data yet</p>`}
+      ${topItems.length?topItems.map(([n,q],i)=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,.2);width:14px;">${i+1}</span><span style="font-size:13px;font-weight:700;">${n}</span></div><div style="display:flex;align-items:center;gap:8px;"><div style="height:4px;border-radius:2px;background:linear-gradient(to right,var(--accent),var(--accent-dark));width:${Math.round((q/topItems[0][1])*80)}px;"></div><span style="font-size:12px;font-weight:800;color:var(--accent);">×${q}</span></div></div>`).join(""):`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:20px 0;">No data yet</p>`}
     </div>
   </div>`;
 }
 
-  /* ── TOAST ── */
-  let _tt;
-  function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
+/* ── TOAST ── */
+let _tt;
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove("show"),2200);}
 </script>
 </body>
 </html>
