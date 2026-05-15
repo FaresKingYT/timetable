@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="FK|Supermarket">
+  <meta name="apple-mobile-web-app-title" content="Fares King">
   <meta name="theme-color" content="#050505">
   <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=19CwRCKQZsmXTUI0DBZtAN4AaUy1zuxdk&sz=w500">
   <title>Fares King | Supermarket</title>
@@ -13,10 +13,25 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom);}
-    body{font-family:"Inter",sans-serif;background:#050505;color:white;overflow-x:hidden;-webkit-tap-highlight-color:transparent;margin:0;}
+    :root{
+      --safe-top:env(safe-area-inset-top);
+      --safe-bottom:env(safe-area-inset-bottom);
+      --accent:#a855f7;
+      --accent-dark:#6b21a8;
+      --accent-rgb:168,85,247;
+    }
+    *{scrollbar-width:none !important;}
+    *::-webkit-scrollbar{display:none !important;}
+    html,body{overflow:hidden;height:100%;margin:0;}
+    body{font-family:"Inter",sans-serif;background:#050505;color:white;-webkit-tap-highlight-color:transparent;}
+    #app{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
     .font-display{font-family:"Archivo Black",sans-serif;letter-spacing:-0.04em;}
-    .king-gradient{background:linear-gradient(to right,#a855f7,#6b21a8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .king-gradient{background:linear-gradient(to right,var(--accent),var(--accent-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    @keyframes wIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes wSub{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .w-anim-1{opacity:0;animation:wSub .55s ease .1s forwards;}
+    .w-anim-2{opacity:0;animation:wIn  .7s cubic-bezier(.22,1,.36,1) .25s forwards;}
+    .w-anim-3{opacity:0;animation:wSub .5s ease .5s forwards;}
     .snack-card{
         cursor:pointer;
         transition:all .4s cubic-bezier(.175,.885,.32,1.275);
@@ -90,7 +105,7 @@
     @keyframes labelPulse{0%,100%{opacity:.3}50%{opacity:1}}
     #app{display:none;}
     #app.entering{animation:appEnter .6s cubic-bezier(.22,1,.36,1) forwards;}
-    @keyframes appEnter{from{opacity:0;transform:scale(.97) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    @keyframes appEnter{from{opacity:0}to{opacity:1}}
     @keyframes waPulse{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 0 rgba(37,211,102,0)}50%{box-shadow:0 4px 20px rgba(37,211,102,.4),0 0 0 13px rgba(37,211,102,0)}}
     #tap-zone{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;}
     /* SITE DOWN */
@@ -274,10 +289,17 @@ let tapCount=0, tapTimer=null;
     return h;
   }
 
-function applyTheme(key){
+function applyTheme(key,saveGlobal=false){
   const t=THEMES[key]||THEMES.purple;
   document.body.style.background=t.bg;
+  const root=document.documentElement;
+  root.style.setProperty("--accent",t.accent);
+  root.style.setProperty("--accent-dark",t.accentDark);
+  const hex=t.accent.replace("#","");
+  const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+  root.style.setProperty("--accent-rgb",r+","+g+","+b);
   currentTheme=key; localStorage.setItem("fk_theme",key);
+  if(saveGlobal&&window.FK_DB) window.FK_DB.saveSettings({globalTheme:key}).catch(()=>{});
 }
 applyTheme(currentTheme);
 
@@ -370,7 +392,7 @@ function showInstallGuide(){
       <p style="font-size:12px;color:rgba(168,85,247,.8);letter-spacing:.3em;text-transform:uppercase;margin-bottom:10px;">SuperMarket</p>
       <p style="font-size:13px;color:rgba(255,255,255,.4);text-align:center;line-height:1.6;margin-bottom:28px;max-width:280px;">This app must be installed to your Home Screen to work properly.</p>
 
-      <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);border-radius:16px;padding:14px 24px;margin-bottom:32px;box-shadow:0 8px 24px rgba(168,85,247,.4);">
+      <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));border-radius:16px;padding:14px 24px;margin-bottom:32px;box-shadow:0 8px 24px rgba(168,85,247,.4);">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
         <span style="color:white;font-weight:900;font-size:13px;letter-spacing:.05em;text-transform:uppercase;">Add to Home Screen</span>
       </div>
@@ -380,7 +402,7 @@ function showInstallGuide(){
 
       <div style="width:100%;display:flex;flex-direction:column;gap:14px;">
         ${steps.map((s,i)=>`<div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#a855f7,#6b21a8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
+          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:14px;color:white;">${i+1}</div>
           <div><p style="font-weight:800;font-size:13px;margin-bottom:4px;">${s[0]}</p><p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;">${s[1]}</p></div>
         </div>`).join("")}
       </div>
@@ -389,13 +411,11 @@ function showInstallGuide(){
         <p style="font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;">Once installed, open from your Home Screen and this screen won't appear again.</p>
       </div>
 
-      <button id="continue-btn" style="margin-top:20px;width:100%;padding:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;color:rgba(255,255,255,.35);font-size:12px;font-family:Inter,sans-serif;cursor:pointer;box-sizing:border-box;">
-        Continue without installing →
-      </button>
     </div>`;
 
   // FIX: Use addEventListener instead of inline onclick so bootApp is always in scope
-  document.getElementById("continue-btn").addEventListener("click", function(){
+  const _continueBtnEl=document.getElementById("continue-btn");
+  if(_continueBtnEl) _continueBtnEl.addEventListener("click", function(){
     localStorage.setItem("fk_install_dismissed","1");
     // Rebuild the loader spinner HTML then run
     loader.style.overflowY="hidden";
@@ -433,6 +453,8 @@ async function bootApp(){
       const settings=await window.FK_DB.getSettings();
       if(settings.waLink) GROUP_LINK=settings.waLink;
       if(settings.ytLink) YT=settings.ytLink;
+      if(settings.globalTheme) applyTheme(settings.globalTheme);
+      window._banner=settings.bannerEnabled?{text:settings.bannerText||"",bg:settings.bannerBg||"#ef4444",tc:settings.bannerTextColor||"#ffffff"}:null;
       if(settings.siteDown){
         const msg=settings.siteDownMsg||"The shop is temporarily closed. Check back later.";
         const sdMsg=document.getElementById("site-down-msg");
@@ -528,9 +550,10 @@ function buildApp(){
     <!-- MAIN VIEW -->
     <div id="main-view" style="padding-top:calc(64px + var(--safe-top));padding-bottom:calc(72px + var(--safe-bottom))">
       <div class="px-4 pt-6 pb-4">
-        <p class="text-[10px] tracking-[0.5em] text-purple-400/70 uppercase mb-1">Welcome to</p>
-        <h1 class="font-display text-5xl uppercase italic leading-none">Fares<br><span class="king-gradient">King</span></h1>
-        <p class="text-white/30 text-xs mt-3">Select your item below</p>
+        <p class="w-anim-1 text-[10px] tracking-[0.5em] uppercase mb-1" style="color:var(--accent)">Welcome to</p>
+        <h1 class="w-anim-2 font-display text-5xl uppercase italic leading-none">Fares<br><span class="king-gradient">King</span></h1>
+        <p class="w-anim-3 text-white/30 text-xs mt-3">Select your item below</p>
+        ${window._banner&&window._banner.text?`<div style="margin-top:14px;padding:8px 14px;border-radius:100px;background:${window._banner.bg};color:${window._banner.tc};font-weight:900;font-size:12px;display:inline-block;letter-spacing:.06em;text-transform:uppercase;">${window._banner.text}</div>`:""}
       </div>
       <div class="flex gap-3 px-4 pb-4 overflow-x-auto" style="scrollbar-width:none">
         <button id="tab-all"    onclick="filterTab(this,'all')"    class="tab-btn active text-white text-xs font-black uppercase tracking-wider whitespace-nowrap pb-1">All</button>
@@ -584,7 +607,7 @@ function buildApp(){
           <span class="text-white/40 text-sm">Total</span>
           <span id="co-total" class="font-display text-2xl">AED 0</span>
         </div>
-        <button id="place-btn" onclick="placeOrder()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,#a855f7,#6b21a8);box-shadow:0 8px 30px rgba(168,85,247,.4)">Place Order</button>
+        <button id="place-btn" onclick="placeOrder()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(168,85,247,.4)">Place Order</button>
       </div>
     </div>
 
@@ -598,7 +621,7 @@ function buildApp(){
       <div id="cart-items" style="max-height:55vh;overflow-y:auto;padding:12px 20px;"></div>
       <div class="px-5 py-4 border-t border-white/5" style="padding-bottom:calc(1rem + var(--safe-bottom))">
         <div class="flex justify-between mb-3"><span class="text-white/40 text-sm">Total</span><span id="cart-total-txt" class="font-display text-xl">AED 0</span></div>
-        <button onclick="goCheckout()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,#a855f7,#6b21a8);box-shadow:0 8px 30px rgba(168,85,247,.35)">Checkout <i class="fas fa-arrow-right ml-2"></i></button>
+        <button onclick="goCheckout()" class="w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shiny-wrap relative overflow-hidden" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 8px 30px rgba(168,85,247,.35)">Checkout <i class="fas fa-arrow-right ml-2"></i></button>
       </div>
     </div>
 
@@ -611,10 +634,6 @@ function buildApp(){
       </div>
     </div>
 
-    <!-- WA FLOAT -->
-    <a id="wa-float" href="${GROUP_LINK}" target="_blank" class="fixed z-[300] flex items-center justify-center rounded-full" style="bottom:calc(72px + var(--safe-bottom) + 14px);right:16px;width:52px;height:52px;background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 4px 20px rgba(37,211,102,.4);animation:waPulse 2.2s ease-in-out infinite">
-      <i class="fab fa-whatsapp text-white text-xl"></i>
-    </a>
 
     <!-- ORDER LOOKUP MODAL -->
     <div id="lookup-modal" class="hidden fixed inset-0 z-[600] flex items-end bg-black/80 backdrop-blur-sm">
@@ -724,6 +743,8 @@ function openAdmin(){
       <button onclick="admTab('themes')"   style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-themes">Themes</button>
       <button onclick="admTab('settings')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-settings">Settings</button>
         <button onclick="admTab('users')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-users">Users</button>
+        <button onclick="admTab('web')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-web">🌐 Web</button>
+        <button onclick="admTab('analytics')" style="flex-shrink:0;padding:12px 16px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:none;border:none;color:rgba(255,255,255,.3);border-bottom:2px solid transparent;cursor:pointer;font-family:Inter,sans-serif;" id="atb-analytics">📊 Stats</button>
       </div>
       <div style="flex:1;overflow-y:auto;" id="adm-content"></div>`;
   panel.style.display="flex";
@@ -737,7 +758,7 @@ function closeAdmin(){
 
 function admTab(name){
   const t=THEMES[currentTheme]||THEMES.purple;
-  ["orders","products","themes","settings","users"].forEach(n=>{
+  ["orders","products","themes","settings","users","web","analytics"].forEach(n=>{
     const btn=document.getElementById("atb-"+n);
     if(!btn)return;
     const active=n===name;
@@ -751,12 +772,14 @@ function admTab(name){
   if(name==="themes")   renderAdmThemes(c);
   if(name==="settings") renderAdmSettings(c);
   if(name==="users")    renderAdmUsers(c);
+  if(name==="web")      renderAdmWeb(c);
+  if(name==="analytics")renderAdmAnalytics(c);
 }
 
 /* ORDERS TAB */
 async function loadAdminOrders(){
   const c=document.getElementById("adm-content");
-  if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.5rem;"></i></div>`;
+  if(c) c.innerHTML=`<div style="text-align:center;padding:60px 20px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.5rem;"></i></div>`;
   try{
     adminOrders=await window.FK_DB.getAllOrders();
     const curTab=document.getElementById("atb-orders");
@@ -765,13 +788,19 @@ async function loadAdminOrders(){
 }
 function renderAdmOrders(c){
   if(!c)return;
-  const pend=adminOrders.filter(o=>o.status!=="complete").length;
-  const rev=adminOrders.filter(o=>o.status==="complete").reduce((s,o)=>s+(o.total||0),0);
+  const pend=adminOrders.filter(o=>o.status!=="complete"&&o.status!=="archived").length;
+  const rev=adminOrders.filter(o=>o.status==="complete"||o.status==="archived").reduce((s,o)=>s+(o.total||0),0);
+  const today=new Date().toLocaleDateString("en-AE");
+  const todayRev=adminOrders.filter(o=>(o.status==="complete"||o.status==="archived")&&new Date((o.created?.seconds?o.created.seconds*1000:(o.created||0))).toLocaleDateString("en-AE")===today).reduce((s,o)=>s+(o.total||0),0);
+  const doneOrders=adminOrders.filter(o=>o.status==="complete"||o.status==="archived");
+  const avgOrder=doneOrders.length?Math.round(rev/doneOrders.length):0;
+  const cts={};adminOrders.forEach(o=>(o.items||[]).forEach(i=>{cts[i.name]=(cts[i.name]||0)+i.qty;}));
+  const topItem=Object.entries(cts).sort((a,b)=>b[1]-a[1])[0];
   c.innerHTML=`<div style="padding:14px 16px;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;">
       <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:12px;text-align:center;">
         <p style="font-family:'Archivo Black',sans-serif;font-size:22px;">${adminOrders.length}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p>
       </div>
       <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:12px;text-align:center;">
         <p style="font-family:'Archivo Black',sans-serif;font-size:22px;color:#fbbf24;">${pend}</p>
@@ -779,7 +808,19 @@ function renderAdmOrders(c){
       </div>
       <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:12px;text-align:center;">
         <p style="font-family:'Archivo Black',sans-serif;font-size:16px;color:#22c55e;">AED ${rev}</p>
-        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL REV</p>
+      </div>
+      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.12);border-radius:14px;padding:12px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:#22c55e;">AED ${todayRev}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TODAY</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:15px;color:rgba(255,255,255,.7);">AED ${avgOrder}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p>
+      </div>
+      <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.1);border-radius:14px;padding:12px;text-align:center;grid-column:span 1;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:12px;color:rgba(255,255,255,.7);">${topItem?topItem[0]+" ×"+topItem[1]:"—"}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOP ITEM</p>
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
@@ -907,7 +948,12 @@ function renderAdmProducts(c){
         <img src="${s.img}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;background:rgba(168,85,247,.05);flex-shrink:0;" loading="lazy">
         <div style="flex:1;min-width:0;">
           <p style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.name}</p>
-          <p style="font-size:11px;color:#a855f7;margin-top:2px;">AED ${s.price} · ${s.category}</p>
+          <p style="font-size:11px;color:var(--accent);margin-top:2px;">AED ${s.price} · ${s.category}</p>
+        <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;">
+          ${s.sticker?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#fff"};">${s.sticker}</span>`:""}
+          ${s.featured?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(168,85,247,.2);color:#c084fc;">⭐ FEATURED</span>`:""}
+          ${s.outOfStock?`<span style="font-size:9px;font-weight:900;padding:1px 7px;border-radius:100px;background:rgba(239,68,68,.15);color:#f87171;">OUT OF STOCK</span>`:""}
+        </div>
         </div>
         <div style="display:flex;gap:7px;">
           <button onclick="openProductModal(${s.id})" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a855f7;font-size:12px;">✏️</button>
@@ -936,8 +982,32 @@ function openProductModal(id){
         <option value="boba" ${s?.category==="boba"?"selected":""}>🧋 Drinks / Boba</option>
         <option value="snacks" ${s?.category==="snacks"||!s?"selected":""}>🍟 Snacks</option>
       </select>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px;">
+        <p style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:10px;">Sticker / Badge</p>
+        <input id="pm-sticker" type="text" placeholder='Sticker text (e.g. "NEW!" or "HOT")' value="${s?.sticker||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Sticker BG</label>
+            <input id="pm-sticker-bg" type="color" value="${s?.stickerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
+          </div>
+          <div>
+            <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Sticker Text Color</label>
+            <input id="pm-sticker-color" type="color" value="${s?.stickerColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;">
+          <span style="font-size:13px;font-weight:700;">⭐ Featured</span>
+          <input id="pm-featured" type="checkbox" ${s?.featured?"checked":""} style="width:18px;height:18px;accent-color:#a855f7;cursor:pointer;">
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;cursor:pointer;">
+          <span style="font-size:13px;font-weight:700;">🚫 Out of Stock</span>
+          <input id="pm-oos" type="checkbox" ${s?.outOfStock?"checked":""} style="width:18px;height:18px;accent-color:#ef4444;cursor:pointer;">
+        </label>
+      </div>
     </div>
-    <button onclick="saveProductModal()" style="width:100%;margin-top:16px;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;">Save Product</button>
+    <button onclick="saveProductModal()" style="width:100%;margin-top:16px;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;">Save Product</button>
     <button onclick="document.getElementById('prod-modal').style.display='none'" style="width:100%;margin-top:8px;padding:12px;background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:Inter,sans-serif;">Cancel</button>
   </div>`;
 }
@@ -947,12 +1017,17 @@ async function saveProductModal(){
   const desc=document.getElementById("pm-desc").value.trim();
   const img=document.getElementById("pm-img").value.trim();
   const cat=document.getElementById("pm-cat").value;
+  const sticker=(document.getElementById("pm-sticker")?.value||"").trim();
+  const stickerBg=document.getElementById("pm-sticker-bg")?.value||"#ef4444";
+  const stickerColor=document.getElementById("pm-sticker-color")?.value||"#ffffff";
+  const featured=!!(document.getElementById("pm-featured")?.checked);
+  const outOfStock=!!(document.getElementById("pm-oos")?.checked);
   if(!name||!price||!img){showToast("Fill in all fields");return;}
   if(_editProdId){
     const s=SNACKS.find(x=>x.id===_editProdId);
-    if(s){s.name=name;s.price=price;s.desc=desc;s.img=img;s.category=cat;}
+    if(s){s.name=name;s.price=price;s.desc=desc;s.img=img;s.category=cat;s.sticker=sticker;s.stickerBg=stickerBg;s.stickerColor=stickerColor;s.featured=featured;s.outOfStock=outOfStock;}
   } else {
-    SNACKS.push({id:Math.max(0,...SNACKS.map(s=>s.id))+1,name,price,desc,img,category:cat});
+    SNACKS.push({id:Math.max(0,...SNACKS.map(s=>s.id))+1,name,price,desc,img,category:cat,sticker,stickerBg,stickerColor,featured,outOfStock});
   }
   try{await window.FK_DB.saveProducts(SNACKS);}catch(e){console.warn(e);}
   document.getElementById("prod-modal").style.display="none";
@@ -975,7 +1050,7 @@ function renderAdmThemes(c){
   c.innerHTML=`<div style="padding:14px 16px;">
     <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">App Theme</p>
     ${Object.entries(THEMES).map(([k,t])=>`
-    <button onclick="applyTheme('${k}');renderAdmThemes(document.getElementById('adm-content'))" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
+    <button onclick="applyTheme('${k}',true);showToast('Theme applied globally ✓');setTimeout(()=>renderAdmThemes(document.getElementById('adm-content')),200)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-radius:14px;border:1px solid ${t.accent}22;background:${t.accent}0a;margin-bottom:10px;cursor:pointer;transition:all .2s;">
       <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});"></div>
         <span style="font-weight:800;font-size:14px;color:white;">${t.label}</span>
@@ -1013,7 +1088,7 @@ function renderAdmSettings(c){
       <p style="font-weight:800;font-size:14px;margin-bottom:10px;">YouTube Link</p>
       <input id="yt-inp" type="url" value="${YT}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
     </div>
-    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,#a855f7,#6b21a8);color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(168,85,247,.35);">Save Settings</button>
+    <button onclick="saveAdmSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(var(--accent-rgb),.35);">Save Settings</button>
   </div>`;
 
   window.FK_DB.getSettings().then(s=>{
@@ -1052,20 +1127,24 @@ function renderProducts(filter){
     const qty=getQty(s.id);
     const isSel=selectedSnack===s.id;
     const imgCls=`snack-shadow${s.isBoba?" boba-adjust":""}${s.isTiger?" tiger-milk-pos":""}`;
-    return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}" onclick="selectSnack(${s.id})">
+    const cardClick=s.outOfStock?"":"selectSnack("+s.id+")";
+    return `<div id="card-${s.id}" class="snack-card rounded-3xl border border-white/8 bg-[#0a0a0a] overflow-hidden${isSel?" selected":""}${s.outOfStock?" opacity-50":""}" onclick="${cardClick}" style="position:relative;">
+      ${s.sticker?`<div style="position:absolute;top:10px;left:10px;z-index:20;background:${s.stickerBg||"#ef4444"};color:${s.stickerColor||"#ffffff"};font-family:'Archivo Black',sans-serif;font-size:10px;font-weight:900;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 2px 8px rgba(0,0,0,.5);">${s.sticker}</div>`:""}
+      ${s.featured?`<div style="position:absolute;top:10px;right:10px;z-index:20;background:linear-gradient(135deg,var(--accent),var(--accent-dark));font-size:9px;padding:3px 8px;border-radius:100px;font-weight:900;color:white;letter-spacing:.05em;">⭐ TOP</div>`:""}
+      ${s.outOfStock?`<div style="position:absolute;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);border-radius:inherit;"><span style="font-family:'Archivo Black',sans-serif;font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.12em;">Out of Stock</span></div>`:""}
       <div class="image-container"><img src="${s.img}" class="${imgCls}" alt="${s.name}" loading="lazy"></div>
       <div class="px-4 pb-5">
         <div class="flex items-start justify-between gap-3 mb-1">
           <div><p class="font-black text-base leading-tight">${s.name}</p><p class="text-white/30 text-xs mt-1">${s.desc}</p></div>
-          <span class="text-purple-400 font-black text-lg whitespace-nowrap">AED ${s.price}</span>
+          <span class="font-black text-lg whitespace-nowrap" style="color:var(--accent)">AED ${s.price}</span>
         </div>
         <div class="flex items-center justify-between mt-3">
           ${qty===0
-            ?`<button onclick="event.stopPropagation();addToCart(${s.id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>`
+            ?`<button onclick="event.stopPropagation();addToCart(${s.id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">Add to Bag</button>`
             :`<div class="flex items-center gap-3" onclick="event.stopPropagation()">
               <button onclick="changeQty(${s.id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button>
               <span class="font-black text-base">${qty}</span>
-              <button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
+              <button onclick="changeQty(${s.id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button>
             </div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`
           }
         </div>
@@ -1105,8 +1184,8 @@ function updateCardControls(id){
   const qty=getQty(id);
   const ctrl=card.querySelector(".flex.items-center.justify-between.mt-3");if(!ctrl)return;
   ctrl.innerHTML=qty===0
-    ?`<button onclick="event.stopPropagation();addToCart(${id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">Add to Bag</button>`
-    :`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`;
+    ?`<button onclick="event.stopPropagation();addToCart(${id})" class="shiny-wrap tap-active px-5 py-2.5 rounded-full text-white font-black text-xs uppercase tracking-wider" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">Add to Bag</button>`
+    :`<div class="flex items-center gap-3" onclick="event.stopPropagation()"><button onclick="changeQty(${id},-1)" class="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center font-black text-base tap-active">−</button><span class="font-black text-base">${qty}</span><button onclick="changeQty(${id},1)" class="w-8 h-8 rounded-full flex items-center justify-center font-black text-base tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button></div><span class="text-white/25 text-xs">AED ${s.price*qty}</span>`;
 }
 function saveCart(){localStorage.setItem("fk_cart",JSON.stringify(cart));}
 function updateCartUI(){
@@ -1124,7 +1203,7 @@ function renderCartItems(){
     <div class="flex items-center gap-2">
       <button onclick="changeQty(${i.id},-1)" class="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-sm font-black tap-active">−</button>
       <span class="font-black text-sm w-4 text-center">${i.qty}</span>
-      <button onclick="changeQty(${i.id},1)" class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-black tap-active" style="background:linear-gradient(135deg,#a855f7,#6b21a8)">+</button>
+      <button onclick="changeQty(${i.id},1)" class="w-7 h-7 rounded-full flex items-center justify-center text-sm font-black tap-active" style="background:linear-gradient(135deg,var(--accent),var(--accent-dark))">+</button>
     </div>
   </div>`).join("");
 }
@@ -1210,14 +1289,11 @@ function sendToWhatsApp(){
 
 /* ── LOOKUP ── */
 function openOrderLookup(){ buildHistoryDrawer(); }
-function buildHistoryDrawer(){
+async function buildHistoryDrawer(){
+  const STATUS_COLORS={pending:"#fbbf24",confirmed:"#60a5fa",getting_product:"#c084fc",waiting_school_day:"#f97316",complete:"#22c55e",archived:"#a855f7"};
+  const STATUS_LABELS={pending:"Pending",confirmed:"Order Confirmed",getting_product:"Getting Product",waiting_school_day:"Waiting for School Day",complete:"Ready for Pickup ✓",archived:"Done ✓"};
   let drawer=document.getElementById("history-drawer");
   if(!drawer){drawer=document.createElement("div");drawer.id="history-drawer";document.body.appendChild(drawer);}
-  const STATUS_COLORS={pending:"#fbbf24",confirmed:"#60a5fa",getting_product:"#c084fc",waiting_school_day:"#f97316",complete:"#22c55e"};
-  const STATUS_LABELS={pending:"Pending",confirmed:"Order Confirmed",getting_product:"Getting Product",waiting_school_day:"Waiting for School Day",complete:"Ready for Pickup ✓"};
-  const historyIds=[];
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("fk_order_")) historyIds.push(k.replace("fk_order_",""));}
-  const orders=historyIds.map(id=>{try{return JSON.parse(localStorage.getItem("fk_order_"+id));}catch(e){return null;}}).filter(Boolean).sort((a,b)=>(b.created||0)-(a.created||0));
   drawer.style.cssText="position:fixed;inset:0;z-index:6000;display:flex;align-items:flex-end;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);";
   drawer.innerHTML=`<div style="width:100%;background:#0a0a14;border-top:1px solid rgba(168,85,247,.15);border-radius:24px 24px 0 0;max-height:85vh;display:flex;flex-direction:column;padding-bottom:var(--safe-bottom);">
     <div style="padding:16px 20px 12px;flex-shrink:0;">
@@ -1226,41 +1302,59 @@ function buildHistoryDrawer(){
         <h3 style="font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:-0.02em;">My Orders</h3>
         <button onclick="document.getElementById('history-drawer').remove()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:13px;">✕</button>
       </div>
-      <div style="position:relative;margin-bottom:4px;">
-        <input id="hist-lookup-inp" type="text" placeholder="Paste Order ID to look up..." style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 48px 11px 14px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;">
-        <button onclick="doLookup()" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:#a855f7;border:none;border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:white;">🔍</button>
-      </div>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:0 20px 20px;">
-      ${orders.length===0
-        ?`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:40px 0;">No order history on this device</p>`
-        :orders.map(o=>{
-          const ts=o.created||Date.now();
-          const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",year:"numeric"});
-          const sc=STATUS_COLORS[o.status]||"#fbbf24";
-          const sl=STATUS_LABELS[o.status]||"Pending";
-          const its=(o.items||[]).map(i=>i.name+(i.qty>1?" ×"+i.qty:"")).join(", ");
-          return`<div onclick="document.getElementById('history-drawer').remove();location.href='receipt.html?orderId=${o.id}'" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-              <div>
-                <p style="font-size:10px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p>
-                <p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Order"}</p>
-              </div>
-              <div style="text-align:right;">
-                <span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:${sc}18;color:${sc};border:1px solid ${sc}33;">${sl}</span>
-                <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
-              </div>
-            </div>
-            <p style="font-size:11px;color:rgba(255,255,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">${its}</p>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
-              <span style="font-size:11px;color:rgba(168,85,247,.6);font-weight:700;">View Receipt →</span>
-            </div>
-          </div>`;
-        }).join("")}
+    <div id="history-orders-list" style="flex:1;overflow-y:auto;padding:0 20px 20px;">
+      <div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>
     </div>
   </div>`;
   drawer.addEventListener("click",e=>{if(e.target===drawer)drawer.remove();});
+
+  /* Fetch live status from Firestore for every saved order */
+  const historyIds=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("fk_order_")) historyIds.push(k.replace("fk_order_",""));}
+  let orders=[];
+  try{
+    const fetched = await Promise.all(historyIds.map(id=>window.FK_DB.getOrder(id).catch(()=>null)));
+    orders = fetched.filter(Boolean).sort((a,b)=>{
+      const ta=a.created?.seconds?a.created.seconds*1000:(a.created||0);
+      const tb=b.created?.seconds?b.created.seconds*1000:(b.created||0);
+      return tb-ta;
+    });
+    /* Update localStorage cache with fresh status */
+    orders.forEach(o=>{ try{ const local=JSON.parse(localStorage.getItem("fk_order_"+o.id)||"{}"); localStorage.setItem("fk_order_"+o.id,JSON.stringify({...local,...o})); }catch(e){} });
+  }catch(e){
+    orders=historyIds.map(id=>{try{return JSON.parse(localStorage.getItem("fk_order_"+id));}catch(e2){return null;}}).filter(Boolean);
+  }
+  const el=document.getElementById("history-orders-list");
+  if(!el)return;
+  if(orders.length===0){
+    el.innerHTML=`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:40px 0;">No order history on this device</p>`;
+    return;
+  }
+  el.innerHTML=orders.map(o=>{
+    const ts=o.created?.seconds?o.created.seconds*1000:(o.created||Date.now());
+    const ds=new Date(ts).toLocaleDateString("en-AE",{day:"2-digit",month:"short",year:"numeric"});
+    const sc=STATUS_COLORS[o.status]||"#fbbf24";
+    const sl=STATUS_LABELS[o.status]||"Pending";
+    const its=(o.items||[]).map(i=>i.name+(i.qty>1?" ×"+i.qty:"")).join(", ");
+    return`<div onclick="document.getElementById('history-drawer').remove();location.href='receipt.html?orderId=${o.id}'" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div>
+          <p style="font-size:10px;font-weight:900;color:#a855f7;">#${(o.id||"").substring(0,14)}</p>
+          <p style="font-weight:800;font-size:14px;margin-top:2px;">${o.customer?.name||"Order"}</p>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-size:10px;font-weight:900;padding:2px 9px;border-radius:100px;background:${sc}18;color:${sc};border:1px solid ${sc}33;">${sl}</span>
+          <p style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">${ds}</p>
+        </div>
+      </div>
+      <p style="font-size:11px;color:rgba(255,255,255,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">${its}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:900;color:#a855f7;font-size:14px;">AED ${o.total||0}</span>
+        <span style="font-size:11px;color:rgba(168,85,247,.6);font-weight:700;">View Receipt →</span>
+      </div>
+    </div>`;
+  }).join("");
 }
 function closeLookup(){const d=document.getElementById("history-drawer");if(d)d.remove();}
 function doLookup(){
@@ -1274,7 +1368,7 @@ function doLookup(){
   /* ── USERS TAB ── */
   async function renderAdmUsers(c){
     if(!c)return;
-    c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:#a855f7;font-size:1.3rem;"></i></div>`;
+    c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>`;
     try{
       const [users, bans] = await Promise.all([
         window.FK_DB.getAllUsers(),
@@ -1354,6 +1448,130 @@ function doLookup(){
     showToast("User unbanned");
     renderAdmUsers(document.getElementById("adm-content"));
   }
+
+/* ── WEB TAB ── */
+async function renderAdmWeb(c){
+  if(!c)return;
+  let cur={};
+  try{cur=await window.FK_DB.getSettings();}catch(e){}
+  c.innerHTML=`<div style="padding:14px 16px;">
+    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">🌐 Web / App Appearance</p>
+
+    <!-- BANNER -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div>
+          <p style="font-weight:800;font-size:14px;">🏷️ Banner Sticker</p>
+          <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Shown below the logo on the home screen</p>
+        </div>
+        <div id="web-banner-toggle" onclick="this.dataset.on=this.dataset.on==='1'?'0':'1';this.style.background=this.dataset.on==='1'?'#a855f7':'rgba(255,255,255,.1)';this.children[0].style.left=this.dataset.on==='1'?'23px':'3px';" data-on="${cur.bannerEnabled?'1':'0'}" style="width:48px;height:26px;border-radius:100px;background:${cur.bannerEnabled?'#a855f7':'rgba(255,255,255,.1)'};position:relative;cursor:pointer;transition:all .3s;flex-shrink:0;">
+          <div style="position:absolute;top:3px;left:${cur.bannerEnabled?'23px':'3px'};width:20px;height:20px;border-radius:50%;background:white;transition:all .3s;"></div>
+        </div>
+      </div>
+      <input id="web-banner-text" type="text" placeholder="Banner text, e.g. 🔥 Limited Time Offer!" value="${cur.bannerText||''}" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 12px;color:white;font-size:13px;outline:none;box-sizing:border-box;font-family:Inter,sans-serif;margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Background Color</label>
+          <input id="web-banner-bg" type="color" value="${cur.bannerBg||'#ef4444'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
+        </div>
+        <div>
+          <label style="font-size:10px;color:rgba(255,255,255,.3);display:block;margin-bottom:4px;">Text Color</label>
+          <input id="web-banner-tc" type="color" value="${cur.bannerTextColor||'#ffffff'}" style="width:100%;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;">
+        </div>
+      </div>
+    </div>
+
+    <!-- THEME QUICK SELECT -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <p style="font-weight:800;font-size:14px;margin-bottom:10px;">🎨 Global Theme</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${Object.entries(THEMES).map(([k,t])=>`
+        <button onclick="applyTheme('${k}',true);showToast('Theme → ${t.label}');renderAdmWeb(document.getElementById('adm-content'))" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:100px;border:2px solid ${k===currentTheme?t.accent:'rgba(255,255,255,.1)'};background:${k===currentTheme?t.accent+'18':'rgba(255,255,255,.04)'};cursor:pointer;font-size:12px;font-weight:800;color:${k===currentTheme?t.accent:'rgba(255,255,255,.5)'};font-family:Inter,sans-serif;">
+          <div style="width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,${t.accent},${t.accentDark});flex-shrink:0;"></div>${t.label}
+        </button>`).join("")}
+      </div>
+    </div>
+
+    <button onclick="saveWebSettings()" style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:white;border:none;border-radius:14px;font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 20px rgba(var(--accent-rgb),.35);">Save Web Settings</button>
+  </div>`;
+}
+async function saveWebSettings(){
+  const bannerEnabled=document.getElementById("web-banner-toggle")?.dataset.on==="1";
+  const bannerText=(document.getElementById("web-banner-text")?.value||"").trim();
+  const bannerBg=document.getElementById("web-banner-bg")?.value||"#ef4444";
+  const bannerTextColor=document.getElementById("web-banner-tc")?.value||"#ffffff";
+  try{
+    await window.FK_DB.saveSettings({bannerEnabled,bannerText,bannerBg,bannerTextColor});
+    window._banner=bannerEnabled?{text:bannerText,bg:bannerBg,tc:bannerTextColor}:null;
+    showToast("Web settings saved ✓");
+  }catch(e){showToast("Save failed");}
+}
+
+/* ── ANALYTICS TAB ── */
+async function renderAdmAnalytics(c){
+  if(!c)return;
+  c.innerHTML=`<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="color:var(--accent);font-size:1.3rem;"></i></div>`;
+  let orders=adminOrders;
+  if(!orders||!orders.length){
+    try{orders=await window.FK_DB.getAllOrders();}catch(e){orders=[];}
+  }
+  const done=orders.filter(o=>o.status==="complete"||o.status==="archived");
+  const rev=done.reduce((s,o)=>s+(o.total||0),0);
+  const avg=done.length?Math.round(rev/done.length):0;
+  // Daily revenue for past 7 days
+  const days={};for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days[d.toLocaleDateString("en-AE")]=0;}
+  done.forEach(o=>{const ts=o.created?.seconds?o.created.seconds*1000:(o.created||0);const d=new Date(ts).toLocaleDateString("en-AE");if(days[d]!==undefined)days[d]+=(o.total||0);});
+  const dayKeys=Object.keys(days);
+  const maxVal=Math.max(...Object.values(days),1);
+  // Item frequency
+  const cts={};orders.forEach(o=>(o.items||[]).forEach(i=>{cts[i.name]=(cts[i.name]||0)+i.qty;}));
+  const topItems=Object.entries(cts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  c.innerHTML=`<div style="padding:14px 16px;">
+    <p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:14px;">📊 Analytics</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+      <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:13px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:24px;">${orders.length}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">TOTAL ORDERS</p>
+      </div>
+      <div style="background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:14px;padding:13px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:20px;color:#22c55e;">AED ${rev}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">REVENUE</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:20px;">AED ${avg}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">AVG ORDER</p>
+      </div>
+      <div style="background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:13px;text-align:center;">
+        <p style="font-family:'Archivo Black',sans-serif;font-size:24px;color:#fbbf24;">${orders.filter(o=>o.status!=="complete"&&o.status!=="archived").length}</p>
+        <p style="font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;letter-spacing:.08em;">PENDING</p>
+      </div>
+    </div>
+    <!-- Bar chart -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:12px;">
+      <p style="font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:12px;">Revenue — Last 7 Days</p>
+      <div style="display:flex;align-items:flex-end;gap:5px;height:80px;">
+        ${dayKeys.map(d=>{const v=days[d];const pct=Math.round((v/maxVal)*100);return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="width:100%;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--accent),var(--accent-dark));height:${pct}%;min-height:${v>0?4:1}px;"></div>
+          <span style="font-size:8px;color:rgba(255,255,255,.25);">${d.split("/").slice(0,2).join("/")}</span>
+        </div>`;}).join("")}
+      </div>
+    </div>
+    <!-- Top items -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;">
+      <p style="font-size:11px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:10px;">Top Items</p>
+      ${topItems.length?topItems.map(([n,q],i)=>`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:rgba(255,255,255,.2);width:14px;">${i+1}</span>
+          <span style="font-size:13px;font-weight:700;">${n}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="height:4px;border-radius:2px;background:linear-gradient(to right,var(--accent),var(--accent-dark));width:${Math.round((q/topItems[0][1])*80)}px;"></div>
+          <span style="font-size:12px;font-weight:800;color:var(--accent);">×${q}</span>
+        </div>
+      </div>`).join(""):`<p style="text-align:center;color:rgba(255,255,255,.2);font-size:13px;padding:20px 0;">No data yet</p>`}
+    </div>
+  </div>`;
+}
 
   /* ── TOAST ── */
   let _tt;
