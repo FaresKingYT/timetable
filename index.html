@@ -75,13 +75,15 @@
     }
 
     /* ── BOBA: shifted right so product (on left of image) centres visually ── */
-    .boba-adjust{
-      transform:scale(1.4) translate(40px,28px);
-    }
-    .snack-card.selected .boba-adjust{
-      transform:scale(2.1) translate(40px,38px);
-      filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
-    }
+
+     .boba-adjust:not(.tiger-milk-pos){
+  transform:scale(1.4) translate(40px,28px);
+}
+
+.snack-card.selected .boba-adjust:not(.tiger-milk-pos){
+  transform:scale(2.1) translate(40px,38px);
+  filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
+}
 
     /* ── TIGER MILK: positioned left, subtle scale on select ── */
     .tiger-milk-pos{
