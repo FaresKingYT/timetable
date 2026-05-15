@@ -74,12 +74,12 @@
       filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
     }
 
-    /* ── BOBA: start small, grow bigger on select ── */
+    /* ── BOBA: shifted right so product (on left of image) centres visually ── */
     .boba-adjust{
-      transform:scale(1.4) translate(10px,28px);
+      transform:scale(1.4) translate(40px,28px);
     }
     .snack-card.selected .boba-adjust{
-      transform:scale(2.1) translate(10px,38px);
+      transform:scale(2.1) translate(40px,38px);
       filter:drop-shadow(0 24px 48px rgba(168,85,247,.5));
     }
 
@@ -341,7 +341,6 @@ let _skipAllowed = false;
 let _skipTimer   = null;
 
 function preloadImages(urls){
-  // Returns a promise that resolves only when EVERY image has loaded or errored
   return new Promise(resolveAll => {
     let loaded = 0;
     const total = urls.length;
@@ -360,7 +359,7 @@ function preloadImages(urls){
     urls.forEach(url=>{
       const img = new Image();
       img.onload  = onOne;
-      img.onerror = onOne; // count errors too — never stall
+      img.onerror = onOne;
       img.src = url;
     });
   });
@@ -374,7 +373,6 @@ function skipLoading(){
   setTimeout(()=>{ revealApp(); bootApp(); }, 100);
 }
 
-/* ── LOADER HELPERS ── */
 function showLoader(){
   const l=document.getElementById("loader");
   if(l){ l.style.display="flex"; l.classList.remove("fade-out"); }
@@ -390,26 +388,21 @@ function revealApp(){
   if(app){ app.style.display="block"; app.classList.add("entering"); }
 }
 
-/* ── LOADER: wait for ALL images, then launch ── */
 function runLoaderWithImages(cb){
   const label   = document.getElementById("loader-label");
   const skipBtn = document.getElementById("loader-skip-btn");
   showLoader();
 
-  // Collect every image URL that will be displayed
   const imgUrls = [LOGO_URL, ...DEFAULT_SNACKS.map(s=>s.img)];
 
-  // Show skip button + message after 30 seconds
   _skipTimer = setTimeout(()=>{
     _skipAllowed = true;
     if(label)   label.textContent = "Taking long time...";
     if(skipBtn) skipBtn.style.display = "block";
   }, 30000);
 
-  // Wait for every single image to finish (load or error)
   preloadImages(imgUrls).then(()=>{
     clearTimeout(_skipTimer);
-    // Bar is already at 100% from preloadImages progress
     setTimeout(()=>{
       hideLoader();
       setTimeout(cb, 100);
@@ -427,18 +420,14 @@ function runLoaderWithImages(cb){
   const wasInstalled = !!localStorage.getItem("fk_was_installed");
 
   if(isStandalone || wasInstalled){
-    // Running as installed PWA — remember this
     if(isStandalone) localStorage.setItem("fk_was_installed","1");
     runLoaderWithImages(()=>{ revealApp(); bootApp(); });
   } else {
-    // Running in browser — check if user dismissed the install guide
     const dismissed = localStorage.getItem("fk_install_dismissed");
     if(!dismissed){
-      // Hide loader spinner, show install guide instead
       document.getElementById("loader").style.display = "none";
       showInstallGuide();
     } else {
-      // Dismissed before — just load normally
       runLoaderWithImages(()=>{ revealApp(); bootApp(); });
     }
   }
@@ -517,13 +506,11 @@ function showInstallGuide(){
       <button id="install-continue-btn">Continue anyway →</button>
     </div>`;
 
-  // Attach handler after DOM is written
   setTimeout(()=>{
     const btn = document.getElementById("install-continue-btn");
     if(btn){
       btn.addEventListener("click", function(){
         localStorage.setItem("fk_install_dismissed","1");
-        // Rebuild the spinner HTML and start loading
         loader.style.overflowY = "hidden";
         loader.innerHTML = `
           <div id="logo-spin-wrap" style="position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;">
@@ -902,7 +889,8 @@ function filterAdmOrders(){
         </div>
         <div style="display:flex;gap:6px;">
           <button onclick="openStatusPicker('${o.id}','${o.status||"pending"}')" style="background:${st.bg};border:1px solid ${st.border};border-radius:10px;padding:7px 12px;color:${st.color};font-size:11px;font-weight:800;cursor:pointer;font-family:Inter,sans-serif;">Status ▾</button>
-          <button onclick="admArchiveOrder('${o.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;">✓ Done</button>
+          <button onclick="admArchiveOrder('${o.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;">✓ Done</button>
+          <button onclick="admHardDelete('${o.id}')" title="Permanently delete" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:7px 10px;color:#f87171;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-trash-can"></i></button>
         </div>
       </div>
     </div>`;
@@ -948,6 +936,20 @@ async function admArchiveOrder(id){
   adminOrders=adminOrders.filter(x=>x.id!==id);
   filterAdmOrders();renderAdmOrders(document.getElementById("adm-content"));
   showToast("Order archived ✓");
+}
+
+/* ── NEW: Permanent hard delete — does NOT touch revenue ── */
+async function admHardDelete(id){
+  if(!confirm("Permanently delete this order? This cannot be undone and will NOT affect revenue stats."))return;
+  try{
+    await window.FK_DB.deleteOrder(id);
+    adminOrders=adminOrders.filter(x=>x.id!==id);
+    filterAdmOrders();
+    renderAdmOrders(document.getElementById("adm-content"));
+    showToast("Order permanently deleted 🗑️");
+  }catch(e){
+    showToast("Delete failed — check connection");
+  }
 }
 
 /* PRODUCTS TAB */
